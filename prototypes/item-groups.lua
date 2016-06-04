@@ -1,0 +1,162 @@
+data:extend(
+{
+  {
+    type = "item-group",
+    hidden = true,
+	name = "Recycling",
+    icon = "__ZRecycling__/graphics/item-group/recycling.png",
+    inventory_order = "e",
+    order = "e"
+  },
+  {
+    type = "item-subgroup",
+    name = "recycling-machine",
+    group = "production",
+    order = "z",
+  },
+  {
+    type = "item-subgroup",
+    name = "rec-armor",
+    group = "Recycling",
+    order = "z",
+  },
+  {
+    type = "item-subgroup",
+    name = "rec-belt",
+    group = "Recycling",
+    order = "c",
+  },
+  {
+    type = "item-subgroup",
+    name = "rec-circuit-network",
+    group = "Recycling",
+    order = "h",
+  },
+  {
+    type = "item-subgroup",
+    name = "rec-defensive-structure",
+    group = "Recycling",
+    order = "z",
+  },
+  {
+    type = "item-subgroup",
+    name = "rec-energy",
+    group = "Recycling",
+    order = "j",
+  },
+  {
+    type = "item-subgroup",
+    name = "rec-energy-pipe-distribution",
+    group = "Recycling",
+    order = "e",
+  },
+  {
+    type = "item-subgroup",
+    name = "rec-equipment",
+    group = "Recycling",
+    order = "z",
+  },
+  {
+    type = "item-subgroup",
+    name = "rec-extraction-machine",
+    group = "Recycling",
+    order = "k",
+  },
+  {
+    type = "item-subgroup",
+    name = "rec-gun",
+    group = "Recycling",
+    order = "z",
+  },
+  {
+    type = "item-subgroup",
+    name = "rec-energy",
+    group = "Recycling",
+    order = "k",
+  },
+  {
+    type = "item-subgroup",
+    name = "rec-inserter",
+    group = "Recycling",
+    order = "d",
+  },
+  {
+    type = "item-subgroup",
+    name = "rec-barrel",
+    group = "Recycling",
+    order = "m",
+  },
+  {
+    type = "item-subgroup",
+    name = "rec-intermediate-product",
+    group = "Recycling",
+    order = "n",
+  },
+  {
+    type = "item-subgroup",
+    name = "rec-logistic-network",
+    group = "Recycling",
+    order = "g",
+  },
+  {
+    type = "item-subgroup",
+    name = "rec-module",
+    group = "Recycling",
+    order = "n",
+  },
+  {
+    type = "item-subgroup",
+    name = "rec-other",
+    group = "Recycling",
+    order = "q",
+  },
+  {
+    type = "item-subgroup",
+    name = "rec-production-machine",
+    group = "Recycling",
+    order = "m",
+  },
+  {
+    type = "item-subgroup",
+    name = "rec-science-pack",
+    group = "Recycling",
+    order = "s",
+  },
+  {
+    type = "item-subgroup",
+    name = "rec-smelting-machine",
+    group = "Recycling",
+    order = "l",
+  },
+  {
+    type = "item-subgroup",
+    name = "rec-storage",
+    group = "Recycling",
+    order = "b",
+  },
+  {
+    type = "item-subgroup",
+    name = "rec-tool",
+    group = "Recycling",
+    order = "i",
+  },
+  {
+    type = "item-subgroup",
+    name = "rec-tools",
+    group = "Recycling",
+    order = "w",
+  },
+  {
+    type = "item-subgroup",
+    name = "rec-transport",
+    group = "Recycling",
+    order = "f",
+  },
+  {
+    type = "item-subgroup",
+    name = "rec-recycling-machine",
+    group = "Recycling",
+    order = "z",
+  },
+}
+)

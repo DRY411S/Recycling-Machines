@@ -1,0 +1,10 @@
+{
+	"name": "ZRecycling",
+	"version": "0.0.1",
+	"title": "Recycling",
+	"author": "DRY411S",
+	"contact": "TBC",
+	"homepage": "TBC",
+	"description": "Recycles most items into their recipe ingredients",
+	"dependencies": ["base >= 0.12.33"]
+}
