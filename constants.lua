@@ -3,8 +3,9 @@
 
 -- The proportion of original ingredients that you get back when you recycle
 -- Original ingredients are rounded up
--- Default 0.2 = 20%
-recycleratio = 0.2
+-- If you wanted (for example) 20% this variable should be set to 0.2
+-- Default 1
+recycleratio = 1
 
 -- The prefix used on the reverse recipes
 -- Personalised with mod author to avoid clashes with other recycling mods

@@ -1,7 +1,169 @@
 -- variables used in data and control luas
 require("constants")
 
-local function add_reverse_recipe(item,recipe,newcategory,rev_recipes)
+-- Unused by code. These were the vanilla sub-groups found in development, left here for reference. Mods may produce others
+local validsubgroups = {	
+							-- "recycling-machine",
+							-- "module",
+							-- "logistic-network",
+							-- "gun",
+							-- "transport",
+							-- "barrel",
+							-- "equipment",
+							-- "production-machine",
+							-- "defensive-structure",
+							-- "circuit-network",
+							-- "energy-pipe-distribution",
+							-- "inserter",
+							-- "extraction-machine",
+							-- "belt",
+							-- "energy",
+							-- "smelting-machine",
+							-- "intermediate-product",
+							-- "storage"
+						}
+
+-- These are the subgroups that cannot be recycled
+local invalidsubgroups = {	
+							"raw-material",
+							"terrain",
+							"fluid-recipes",
+							-- bob's mods
+							--"bob-alien-resource",
+						}
+
+-- These are the vanilla groups. Those in the table that are not commented have no recipes attached to them that we want to reverse
+local invalid_item_groups = {
+							--"combat",
+							"enemies",
+							"environment",
+							"fluids",
+							--"intermediate-products",
+							--"logistics",
+							"other",
+							--"production",
+							"signals",
+							-- Unsupported bob's mod item-groups
+							--"bob-fluid-products",
+							}
+
+-- These are the types found in development
+-- Mods may invent more
+-- Maybe let people decide what they want to recycle to unclutter the menus
+local validtypes =	{	
+						"ammo",
+						"armor",
+						"capsule",
+						--"fluid",
+						"gun",
+						"item",
+						"mining-tool",
+						"module",
+						"repair-tool",
+						"tool"
+					}
+
+local recycling_groups = {}
+local recycling_subgroups = {}
+local function build_groups()
+	-- build groups and subgroups as candidates for recycling
+	local invalid
+	for _, group in pairs(data.raw["item-group"]) do
+		invalid = false
+		for _, invalid_item_group in pairs(invalid_item_groups) do
+			if group.name == invalid_item_group then
+				invalid = true
+				break
+			end
+		end
+		if invalid == false then
+			local newgroup = {
+								type = "item-group",
+								icon = group.icon,
+								inventory_order = group.inventory_order,
+								--name = rec_prefix .. group.name,
+								name = group.name,
+								order = group.order
+							}
+			table.insert(recycling_groups,newgroup)
+		end
+	end
+	-- debug local callback = {}
+	invalid = false
+	--error(serpent.block(recycling_groups) .. serpent.block(recycling_subgroups) .. serpent.block(rev_recipes))
+	--error(serpent.block(data.raw["item-subgroup"]))
+	for subgroupname, subgroup in pairs(data.raw["item-subgroup"]) do
+		-- It's valid unless we find a reason that it's not
+		invalid = false
+		groupname = subgroup.group
+		-- debug table.insert(callback,{subgroupname,groupname})
+		if invalid == false then
+			--error(serpent.block(subgroup))
+			for _, invalid_item_group in pairs(invalid_item_groups) do
+				if groupname == invalid_item_group then
+					invalid = true
+					--error("Subgroup: " .. serpent.block(subgroup) .. " invalid_item_group: " .. invalid_item_group .. " groupname:" .. groupname)
+					break
+				else
+					--error("Subgroup: " .. serpent.block(subgroup) .. " invalid_item_group: " .. invalid_item_group .. " groupname:" .. groupname)
+				end
+			end
+			--error("Subgroup: " .. serpent.block(subgroup) .. " invalid: " .. invalid .. " groupname:" .. groupname)
+		end
+		-- debug table.insert(callback,{groupname,invalid})
+		if invalid == false then
+			--error(serpent.block(subgroup))
+			for _,invalidsubgroup in pairs(invalidsubgroups) do
+				if invalidsubgroup == subgroupname then
+					invalid = true
+					--error("Subgroup: " .. serpent.block(subgroup) .. " invalid_item_group: " .. invalid_item_group .. " groupname:" .. groupname)
+					break
+				else
+					--error("Subgroup: " .. serpent.block(subgroup) .. " invalid_item_group: " .. invalid_item_group .. " groupname:" .. groupname)
+				end
+			end
+		end
+		-- debug table.insert(callback,{subgroupname,invalid})
+		if invalid == false then
+			local newsubgroup = {
+								type = "item-subgroup",
+								--name = rec_prefix .. subgroup.name,
+								--group = rec_prefix .. subgroup.group,
+								name = subgroup.name,
+								group = subgroup.group,
+								order = subgroup.order
+							}
+			--error(serpent.block(newsubgroup))
+			table.insert(recycling_subgroups,newsubgroup)
+		end
+	end
+--error(serpent.block(callback))
+--error(serpent.block(recycling_subgroups))
+end
+
+local function create_reverse_groupsandsubgroups()
+	for _,group in pairs(recycling_groups) do
+		group.name = rec_prefix .. group.name
+	end
+	for _,subgroup in pairs(recycling_subgroups) do
+		subgroup.name = rec_prefix .. subgroup.name
+		subgroup.group = rec_prefix .. subgroup.group
+	end
+end
+
+-- Accepted crafting categories
+-- These are the categories which are accepted in assembling machines
+-- This mod only recycles things that can be assembled in machines
+-- TODO: Why are engine-units the only thing that I can find that use advanced-crafting?
+local craftingbeforeandafter =	{
+									["crafting"] = "recycling-",
+									["advanced-crafting"] = "recycling-",
+									["crafting-with-fluid"] = "recycling-with-fluid"
+								}
+
+-- Where the reversed recipes will be stored
+local rev_recipes = {}
+local function add_reverse_recipe(item,recipe,newcategory)
 
 	-- Pick up icon, subgroup, and order from item
 	-- Check hidden
@@ -39,7 +201,7 @@ local function add_reverse_recipe(item,recipe,newcategory,rev_recipes)
 	end
 	if can_recycle == true and product_count == 1 then
 		local rec_name = rec_prefix .. result
-		-- game.player.print("Recipe: " .. rec_name)
+		local newgroup = rec_prefix .. data.raw["item-subgroup"][item.subgroup].group
 		local recycle_count = 0
 		-- Build the ingredients into results
 		local rev_results = {}
@@ -63,7 +225,9 @@ local function add_reverse_recipe(item,recipe,newcategory,rev_recipes)
 				newrow.amount = v.amount
 			end
 			-- Apply recycle ratio
-			-- TODO: Need a test for if some joker has made it >= 1
+			if recycleratio > 1 then
+				recycleratio = 1
+			end
 			newrow.amount = math.ceil(newrow.amount*recycleratio)
 			
 			table.insert(rev_results,newrow) 
@@ -98,12 +262,11 @@ local function add_reverse_recipe(item,recipe,newcategory,rev_recipes)
 			results = rev_results,
 			energy_required = recipe.energy,
 			main_product = "",
-			group = "Recycling",
-			subgroup = "rec-" .. item.subgroup,
-			-- TODO: order = "b[fluid-chemistry]-c[solid-fuel-from-light-oil]", -- :: string [R]	Order string. Need to inject 'recycled-'
+			group = newgroup,
+			subgroup = rec_prefix .. item.subgroup,
+			order = item.order,
 			icon = theicon
 		}
-		-- game.player.print("Reversed Recipe: " .. new_recipe.name)
 		
 		table.insert(rev_recipes,new_recipe)
 		
@@ -111,102 +274,38 @@ local function add_reverse_recipe(item,recipe,newcategory,rev_recipes)
 
 end -- function
 
--- Unused by code. These were the sub-groups found in development, left here for reference. Mods may produce others
-local validsubgroups = {	
-							-- "recycling-machine",
-							-- "module",
-							-- "logistic-network",
-							-- "gun",
-							-- "transport",
-							-- "barrel",
-							-- "equipment",
-							-- "production-machine",
-							-- "defensive-structure",
-							-- "circuit-network",
-							-- "energy-pipe-distribution",
-							-- "inserter",
-							-- "extraction-machine",
-							-- "belt",
-							-- "energy",
-							-- "smelting-machine",
-							-- "intermediate-product",
-							-- "storage"
-						}
 
--- These are the invalid subgroups discovered in development
--- They are wood, coal, and plate
--- And anything that produces a fluid out of refineries or chemical plants
-local invalidsubgroups = {	
-							"raw-material",
-							"terrain",
-							"fluid-recipes"
-						}
-
--- These are the types found in development
--- Mods may invent more
--- If they are commented out, they aren't recycled
--- Currently that's Ammunition and Capsules on the basis that they could explode during recycling
--- And you can never have too much ammo and combat robots right?
--- And honestly, turning fluids back into crude-oil isn't realistic.
-local validtypes =	{	
-						--"ammo",
-						"armor",
-						--"capsule",
-						--"fluid",
-						"gun",
-						"item",
-						"mining-tool",
-						"module",
-						"repair-tool",
-						"tool"
-					}
-
--- Acepted crafting categories
--- These are the categories which are accepted in assembling machines
--- This mod only recycles things that can be assembled in machines
--- TODO: Why are engine-units the only thing that I can find that use advanced-crafting?
-local craftingbeforeandafter =	{
-									["crafting"] = "recycling-",
-									["advanced-crafting"] = "recycling-",
-									["crafting-with-fluid"] = "recycling-with-fluid"
-								}
-
--- Where the reversed recipes will be stored
-local rev_recipes = {}
-
--- a flag for this recipe if it is invalid for recycling
-local invalid
 --
 -- MAIN CODE STARTS HERE
 --
--- For valid 'item' prototypes only
+-- a flag for this recipe if it is invalid for recycling
+local invalid
+
+-- Build Groups and Subgroups that look like they will be recyclable
+build_groups()
+-- error(serpent.block(recycling_groups) .. serpent.block(recycling_subgroups))
+-- error(serpent.block(recycling_subgroups))
+
+-- for all validtypes
 for _,validtype in pairs(validtypes) do
-	-- For every 'item' in that valid prototype
+	-- For all 'item' prototypes
 	for name, item in pairs(data.raw[validtype]) do
-		-- We need to do this because mods may have added new recipes with the same name
-		-- for the same item, in different categories
-		-- TODO: Assuming not
-		-- for _,recipe in pairs(data.raw.recipe[name]) do
+
+		--error(serpent.block(item))
 		local recipe = data.raw.recipe[name]
 		
-		-- Assume we have a valid recipe
-		invalid = false
+		-- Assume we have an invalid recipe
+		invalid = true
 		
 		local newcategory
 		-- May not be a recipe, for example the machine gun on a vehicle
-		if not recipe then
-			invalid = true
-		else
-			-- TODO: Create and assign item menu-sub-groups on the fly
-			
+		if recipe then
 			-- Only handle recipes where the category is nil or is produced in an assembling machine
+			invalid = true
 			newcategory = recipe.category
 			if not newcategory then
 				newcategory = "crafting"
 			end
-			-- Assume recipe is invalid unless it is in one of the accepted craftings
-			-- This isn't the end of it. Further categorisation required
-			invalid = true
 			for before,after in pairs(craftingbeforeandafter) do
 				if newcategory == before then
 					newcategory = after
@@ -232,32 +331,39 @@ for _,validtype in pairs(validtypes) do
 				invalid = true
 			end
 
-			-- We have an item and a recipe
-			-- Just need to make sure that the item isn't in on of the unsupported sub-groups
-			for _,invalidsubgroup in pairs(invalidsubgroups) do
-				if invalidsubgroup == item.subgroup then
-					invalid = true
-					break -- invalid item found
+			if invalid == false then
+				-- We have a valid item and recipe
+				-- Just need to make sure that the item is in one of our sub-groups
+				-- Assume it isn't
+				invalid = true
+				--error(serpent.block(item) .. serpent.block(recipe))
+				for _,validsubgroup in pairs(recycling_subgroups) do
+					--error(serpent.block(item) .. serpent.block(validsubgroup))
+					if validsubgroup.name == item.subgroup then
+						invalid = false
+						-- error(serpent.block(item) .. serpent.block(validsubgroup))
+						break -- valid item found
+					end
 				end
 			end
-		end	
-			if invalid == false then
-				-- The 'item' contains useful things we need to construct the reverse recipe
-				-- It may be armor, gun, item, module etc.
-				-- Do the work here
-				add_reverse_recipe(item,recipe,newcategory,rev_recipes)
-			end 
-		-- end: See TODO
+		end
+		if invalid == false then
+			-- The 'item' contains useful things we need to construct the reverse recipe
+			-- It may be armor, gun, item, module etc.
+			-- Make the recipe
+			--error(serpent.block(item) .. serpent.block(recipe))
+			add_reverse_recipe(item,recipe,newcategory)
+		end 
 	end
 end
 
--- All done
--- Add the reverse recipes to raw data
+-- Recipes all done, Create new subgroups and groups
+create_reverse_groupsandsubgroups()
+-- Add the new groups, new subgroups and reverse recipes to raw data
+data:extend(recycling_groups)
+data:extend(recycling_subgroups)
 data:extend(rev_recipes)
 
--- TODO: Add the new sub-groups too
--- data:extend(new_subgroups)
-
--- Call for debugging only. Dump table in factorio-current.log
+-- Call for debugging only. Dump local tables in factorio-current.log
 -- Stops game. Remove comment if you want the dump
--- error(serpent.block(data.raw))
+--error(serpent.block(recycling_groups) .. serpent.block(recycling_subgroups) .. serpent.block(rev_recipes))
