@@ -206,21 +206,27 @@ local function add_reverse_recipe(item,recipe,newcategory)
 		-- Build the ingredients into results
 		local rev_results = {}
 		local newrow
+		-- if result == "basic-mining-drill" then
+			-- error(serpent.block(recipe.ingredients))
+		-- end
 		for k, v in pairs(recipe.ingredients) do
 			recycle_count = recycle_count + 1
 			newrow = {}
 			-- Examples of different ingredient formats
 			-- {"engine-unit", 1},
 			-- {type="fluid", name= "lubricant", amount = 2},
+			-- bobs-mod replacements are like
+			-- {amount = 3, name = "basic-circuit-board", type = "item" } 
 			-- Nightmare
 			
+			-- TODO: Need code to deal with stack-sizes
 			-- If not v.name, this implies that the elements have no 'friendly' key, are item types,
 			-- and are just in table in name, amount order
 			if not v.name then
 				newrow.name = v[1]
 				newrow.amount = v[2]
 			else
-				newrow.type = "fluid"
+				newrow.type = v.type
 				newrow.name = v.name
 				newrow.amount = v.amount
 			end
@@ -230,7 +236,42 @@ local function add_reverse_recipe(item,recipe,newcategory)
 			end
 			newrow.amount = math.ceil(newrow.amount*recycleratio)
 			
-			table.insert(rev_results,newrow) 
+			-- If the result amounts are greater than the stack_size we need to limit out to stack_size
+			-- data.raw.item doesn't work we need its type.
+			local stack_size = nil
+			for _,group  in pairs(data.raw) do
+				for _,nextitem in pairs(group) do
+					if nextitem.name == newrow.name then
+						stack_size = nextitem.stack_size
+						if stack_size then
+							break
+						end
+					end
+				end
+				if stack_size then
+					break
+				end
+			end
+			
+			if stack_size then
+				local swopamount = newrow.amount
+				while swopamount > stack_size do
+					newrow.amount = stack_size
+					swopamount = swopamount - stack_size
+					table.insert(rev_results,newrow)
+				end
+				
+				-- -- Crop the amount if it exceeds the stack_size
+				-- if stack_size then
+					-- newrow.amount = math.min(stack_size,newrow.amount)
+				-- -- else
+					-- -- error("Result: " .. newrow.name .. " has no stack_size")
+				-- end
+				if swopamount ~= 0 then
+					newrow.amount = swopamount
+					table.insert(rev_results,newrow)
+				end
+			end
 		end
 		-- Build the results into ingredients
 		local ingredients = {}
@@ -260,7 +301,7 @@ local function add_reverse_recipe(item,recipe,newcategory)
 			category = newcategory,
 			ingredients = {ingredients},
 			results = rev_results,
-			energy_required = recipe.energy,
+			energy_required = recipe.energy_required,
 			main_product = "",
 			group = newgroup,
 			subgroup = rec_prefix .. item.subgroup,
@@ -367,3 +408,4 @@ data:extend(rev_recipes)
 -- Call for debugging only. Dump local tables in factorio-current.log
 -- Stops game. Remove comment if you want the dump
 --error(serpent.block(recycling_groups) .. serpent.block(recycling_subgroups) .. serpent.block(rev_recipes))
+--error(serpent.block(recycling_groups))
