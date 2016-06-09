@@ -67,6 +67,7 @@ local recycling_groups = {}
 local recycling_subgroups = {}
 local function build_groups()
 	-- build groups and subgroups as candidates for recycling
+	local neworder = "zzz"
 	local invalid
 	for _, group in pairs(data.raw["item-group"]) do
 		invalid = false
@@ -77,13 +78,16 @@ local function build_groups()
 			end
 		end
 		if invalid == false then
+			local newicon = group.icon
+			neworder = neworder .. "z"
 			local newgroup = {
 								type = "item-group",
 								icon = group.icon,
 								inventory_order = group.inventory_order,
 								--name = rec_prefix .. group.name,
 								name = group.name,
-								order = group.order
+								--order = group.order
+								order = neworder
 							}
 			table.insert(recycling_groups,newgroup)
 		end
