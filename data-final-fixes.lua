@@ -62,12 +62,29 @@ local validtypes =	{
 						"repair-tool",
 						"tool"
 					}
+					
+-- A table of mods (and vanilla) where I've tested and provide a 'recycling' item-group icon
+-- All other mods are shown in the default item-group
+local groups_supported =	{
+								["default"] = "__ZRecycling__/graphics/item-group/recycling.png",
+								["Recycling"] = "__ZRecycling__/graphics/item-group/recycling.png",
+								["logistics"] = "__ZRecycling__/graphics/item-group/logistics.png",
+								["production"] = "__ZRecycling__/graphics/item-group/production.png",
+								["combat"] = "__ZRecycling__/graphics/item-group/military.png",
+								["intermediate-products"] = "__ZRecycling__/graphics/item-group/intermediate-products.png",
+								["bob-logistics"] = "__ZRecycling__/graphics/item-group/boblogistics/logistics.png",
+								["bob-fluid-products"] = "__ZRecycling__/graphics/item-group/bobelectronics/fluids.png",
+								["bob-resource-products"] = "__ZRecycling__/graphics/item-group/bobelectronics/resources.png",
+								["bob-intermediate-products"] = "__ZRecycling__/graphics/item-group/bobelectronics/intermediates.png",
+								["void"] = "__ZRecycling__/graphics/item-group/bobplates/void.png",
+								["bob-gems"] = "__ZRecycling__/graphics/item-group/bobplates/diamond-5.png",
+								["bobmodules"] = "__ZRecycling__/graphics/item-group/bobmodules/module.png",
+							}
 
 local recycling_groups = {}
 local recycling_subgroups = {}
 local function build_groups()
 	-- build groups and subgroups as candidates for recycling
-	local neworder = "zzz"
 	local invalid
 	for _, group in pairs(data.raw["item-group"]) do
 		invalid = false
@@ -78,16 +95,24 @@ local function build_groups()
 			end
 		end
 		if invalid == false then
-			local newicon = group.icon
-			neworder = neworder .. "z"
+			local newicon = groups_supported["default"]
+			for nextname,nextpath in pairs(groups_supported) do
+				-- error(nextname .. nextpath)
+				if group.name == nextname then
+					newicon = nextpath
+					--error("newicon = " .. newicon)
+					break
+				end
+			end
+			
 			local newgroup = {
 								type = "item-group",
-								icon = group.icon,
+								icon = newicon,
 								inventory_order = group.inventory_order,
+								hidden = false,
 								--name = rec_prefix .. group.name,
 								name = group.name,
-								--order = group.order
-								order = neworder
+								order = "z" .. group.order .. "z"
 							}
 			table.insert(recycling_groups,newgroup)
 		end
