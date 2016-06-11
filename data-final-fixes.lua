@@ -1,4 +1,5 @@
 -- variables used in data and control luas
+-- to ensure consistency without hardcoding
 require("constants")
 
 -- Unused by code. These were the vanilla sub-groups found in development, left here for reference. Mods may produce others
@@ -28,8 +29,6 @@ local invalidsubgroups = {
 							"raw-material",
 							"terrain",
 							"fluid-recipes",
-							-- bob's mods
-							--"bob-alien-resource",
 						}
 
 -- These are the vanilla groups. Those in the table that are not commented have no recipes attached to them that we want to reverse
@@ -49,7 +48,7 @@ local invalid_item_groups = {
 
 -- These are the types found in development
 -- Mods may invent more
--- Maybe let people decide what they want to recycle to unclutter the menus
+-- TODO: Maybe let people decide what they want to recycle to unclutter the menus
 local validtypes =	{	
 						"ammo",
 						"armor",
@@ -64,7 +63,7 @@ local validtypes =	{
 					}
 					
 -- A table of mods (and vanilla) where I've tested and provide a 'recycling' item-group icon
--- All other mods are shown in the default item-group
+-- All other mods are shown in the default 'Recycling' item-group
 local groups_supported =	{
 								["default"] = "__ZRecycling__/graphics/item-group/recycling.png",
 								["Recycling"] = "__ZRecycling__/graphics/item-group/recycling.png",
@@ -84,7 +83,7 @@ local groups_supported =	{
 local recycling_groups = {}
 local recycling_subgroups = {}
 local function build_groups()
-	-- build groups and subgroups as candidates for recycling
+	-- build local item-groups and subgroups as candidates for recycling
 	local invalid
 	for _, group in pairs(data.raw["item-group"]) do
 		invalid = false
@@ -117,7 +116,7 @@ local function build_groups()
 			table.insert(recycling_groups,newgroup)
 		end
 	end
-	-- debug local callback = {}
+	-- debug local callback = {} -- to build a table for dumping during debugging
 	invalid = false
 	--error(serpent.block(recycling_groups) .. serpent.block(recycling_subgroups) .. serpent.block(rev_recipes))
 	--error(serpent.block(data.raw["item-subgroup"]))
@@ -156,8 +155,6 @@ local function build_groups()
 		if invalid == false then
 			local newsubgroup = {
 								type = "item-subgroup",
-								--name = rec_prefix .. subgroup.name,
-								--group = rec_prefix .. subgroup.group,
 								name = subgroup.name,
 								group = subgroup.group,
 								order = subgroup.order
@@ -170,6 +167,7 @@ local function build_groups()
 --error(serpent.block(recycling_subgroups))
 end
 
+-- To add the recycycling prefix when we're done with them 'as is'
 local function create_reverse_groupsandsubgroups()
 	for _,group in pairs(recycling_groups) do
 		group.name = rec_prefix .. group.name
@@ -235,9 +233,6 @@ local function add_reverse_recipe(item,recipe,newcategory)
 		-- Build the ingredients into results
 		local rev_results = {}
 		local newrow
-		-- if result == "basic-mining-drill" then
-			-- error(serpent.block(recipe.ingredients))
-		-- end
 		for k, v in pairs(recipe.ingredients) do
 			recycle_count = recycle_count + 1
 			newrow = {}
@@ -260,45 +255,44 @@ local function add_reverse_recipe(item,recipe,newcategory)
 				newrow.amount = v.amount
 			end
 			-- Apply recycle ratio
-			if recycleratio > 1 then
-				recycleratio = 1
+			if recycleratio > 100 or recycleratio <= 0 then
+				recycleratio = 100
 			end
-			newrow.amount = math.ceil(newrow.amount*recycleratio)
+			newrow.amount = math.ceil((newrow.amount*recycleratio)/100)
 			
-			-- If the result amounts are greater than the stack_size we need to limit out to stack_size
-			-- data.raw.item doesn't work we need its type.
-			local stack_size = nil
-			for _,group  in pairs(data.raw) do
-				for _,nextitem in pairs(group) do
-					if nextitem.name == newrow.name then
-						stack_size = nextitem.stack_size
-						if stack_size then
-							break
+			-- Just add it, if it's a fluid
+			if newrow.type and newrow.type == "fluid" then
+				table.insert(rev_results,newrow)
+			else
+				-- If the result amounts are greater than the stack_size we need to limit out to stack_size
+				-- data.raw.item doesn't work we need its type.
+				local stack_size = nil
+				for _,group  in pairs(data.raw) do
+					for _,nextitem in pairs(group) do
+						if nextitem.name == newrow.name then
+							stack_size = nextitem.stack_size
+							if stack_size then
+								break
+							end
 						end
 					end
-				end
-				if stack_size then
-					break
-				end
-			end
-			
-			if stack_size then
-				local swopamount = newrow.amount
-				while swopamount > stack_size do
-					newrow.amount = stack_size
-					swopamount = swopamount - stack_size
-					table.insert(rev_results,newrow)
+					if stack_size then
+						break
+					end
 				end
 				
-				-- -- Crop the amount if it exceeds the stack_size
-				-- if stack_size then
-					-- newrow.amount = math.min(stack_size,newrow.amount)
-				-- -- else
-					-- -- error("Result: " .. newrow.name .. " has no stack_size")
-				-- end
-				if swopamount ~= 0 then
-					newrow.amount = swopamount
-					table.insert(rev_results,newrow)
+				if stack_size then
+					local swopamount = newrow.amount
+					while swopamount > stack_size do
+						newrow.amount = stack_size
+						swopamount = swopamount - stack_size
+						table.insert(rev_results,newrow)
+					end
+					
+					if swopamount ~= 0 then
+						newrow.amount = swopamount
+						table.insert(rev_results,newrow)
+					end
 				end
 			end
 		end
@@ -331,7 +325,7 @@ local function add_reverse_recipe(item,recipe,newcategory)
 			ingredients = {ingredients},
 			results = rev_results,
 			energy_required = recipe.energy_required,
-			main_product = "",
+			-- main_product = "",
 			group = newgroup,
 			subgroup = rec_prefix .. item.subgroup,
 			order = item.order,
@@ -438,3 +432,4 @@ data:extend(rev_recipes)
 -- Stops game. Remove comment if you want the dump
 --error(serpent.block(recycling_groups) .. serpent.block(recycling_subgroups) .. serpent.block(rev_recipes))
 --error(serpent.block(recycling_groups))
+--error(serpent.block(rev_recipes))

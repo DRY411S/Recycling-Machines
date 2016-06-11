@@ -6,6 +6,10 @@
 -- TODO: Consider making them behave like furnaces and accept anything that goes past them
 --       instead of recycling only one type of a item at a time
 --       reverse-factory mod has this pretty much covered though
+
+-- We need a special south facing pipe with a recycling logo on it for recycling-machine 3
+require ("prototypes.recyclingpipes")
+
 data:extend(
 {
   {
