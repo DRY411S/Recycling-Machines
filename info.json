@@ -1,10 +1,10 @@
 {
 	"name": "ZRecycling",
-	"version": "0.0.1",
+	"version": "0.12.3",
 	"title": "Recycling",
 	"author": "DRY411S",
-	"contact": "TBC",
-	"homepage": "TBC",
-	"description": "Recycles most items into their recipe ingredients",
-	"dependencies": ["base >= 0.12.33"]
+	"contact": "https://forums.factorio.com/ucp.php?i=pm&mode=compose&u=15698",
+	"homepage": "https://github.com/DRY411S",
+	"description": "Recycling Machines that disassemble most items back into their recipe ingredients",
+	"dependencies": ["base >= 0.12.35"]
 }
