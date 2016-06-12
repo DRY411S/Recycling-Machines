@@ -9,6 +9,7 @@ require("constants")
 -- GLOBAL variables
 
 -- LOCAL Variables
+local force = nil
 
 -- LOCAL functions
 
@@ -23,35 +24,36 @@ local function Toggle_Recipes(toggle)
 end
 
 local function Unlock_Recipe(recipename)
-	game.player.print("Recipe: " .. recipename)
+	--game.player.print("Recipe: " .. recipename)
 	-- Need to enable the reverse recipe for this one, in the Recycling group
-	local recipe = game.player.force.recipes[recipename]
+	local recipe = force.recipes[recipename]
 	if recipe then
 		--error(serpent.block(recipe))
-		game.player.print("Recipe found: " .. recipename)
+		--game.player.print("Recipe found: " .. recipename)
 		-- Enable the reversed version
-		local reverse_recipe = game.player.force.recipes[rec_prefix .. recipename]
+		local reverse_recipe = force.recipes[rec_prefix .. recipename]
 		if reverse_recipe then
-			game.player.print("Reverse recipe found: " .. rec_prefix .. recipename)
-			game.player.force.recipes[rec_prefix .. recipename].enabled = true
+			--game.player.print("Reverse recipe found: " .. rec_prefix .. recipename)
+			force.recipes[rec_prefix .. recipename].enabled = true
 		else
-			game.player.print("Reverse recipe missing: " .. recipename)
+			--game.player.print("Reverse recipe missing: " .. recipename)
 		end
 	else
-		game.player.print("Recipe passed by event is missing " .. recipename)
+		--game.player.print("Recipe passed by event is missing " .. recipename)
 	end
 end
 
 local function enable_reverse_recipes(event)
-	game.player.print("Something was researched : " .. event.research.name)
-	if event.research.force.name == "player" then
+
+	for _, nextforce in pairs(game.forces) do
+		force = nextforce
 		-- Don't reverse anything until automation has been researched (which allows a recycling machine)
-		if game.player.force.technologies["automation"].researched == true or event.research.name == "automation"then
+		if force.technologies["automation"].researched == true or event.research.name == "automation"then
 			-- Special case for automation
 			if event.research.name == "automation" then
 				-- Now we can recycle. Pick up reverse recipes for all the things
 				-- that can be crafted without automation
-				for _,v in pairs(game.player.force.recipes) do
+				for _,v in pairs(force.recipes) do
 					if v.enabled == true then
 						Unlock_Recipe(v.name)
 					end
@@ -64,8 +66,6 @@ local function enable_reverse_recipes(event)
 				end
 			end
 		end
-	else
-		game.player.print("Something was researched NOT for a player: " .. event.research.force.name)
 	end
 end
 
@@ -80,6 +80,7 @@ end
 
 -- KUDOS to original CODE to check for a machine being opened by Kriogenic, and adapted by me to add a 'closed' handler
 -- https://forums.factorio.com/viewtopic.php?f=25&t=26017#p164949
+-- I no longer use it though!
 
     -- events = defines.events
     -- events.machine_opened = script.generate_event_name()
