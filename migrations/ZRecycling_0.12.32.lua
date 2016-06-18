@@ -1,6 +1,12 @@
+--
+-- Requested Enhancement
+-- https://github.com/DRY411S/Recycling-Machines/issues/5
+
 game.reload_script()
 
 -- This variable and function are copies from constants.lua. Need to find a better way.
+-- Globals?
+
 local force = {}
 local rec_prefix = "dry411srev-"
 
@@ -28,7 +34,7 @@ for index, nextforce in pairs(game.forces) do
 	nextforce.reset_recipes()
 	nextforce.reset_technologies()
 
-	--Reenable in reverse recipes where necessary
+	-- Reenable reverse recipes where necessary
 	force = nextforce
 	if nextforce.technologies["automation"].researched and nextforce.technologies["automation"].researched == true then
 		for _,v in pairs(force.recipes) do
@@ -38,7 +44,7 @@ for index, nextforce in pairs(game.forces) do
 		end
 	end
 	
-	-- Unlock recycling machines
+	-- Unlock recycling machines if the appropriate research has completed
 	if nextforce.technologies["automation"].researched and nextforce.technologies["automation"].researched == true then
 		force.recipes["recycling-machine-1"].enabled = true
 		Unlock_Recipe("recycling-machine-1")
