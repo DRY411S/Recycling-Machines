@@ -1,10 +1,10 @@
 {
 	"name": "ZRecycling",
-	"version": "0.12.32",
+	"version": "0.12.33",
 	"title": "Recycling",
 	"author": "DRY411S",
 	"contact": "https://forums.factorio.com/ucp.php?i=pm&mode=compose&u=15698",
-	"homepage": "https://github.com/DRY411S",
-	"description": "Recycling Machines that disassemble most items back into their recipe ingredients",
+	"homepage": "https://github.com/DRY411S/Recycling-Machines",
+	"description": "Recycling Machines that disassemble most items back into their recipe ingredients. Optionally, can be used with a RecycleRatio mod to reduce the percentage recycling return.",
 	"dependencies": ["base >= 0.12.35"]
 }

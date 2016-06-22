@@ -1,6 +1,34 @@
 -- variables used in data and control luas
 -- to ensure consistency without hardcoding
 require("constants")
+local rec_prefix = constant_rec_prefix
+
+--Set the recycle ratio. The user can enable a trigger mod to choose what they want
+-- Default to 100% if they disabled all triggers
+-- Set to the highest value if they enabled more than one
+if dry411smods == nil then
+	recycleratio = 100
+elseif dry411smods.recycling == nil then
+	recycleratio = 100
+else
+	recycleratio = 100
+	if dry411smods.recycling.recycleratio20 then
+		recycleratio = 20
+	end
+	if dry411smods.recycling.recycleratio40 then
+		recycleratio = 40
+	end
+	if dry411smods.recycling.recycleratio50 then
+		recycleratio = 50
+	end
+	if dry411smods.recycling.recycleratio60 then
+		recycleratio = 60
+	end
+	if dry411smods.recycling.recycleratio80 then
+		recycleratio = 80
+	end
+end	
+
 
 -- Unused by code. These were the vanilla sub-groups found in development, left here for reference. Mods may produce others
 local validsubgroups = {	
