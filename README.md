@@ -11,7 +11,7 @@ When you start a new game
 The mod looks for every recipe (including any recipes in installed mods). If the recipe can be made in an
 assembling machine, this mod creates a 'reverse recipe' that can be made in recycling machines.
 
-The research tree is altered so that every time a Level X assembling machine is reaserched, a Level X recycling machine
+The research tree is altered so that every time a Level X assembling machine is researched, a Level X recycling machine
 will be researched at the same time.
 
 As you play the game
