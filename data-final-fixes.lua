@@ -11,23 +11,29 @@ if dry411smods == nil then
 elseif dry411smods.recycling == nil then
 	recycleratio = 100
 else
-	recycleratio = 100
+	recycleratio = 0
+	if dry411smods.recycling.recycleratio10 then
+		recycleratio = 10
+	end
 	if dry411smods.recycling.recycleratio20 then
-		recycleratio = 20
+		recycleratio = recycleratio + 20
 	end
 	if dry411smods.recycling.recycleratio40 then
-		recycleratio = 40
+		recycleratio = recycleratio +  40
 	end
 	if dry411smods.recycling.recycleratio50 then
-		recycleratio = 50
+		recycleratio = recycleratio +  50
 	end
+	-- 60 and 80 issued at 0.12.30 as absolutes, not adds
+	-- Description says 'sets' not 'adds'
 	if dry411smods.recycling.recycleratio60 then
 		recycleratio = 60
 	end
 	if dry411smods.recycling.recycleratio80 then
 		recycleratio = 80
 	end
-end	
+end
+if recycleratio > 100 then recycleratio = 100 end	
 
 
 -- Unused by code. These were the vanilla sub-groups found in development, left here for reference. Mods may produce others
@@ -318,9 +324,6 @@ local function add_reverse_recipe(item,recipe,newcategory)
 				newrow.amount = v.amount
 			end
 			-- Apply recycle ratio
-			if recycleratio > 100 or recycleratio <= 0 then
-				recycleratio = 100
-			end
 			newrow.amount = math.ceil((newrow.amount*recycleratio)/100)
 			
 			-- Just add it, if it's a fluid
@@ -349,12 +352,20 @@ local function add_reverse_recipe(item,recipe,newcategory)
 					while swopamount > stack_size do
 						newrow.amount = stack_size
 						swopamount = swopamount - stack_size
-						table.insert(rev_results,newrow)
+						if newrow.type then
+							table.insert(rev_results,{newrow.type,newrow.name,newrow.amount})
+						else
+							table.insert(rev_results,{newrow.name,newrow.amount})
+						end
 					end
 					
 					if swopamount ~= 0 then
 						newrow.amount = swopamount
-						table.insert(rev_results,newrow)
+						if newrow.type then
+							table.insert(rev_results,{newrow.type,newrow.name,newrow.amount})
+						else
+							table.insert(rev_results,{newrow.name,newrow.amount})
+						end
 					end
 				end
 			end
