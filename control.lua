@@ -1,7 +1,5 @@
 -- GLOBAL defines--
 
-require "defines"
-require "util"
 -- Constants.lua contains the reverse recipe prefix in a variable constant_rec_prefix
 -- It's also used in data-final-fixes.lua where the reverse recipes are built
 require("constants")
