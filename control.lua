@@ -1,3 +1,5 @@
+-- v0.12 branch
+
 -- GLOBAL defines--
 
 require "defines"
@@ -11,6 +13,7 @@ require("constants")
 -- Make the recipe prefix a global to be used in migrations, which don't allow requires.
 rec_prefix = constant_rec_prefix
 
+-- This has to be copied into the migration scripts. Make sure it is aligned.
 -- GLOBAL functions
 if not ZRecycling then ZRecycling = {} end
 
