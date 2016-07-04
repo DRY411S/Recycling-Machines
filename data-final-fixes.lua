@@ -353,7 +353,7 @@ local function add_reverse_recipe(item,recipe,newcategory)
 						newrow.amount = stack_size
 						swopamount = swopamount - stack_size
 						if newrow.type then
-							table.insert(rev_results,{newrow.type,newrow.name,newrow.amount})
+							table.insert(rev_results,newrow)
 						else
 							table.insert(rev_results,{newrow.name,newrow.amount})
 						end
@@ -362,7 +362,7 @@ local function add_reverse_recipe(item,recipe,newcategory)
 					if swopamount ~= 0 then
 						newrow.amount = swopamount
 						if newrow.type then
-							table.insert(rev_results,{newrow.type,newrow.name,newrow.amount})
+							table.insert(rev_results,newrow)
 						else
 							table.insert(rev_results,{newrow.name,newrow.amount})
 						end
@@ -507,4 +507,5 @@ data:extend(rev_recipes)
 --error(serpent.block(recycling_groups) .. serpent.block(recycling_subgroups) .. serpent.block(rev_recipes))
 --error(serpent.block(recycling_groups))
 --error(serpent.block(recycling_subgroups))
+--error(serpent.block(data.raw.recipe))
 --error(serpent.block(rev_recipes))
