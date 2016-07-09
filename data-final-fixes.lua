@@ -289,7 +289,7 @@ local function add_reverse_recipe(item,recipe,newcategory)
 			product_count = product_count + 1
 			result = v.name
 			result_count = v.amount and v.amount or 1
-			if v.type and ( v.type ~= 0 or v.type ~= "item" )then -- 0 is 'item' 1 is 'fluid'
+			if v.type and ( v.type == 1 or v.type == "fluid" )then -- 0 is 'item' 1 is 'fluid'
 				can_recycle = false
 				break
 			end
@@ -353,7 +353,7 @@ local function add_reverse_recipe(item,recipe,newcategory)
 						newrow.amount = stack_size
 						swopamount = swopamount - stack_size
 						if newrow.type then
-							table.insert(rev_results,{newrow.type,newrow.name,newrow.amount})
+							table.insert(rev_results,newrow)
 						else
 							table.insert(rev_results,{newrow.name,newrow.amount})
 						end
@@ -362,7 +362,7 @@ local function add_reverse_recipe(item,recipe,newcategory)
 					if swopamount ~= 0 then
 						newrow.amount = swopamount
 						if newrow.type then
-							table.insert(rev_results,{newrow.type,newrow.name,newrow.amount})
+							table.insert(rev_results,newrow)
 						else
 							table.insert(rev_results,{newrow.name,newrow.amount})
 						end
