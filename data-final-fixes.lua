@@ -289,7 +289,7 @@ local function add_reverse_recipe(item,recipe,newcategory)
 			product_count = product_count + 1
 			result = v.name
 			result_count = v.amount and v.amount or 1
-			if v.type and ( v.type ~= 0 or v.type ~= "item" )then -- 0 is 'item' 1 is 'fluid'
+			if v.type and ( v.type == 1 or v.type == "fluid" )then -- 0 is 'item' 1 is 'fluid'
 				can_recycle = false
 				break
 			end
@@ -504,7 +504,8 @@ data:extend(rev_recipes)
 
 -- Call for debugging only. Dump local tables in factorio-current.log
 -- Stops game. Remove comment if you want the dump
---error(serpent.block(recycling_groups) .. serpent.block(recycling_subgroups) .. serpent.block(rev_recipes))
+--error(serpent.block(data.raw.item))
+--error(serpent.block(recycling_groups) .. serpent.block(recycling_subgroups) .. serpent.block(data.raw.recipe) .. serpent.block(rev_recipes))
 --error(serpent.block(recycling_groups))
 --error(serpent.block(recycling_subgroups))
 --error(serpent.block(data.raw.recipe))
