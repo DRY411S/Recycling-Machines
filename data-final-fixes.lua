@@ -295,6 +295,11 @@ local function add_reverse_recipe(item,recipe,newcategory)
 			end
 		end
 	end
+	-- Fix for issues 11 and 12, caused by recipes that have NO ingredients!
+ 	-- http://http://stackoverflow.com/questions/1252539/most-efficient-way-to-determine-if-a-lua-table-is-empty-contains-no-entries
+ 	if next(recipe.ingredients) == nil then
+ 		can_recycle = false
+ 	end
 	if can_recycle == true and product_count == 1 then
 		local rec_name = rec_prefix .. result
 		local newgroup = rec_prefix .. data.raw["item-subgroup"][item.subgroup].group
