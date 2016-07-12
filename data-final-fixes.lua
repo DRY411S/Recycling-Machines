@@ -36,7 +36,8 @@ end
 if recycleratio > 100 then recycleratio = 100 end	
 
 
--- Unused by code. These were the vanilla sub-groups found in development, left here for reference. Mods may produce others
+-- Used as a basis for locale determination. These were the v0.12 vanilla sub-groups found in development, left here for reference.
+-- Mods produce others, v0.13 appears to have more too Mod subgroups will need to be handled for locale translation
 local validsubgroups = {	
 							-- "recycling-machine",
 							-- "module",
@@ -76,12 +77,10 @@ local invalid_item_groups = {
 							"other",
 							--"production",
 							"signals",
-							-- Unsupported bob's mod item-groups
-							--"bob-fluid-products",
 							}
 
 -- These are the types found in development
--- Mods may invent more
+-- Mods may invent more, but not likely
 -- TODO: Maybe let people decide what they want to recycle to unclutter the menus
 local validtypes =	{	
 						"ammo",
@@ -247,6 +246,51 @@ local function create_reverse_groupsandsubgroups()
 	end
 end
 
+-- Localise the recipe name
+local localestring = ""
+local localetype = ""
+local function localise_text(item,recipe,result)
+	-- Thanks to Mooncat https://forums.factorio.com/memberlist.php?mode=viewprofile&u=20664
+	-- and this advice https://forums.factorio.com/viewtopic.php?f=97&t=26039&p=183183#p183183
+	-- This has more sub-groups than in the 0.12 game and commented above.
+	-- Based on the subgroup name, this lookup table builds a locale string from the base.cfg locale
+	-- In English, "Recycled <item_being_recycled> parts" is displayed
+	-- TODO: expand to support mods that create a lot of new subgroups.
+	local locale_section = 	{
+							["recycling-machine"] = "entity-name.",
+							["module"] = "item-name.",
+							["logistic-network"] = "entity-name.",
+							["gun"] = "item-name.",
+							["transport"] = "entity-name.",
+							["barrel"] = "item-name.",
+							["equipment"] = "equipment-name.",
+							["production-machine"] = "entity-name.",
+							["defensive-structure"] = "entity-name.",
+							["circuit-network"] = "item-name.",
+							["energy-pipe-distribution"] = "entity-name.",
+							["inserter"] = "entity-name.",
+							["extraction-machine"] = "entity-name.",
+							["belt"] = "entity-name.",
+							["energy"] = "entity-name.",
+							["smelting-machine"] = "entity-name.",
+							["intermediate-product"] = "item-name.",
+							["storage"] = "entity-name.",
+							["tool"] = "item-name.",
+							["science-pack"] = "item-name.",
+							["ammo"] = "item-name.",
+							["capsule"] = "item-name.",
+							["armor"] = "item-name.",
+							}
+	if locale_section[item.subgroup] then
+		localestring = {"recipe-name.recycledparts",{locale_section[item.subgroup] .. result}}
+	else
+		-- Show the user the name of the unsupported subgroup,
+		-- when they hover over the Recycling Recipes
+		-- for future bug reporting and enhancement
+		localestring = {"recipe-name.recycledunknown", {item.subgroup}}
+	end
+end --localise_text
+
 -- Accepted crafting categories
 -- These are the categories which are accepted in assembling machines
 -- This mod only recycles things that can be assembled in machines
@@ -393,10 +437,13 @@ local function add_reverse_recipe(item,recipe,newcategory)
 			end
 			newcategory = newcategory .. recyclesuffix
 		end
+
+		-- Build the recipe now we have all the parts
 		local new_recipe =
 		{
 			type = "recipe",
 			name = rec_name,
+			-- localised_name = locale,
 			-- enabled is initially false and made true in the event handler
 			enabled = false,
 			hidden = false,
@@ -410,6 +457,13 @@ local function add_reverse_recipe(item,recipe,newcategory)
 			order = item.order,
 			icon = theicon
 		}
+		-- Produce localised "Recycled <item> parts" if there is more than one result
+		if recycle_count > 1 then
+			localise_text(item,recipe,result)
+			if localestring ~= "" then
+				new_recipe.localised_name = localestring
+			end
+		end
 		
 		table.insert(rev_recipes,new_recipe)
 		
@@ -428,6 +482,23 @@ local invalid
 build_groups()
 -- error(serpent.block(recycling_groups) .. serpent.block(recycling_subgroups))
 -- error(serpent.block(recycling_subgroups))
+
+-- New for v0.13.14 Adjust recycling machine recipes if Marathon mod is installed
+if marathon then
+	-- For each assembling machine
+	for i=1,3 do
+		local assembler = data.raw.recipe["assembling-machine-" .. i]
+		for _,ass_ingredient in ipairs(assembler.ingredients) do
+			for _,rec_ingredient in ipairs(data.raw.recipe["recycling-machine-" .. i].ingredients) do
+				if ass_ingredient[1] == rec_ingredient[1] then
+					rec_ingredient[2] = ass_ingredient[2]
+					break
+				end
+			end
+		end
+	end
+end
+--error(serpent.block(data.raw.recipe["assembling-machine-1"]) .. serpent.block(data.raw.recipe["recycling-machine-1"]) .. serpent.block(data.raw.recipe["assembling-machine-2"]) .. serpent.block(data.raw.recipe["recycling-machine-2"]) .. serpent.block(data.raw.recipe["assembling-machine-3"]) .. serpent.block(data.raw.recipe["recycling-machine-3"]))
 
 -- for all validtypes
 for _,validtype in pairs(validtypes) do
@@ -500,6 +571,7 @@ for _,validtype in pairs(validtypes) do
 	end
 end
 
+
 -- Recipes all done, Create new subgroups and groups
 create_reverse_groupsandsubgroups()
 -- Add the new groups, new subgroups and reverse recipes to raw data
@@ -509,8 +581,10 @@ data:extend(rev_recipes)
 
 -- Call for debugging only. Dump local tables in factorio-current.log
 -- Stops game. Remove comment if you want the dump
+--error(serpent.block(data.raw))
 --error(serpent.block(data.raw.item))
 --error(serpent.block(recycling_groups) .. serpent.block(recycling_subgroups) .. serpent.block(data.raw.recipe) .. serpent.block(rev_recipes))
 --error(serpent.block(recycling_groups))
 --error(serpent.block(recycling_subgroups))
---error(serpent.block(data.raw.recipe) .. serpent.block(rev_recipes))
+--error(serpent.block(data.raw.recipe))
+--error(serpent.block(rev_recipes))
