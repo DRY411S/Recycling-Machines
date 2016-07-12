@@ -429,6 +429,22 @@ build_groups()
 -- error(serpent.block(recycling_groups) .. serpent.block(recycling_subgroups))
 -- error(serpent.block(recycling_subgroups))
 
+-- New for v0.12.38 Adjust recycling machine recipes if Marathon mod is installed
+if marathon then
+	-- For each assembling machine
+	for i=1,3 do
+		local assembler = data.raw.recipe["assembling-machine-" .. i]
+		for _,ass_ingredient in ipairs(assembler.ingredients) do
+			for _,rec_ingredient in ipairs(data.raw.recipe["recycling-machine-" .. i].ingredients) do
+				if ass_ingredient[1] == rec_ingredient[1] then
+					rec_ingredient[2] = ass_ingredient[2]
+					break
+				end
+			end
+		end
+	end
+end
+
 -- for all validtypes
 for _,validtype in pairs(validtypes) do
 	-- For all 'item' prototypes
