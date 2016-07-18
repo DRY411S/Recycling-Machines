@@ -1,11 +1,11 @@
 {
 	"name": "ZRecycling",
-	"version": "0.13.14",
+	"version": "0.13.15",
 	"title": "Recycling Machines",
 	"author": "DRY411S",
 	"contact": "https://forums.factorio.com/ucp.php?i=pm&mode=compose&u=15698",
 	"homepage": "https://github.com/DRY411S/Recycling-Machines",
 	"description": "Recycling Machines that disassemble most items back into 100% of their recipe ingredients. Optionally, can be used with a Recycling Return trigger mod to reduce the percentage recycling return.",
 	"factorio_version":"0.13",
-	"dependencies": ["base >= 0.13.5"]
+	"dependencies": ["base >= 0.13.9", "? bobelectronics >= 0.13.1", "? bobmodules >= 0.13.0", "? boblogistics >= 0.13.4", "? bobpower >= 0.13.1", "?  bobplates >= 0.13.2", "? bobwarfare >= 0.13.4", "? bobgreenhouse >= 0.13.1"]
 }

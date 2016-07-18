@@ -147,6 +147,135 @@ local groups_supported =	{
 								["yuoki_liquids"] = "__ZRecycling__/graphics/item-group/yuoki/yuoki-liquids.png",
 							}
 
+-- Thanks to Mooncat https://forums.factorio.com/memberlist.php?mode=viewprofile&u=20664
+-- and this advice https://forums.factorio.com/viewtopic.php?f=97&t=26039&p=183183#p183183
+-- This has more sub-groups than in the 0.12 game and commented above.
+-- Based on the subgroup name, this lookup table builds a locale string from the base.cfg locale
+-- In English, "Recycled <item_being_recycled> parts" is displayed
+-- TODO: expand to support mods that create a lot of new subgroups.
+local locale_section = 	{
+						["recycling-machine"] = "entity-name.",
+						["module"] = "item-name.",
+						["logistic-network"] = "entity-name.",
+						["gun"] = "item-name.",
+						["transport"] = "entity-name.",
+						["barrel"] = "item-name.",
+						["equipment"] = "equipment-name.",
+						["production-machine"] = "entity-name.",
+						["defensive-structure"] = "entity-name.",
+						["circuit-network"] = "item-name.",
+						["energy-pipe-distribution"] = "entity-name.",
+						["inserter"] = "entity-name.",
+						["extraction-machine"] = "entity-name.",
+						["belt"] = "entity-name.",
+						["energy"] = "entity-name.",
+						["smelting-machine"] = "entity-name.",
+						["intermediate-product"] = "item-name.",
+						["storage"] = "entity-name.",
+						["tool"] = "item-name.",
+						["science-pack"] = "item-name.",
+						["ammo"] = "item-name.",
+						["capsule"] = "item-name.",
+						["armor"] = "item-name.",
+						-- Bob's Mods
+						-- Bob's Logistics
+						["bob-storage"] = "entity-name.",
+						["bob-belt"] = "item-name.",
+						["bob-smart-inserter"] = "entity-name.",
+						["bob-purple-inserter"] = "entity-name.",
+						["pipe"] = "entity-name.",
+						["pipe-to-ground"] = "entity-name.",
+						["bob-transport"] = "entity-name.",
+						["bob-logistic-robots"] = "entity-name.",
+						["bob-logistic-roboport"] = "entity-name.",
+						["bob-roboport-parts"] = "item-name.",
+						-- Bob's Modules
+						["module-intermediates"] = "item-name.",
+						["speed-module"] = "item-name.",
+						["effectivity-module"] = "item-name.",
+						["productivity-module"] = "item-name.",
+						["pollution-create-module"] = "item-name.",
+						["pollution-clean-module"] = "item-name.",
+						["raw-speed-module"] = "item-name.",
+						["raw-speed-module-combine"] = "item-name.",
+						["green-module"] = "item-name.",
+						["green-module-combine"] = "item-name.",
+						["raw-productivity-module"] = "item-name.",
+						["raw-productivity-module-combine"] = "item-name.",
+						["god-module"] = "item-name.",
+						["module-beacon"] = "entity-name.",
+						-- Bob's Power
+						["bob-energy-boiler"] = "entity-name.",
+						["bob-energy-steam-engine"] = "entity-name.",
+						["bob-energy-solar-panel"] = "entity-name.",
+						["bob-energy-accumulator"] = "entity-name.",
+						-- Bob's Electronics
+						["bob-fluid"] = "fluid-name.",
+						["bob-resource-products"] = "item-name.",
+						["bob-resource"] = "item-name.",
+						["bob-resource-chemical"] = "item-name.",
+						["bob-material-smelting"] = "item-name.",
+						["bob-material-chemical"] = "item-name.",
+						["bob-alloy"] = "item-name.",
+						["bob-electronic-components"] = "item-name.",
+						["bob-boards"] = "item-name.",
+						["bob-electronic-boards"] = "item-name.",
+						-- Bob's Warfare
+						["bob-resource"] = "item-name.",
+						["bob-ammo-parts"] = "item-name.",
+						["bob-intermediates"] = "item-name.",
+						["bob-robot-parts"] = "item-name.",
+						["bob-gun"] = "item-name.",
+						["bob-ammo"] = "item-name.",
+						["bob-capsule"] = "item-name.",
+						["bob-combat-robots"] = "item-name.",
+						["bob-armor"] = "item-name.",
+						["bob-equipment"] = "item-name.",
+						-- Bob's Plates
+						["bob-pump"] = "entity-name.",
+						["bob-smelting-machine"] = "entity-name.",
+						["bob-production-machine"] = "entity-name.",
+						["bob-assembly-machine"] = "entity-name.",
+						["bob-chemical-machine"] = "entity-name.",
+						["bob-electrolyser-machine"] = "entity-name.",
+						-- ["bob-refinery-machine"] = "-name.",
+						["bob-fluid"] = "fluid-name.",
+						["bob-fluid-electrolysis"] = "entity-name.",
+						-- ["bob-fluid-pump"] = "-name.",
+						["bob-gas-bottle"] = "item-name.",
+						["bob-empty-gas-bottle"] = "item-name.",
+						["bob-barrel"] = "item-name.",
+						["bob-empty-barrel"] = "item-name.",
+						["bob-canister"] = "item-name.",
+						["bob-empty-canister"] = "item-name.",
+						-- ["bob-intermediates"] = "-name.",
+						-- ["bob-electronic-components"] = "-name.",
+						-- ["bob-boards"] = "-name.",
+						-- ["bob-electronic-boards"] = "-name.",
+						-- ["bob-gears"] = "item-name.",
+						["bob-bearings"] = "item-name.",
+						-- ["bob-roboport-parts"] = "-name.",
+						-- Bob's Greenhouse
+						["bob-greenhouse"] = "entity-name.",
+						["bob-greenhouse-items"] = "item-name.",
+--						["bob-"] = "-name.",
+						
+						}
+
+-- Localise the recipe name
+local localestring = ""
+local localetype = ""
+local function localise_text(item,recipe,result)
+	if locale_section[item.subgroup] then
+		localestring = {"recipe-name.recycledparts",{locale_section[item.subgroup] .. result}}
+	else
+		-- Show the user the name of the unsupported subgroup,
+		-- when they hover over the Recycling Recipes
+		-- for future bug reporting and enhancement
+		localestring = {"recipe-name.recycledunknown", {item.subgroup}}
+	end
+end --localise_text
+
 local recycling_groups = {}
 local recycling_subgroups = {}
 local function build_groups()
@@ -246,51 +375,6 @@ local function create_reverse_groupsandsubgroups()
 	end
 end
 
--- Localise the recipe name
-local localestring = ""
-local localetype = ""
-local function localise_text(item,recipe,result)
-	-- Thanks to Mooncat https://forums.factorio.com/memberlist.php?mode=viewprofile&u=20664
-	-- and this advice https://forums.factorio.com/viewtopic.php?f=97&t=26039&p=183183#p183183
-	-- This has more sub-groups than in the 0.12 game and commented above.
-	-- Based on the subgroup name, this lookup table builds a locale string from the base.cfg locale
-	-- In English, "Recycled <item_being_recycled> parts" is displayed
-	-- TODO: expand to support mods that create a lot of new subgroups.
-	local locale_section = 	{
-							["recycling-machine"] = "entity-name.",
-							["module"] = "item-name.",
-							["logistic-network"] = "entity-name.",
-							["gun"] = "item-name.",
-							["transport"] = "entity-name.",
-							["barrel"] = "item-name.",
-							["equipment"] = "equipment-name.",
-							["production-machine"] = "entity-name.",
-							["defensive-structure"] = "entity-name.",
-							["circuit-network"] = "item-name.",
-							["energy-pipe-distribution"] = "entity-name.",
-							["inserter"] = "entity-name.",
-							["extraction-machine"] = "entity-name.",
-							["belt"] = "entity-name.",
-							["energy"] = "entity-name.",
-							["smelting-machine"] = "entity-name.",
-							["intermediate-product"] = "item-name.",
-							["storage"] = "entity-name.",
-							["tool"] = "item-name.",
-							["science-pack"] = "item-name.",
-							["ammo"] = "item-name.",
-							["capsule"] = "item-name.",
-							["armor"] = "item-name.",
-							}
-	if locale_section[item.subgroup] then
-		localestring = {"recipe-name.recycledparts",{locale_section[item.subgroup] .. result}}
-	else
-		-- Show the user the name of the unsupported subgroup,
-		-- when they hover over the Recycling Recipes
-		-- for future bug reporting and enhancement
-		localestring = {"recipe-name.recycledunknown", {item.subgroup}}
-	end
-end --localise_text
-
 -- Accepted crafting categories
 -- These are the categories which are accepted in assembling machines
 -- This mod only recycles things that can be assembled in machines
@@ -298,7 +382,11 @@ end --localise_text
 local craftingbeforeandafter =	{
 									["crafting"] = "recycling-",
 									["advanced-crafting"] = "recycling-",
-									["crafting-with-fluid"] = "recycling-with-fluid"
+									["crafting-with-fluid"] = "recycling-with-fluid",
+-- Special crafting for Bob's Mods
+									["electronics"] = "recycling-",
+									["electronics-machine"] = "recycling-with-fluid",
+									["crafting-machine"] = "recycling-",
 								}
 
 -- Where the reversed recipes will be stored
