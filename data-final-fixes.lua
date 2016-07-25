@@ -92,7 +92,9 @@ local validtypes =	{
 						"mining-tool",
 						"module",
 						"repair-tool",
-						"tool"
+						"tool",
+						-- New in v0.13
+						"rail-planner",
 					}
 					
 -- A table of mods (and vanilla) where I've tested and provide a 'recycling' item-group icon
@@ -152,8 +154,10 @@ local groups_supported =	{
 -- This has more sub-groups than in the 0.12 game and commented above.
 -- Based on the subgroup name, this lookup table builds a locale string from the base.cfg locale
 -- In English, "Recycled <item_being_recycled> parts" is displayed
--- TODO: expand to support mods that create a lot of new subgroups.
 local locale_section = 	{
+						--
+						-- Vanilla
+						--
 						["recycling-machine"] = "entity-name.",
 						["module"] = "item-name.",
 						["logistic-network"] = "entity-name.",
@@ -177,7 +181,9 @@ local locale_section = 	{
 						["ammo"] = "item-name.",
 						["capsule"] = "item-name.",
 						["armor"] = "item-name.",
+						--
 						-- Bob's Mods
+						--
 						-- Bob's Logistics
 						["bob-storage"] = "entity-name.",
 						["bob-belt"] = "item-name.",
@@ -258,8 +264,118 @@ local locale_section = 	{
 						-- Bob's Greenhouse
 						["bob-greenhouse"] = "entity-name.",
 						["bob-greenhouse-items"] = "item-name.",
---						["bob-"] = "-name.",
-						
+						-- Bob's Assembling Machines
+						["bob-assembly-machine"] = "entity-name.",
+						["bob-chemical-machine"] = "entity-name.",
+						["bob-electrolyser-machine"] = "entity-name.",
+						["bob-refinery-machine"] = "entity-name.",
+						--
+						-- Orbital Ion Cannon
+						--
+						-- Has a fix in my locale.cfg file
+						--
+						--5dim localisations
+						--
+						--5dim transport
+						["liquid-store"] = "entity-name.",
+						["store-solid"] = "entity-name.",
+						["transport-belt"] = "entity-name.",
+						["transport-ground"] = "entity-name.",
+						["transport-ground-30"] = "entity-name.",
+						["transport-ground-50"] = "entity-name.",
+						["transport-splitters"] = "entity-name.",
+						["transport-pipe-ground"] = "entity-name.",
+						["transport-pipe-ground-30"] = "entity-name.",
+						["transport-pipe-ground-50"] = "entity-name.",
+						--5dim resources
+						["masher"] = "entity-name.",
+						--5dim mining
+						["liquid-pump"] = "entity-name.",
+						["mining-speed"] = "entity-name.",
+						["mining-range"] = "entity-name.",
+						--5dim automization
+						["liquid-refinery"] = "entity-name.",
+						["liquid-plant"] = "entity-name.",
+						--5dim core
+						-- Rocket silo locale also added
+						["intermediate-lab"] = "item-name.",
+						["intermediate-misc"] = "item-name.",
+						["intermediate-chip"] = "item-name.",
+						["intermediate-silo"] = "item-name.",
+						["furnace-coal"] = "entity-name.",
+						["furnace-electric"] = "entity-name.",
+						["assembling-machine"] = "entity-name.",
+						["lab"] = "item-name.",
+						["pick"] = "item-name.",
+						--5dim energy
+						["energy-engine-1"] = "entity-name.",
+						["energy-boiler"] = "entity-name.",
+						["energy-offshore-pump"] = "entity-name.",
+						["energy-small-pump"] = "entity-name.",
+						["energy-accumulator"] = "entity-name.",
+						["energy-solar-panel"] = "entity-name.",
+						["energy-pole"] = "entity-name.",
+						["energy-lamp"] = "entity-name.",
+						--5dim inserters
+						-- Filter inserter locale also added
+						["inserters-burner"] = "entity-name.",
+						["inserters-speed1"] = "entity-name.",
+						["inserters-speed2"] = "entity-name.",
+						["inserters-speed3"] = "entity-name.",
+						["inserters-smart"] = "item-name.",
+						["inserters-right"] = "item-name.",
+						["inserters-left"] = "item-name.",
+						--5dim logistic
+						["logistic-robot"] = "entity-name.",
+						["logistic-robot-c"] = "entity-name.",
+						["logistic-roboport"] = "entity-name.",
+						["logistic-pasive"] = "entity-name.",
+						["logistic-requester"] = "entity-name.",
+						["logistic-storage"] = "entity-name.",
+						["logistic-active"] = "entity-name.",
+						["logistic-wire"] = "item-name.",
+						["logistic-beacon"] = "entity-name.",
+						["logistic-comb"] = "entity-name.",
+						["repair"] = "item-name.",
+						--5dim module
+						["speed"] = "item-name.",
+						["effectivity"] = "item-name.",
+						["productivity"] = "item-name.",
+						["pollution"] = "item-name.",
+						["welder"] = "item-name.",
+						--5dim trains
+						["trains-rails"] = "entity-name.",
+						["trains-locomotive"] = "entity-name.",
+						["trains-misc"] = "entity-name.",
+						--5dim battlefield
+						["defense-gun"] = "entity-name.",
+						["defense-laser"] = "entity-name.",
+						["defense-flame"] = "entity-name.",
+						["defense-wall"] = "entity-name.",
+						["defense-gate"] = "entity-name.",
+						["defense-radar"] = "entity-name.",
+						--5dim armor
+						-- TODO
+						["armor-bullet"] = "item-name.",
+						["armor-shotgun"] = "item-name.",
+						["armor-rocket"] = "item-name.",
+						["armor-flame"] = "item-name.",
+						["armor-capsule"] = "item-name.",
+						["armor-armor"] = "item-name.",
+						["armor-dmg"] = "equipment-name.",
+						["armor-util"] = "equipment-name.",
+						--5dim vehicle
+						--TODO
+						["vehicles-car"] = "entity-name.",
+						["vehicles-truck"] = "entity-name.",
+						["vehicles-air"] = "entity-name.",
+						["vehicles-tank"] = "item-name.",
+						["vehicles-boat"] = "entity-name.",
+						["vehicles-arty"] = "item-name.",
+						--5dim decoration
+						["decoration-banner"] = "entity-name.",
+						["decoration-arrow"] = "entity-name.",
+						["decoration-letter"] = "entity-name.",
 						}
 
 -- Localise the recipe name
