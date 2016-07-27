@@ -1,5 +1,3 @@
--- v0.12 branch
-
 -- GLOBAL defines--
 
 -- Constants.lua contains the reverse recipe prefix in a variable constant_rec_prefix
