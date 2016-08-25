@@ -374,10 +374,7 @@ local function add_reverse_recipe(item,recipe,newcategory)
 	local ingredients = {}
 	ingredients[1] = result
 	ingredients[2] = result_count
-	local theicon = item.icon
-	if not theicon then
-		theicon = "__base__/graphics/icons/" .. result .. ".png"
-	end
+	
 	-- Assign the category to force a recycling machine based on the number of results
 	if newcategory ~= "recycling-with-fluid" then
 		local recyclesuffix = "1"
@@ -408,8 +405,18 @@ local function add_reverse_recipe(item,recipe,newcategory)
 		group = newgroup,
 		subgroup = rec_prefix .. item.subgroup,
 		order = item.order,
-		icon = theicon
 	}
+	
+	-- Fix for issue 23. Provided by judos https://github.com/judos,
+	-- The else clause failed in testing, modified by me
+	if item.icon then
+		new_recipe.icon = item.icon
+	elseif item.icons then	
+		new_recipe.icons = item.icons
+	else
+		new_recipe.icon = "__base__/graphics/icons/" .. result .. ".png"
+	end
+	
 	-- Produce localised "Recycled <item> parts" if there is more than one result
 	-- If there is only one result, the game takes care of the locale
 	if recycle_count > 1 then
@@ -541,10 +548,15 @@ for _,validtype in pairs(validtypes) do
 						invalid = true
 					end
 
-					-- Special case for vanilla barrels
+					-- Special case for vanilla and Omnibarrels
 					-- We only recycle empty barrels
-					if recipe.name == "fill-crude-oil-barrel" or recipe.name == "empty-crude-oil-barrel" then
-						invalid = true
+					-- This code is dangerous!
+					-- It assumes that all mods with barreled fluids follow
+					-- the same empty/fill-<fluid>-barrel naming convention
+					if (string.find(recipe.name,"fill-") == 1 or string.find(recipe.name,"empty-") == 1) and string.find(recipe.name,"-barrel") ~= nil then
+						if recipe.name ~= "empty-barrel" then
+							invalid = true
+						end
 					end
 
 					if invalid == false then
