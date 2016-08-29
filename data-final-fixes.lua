@@ -121,7 +121,7 @@ if GameVersion ~= "0.12" then
 	-- Localise the reversed recipe name by wrapping the original recipe
 	-- with "Recycled <recipetext> parts"
 	-- Uses the lookup table from the localisations.lua
-	local function localise_text(item,recipe,result)
+	function localise_text(item,recipe,result)
 		if locale_section[item.subgroup] then
 			localestring = {"recipe-name.recycledparts",{locale_section[item.subgroup] .. result}}
 		else
