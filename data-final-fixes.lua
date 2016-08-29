@@ -49,20 +49,30 @@ local validtypes =	{
 						"module",
 						"repair-tool",
 						"tool",
-						-- New in v0.13
-						"rail-planner",
-						-- Yuoki
+						-- Yuoki (is also used by vanilla but there are no recipes)
 						"container"
 					}
-					
+--
+-- Unsupported type in v0.12
+--
+if GameVersion ~= "0.12" then
+	-- New in v0.13
+	table.insert(validtypes,"rail-planner")
+end
+
 -- There's a long lookup list of Recycling group tabs in this included file
 require("lookups.itemgrouptabs")
 
--- Localisations are a huge lookup table
--- Placed in a separate file to aid readability of this main code
-require("lookups.localisations")
-local localestring = ""
-local localetype = ""
+--
+-- Unsupported in V0.12 of Factorio
+--
+if GameVersion ~= "0.12" then
+	-- Localisations are a huge lookup table
+	-- Placed in a separate file to aid readability of this main code
+	require("lookups.localisations")
+	local localestring = ""
+	local localetype = ""
+end
 
 -- Accepted crafting categories
 -- These are the categories which are accepted in assembling machines
@@ -104,19 +114,25 @@ local rev_recipes = {}			-- Where the reversed recipes will be stored
 -- LOCAL FUNCTIONS
 --
 
--- Localise the reversed recipe name by wrapping the original recipe
--- with "Recycled <recipetext> parts"
--- Uses the lookup table from the localisations.lua
-local function localise_text(item,recipe,result)
-	if locale_section[item.subgroup] then
-		localestring = {"recipe-name.recycledparts",{locale_section[item.subgroup] .. result}}
-	else
-		-- Show the user the name of the unsupported subgroup,
-		-- when they hover over the Recycling Recipes
-		-- for future bug reporting and enhancement
-		localestring = {"recipe-name.recycledunknown", {item.subgroup}}
-	end
-end --localise_text
+--
+-- Unsupported in V0.12 of Factorio
+--
+if GameVersion ~= "0.12" then
+	-- Localise the reversed recipe name by wrapping the original recipe
+	-- with "Recycled <recipetext> parts"
+	-- Uses the lookup table from the localisations.lua
+	function localise_text(item,recipe,result)
+		if locale_section[item.subgroup] then
+			localestring = {"recipe-name.recycledparts",{locale_section[item.subgroup] .. result}}
+		else
+			-- Show the user the name of the unsupported subgroup,
+			-- when they hover over the Recycling Recipes
+			-- for future bug reporting and enhancement
+			localestring = {"recipe-name.recycledunknown", {item.subgroup}}
+		end
+	end --localise_text
+end
+
 
 local function build_groups()
 	-- build local item-groups and subgroups as candidates for recycling
@@ -417,12 +433,17 @@ local function add_reverse_recipe(item,recipe,newcategory)
 		new_recipe.icon = "__base__/graphics/icons/" .. result .. ".png"
 	end
 	
-	-- Produce localised "Recycled <item> parts" if there is more than one result
-	-- If there is only one result, the game takes care of the locale
-	if recycle_count > 1 then
-		localise_text(item,recipe,result)
-		if localestring ~= "" then
-			new_recipe.localised_name = localestring
+	--
+	-- Unsupported in V0.12 of Factorio
+	--
+	if GameVersion ~= "0.12" then
+		-- Produce localised "Recycled <item> parts" if there is more than one result
+		-- If there is only one result, the game takes care of the locale
+		if recycle_count > 1 then
+			localise_text(item,recipe,result)
+			if localestring ~= "" then
+				new_recipe.localised_name = localestring
+			end
 		end
 	end
 	
@@ -473,7 +494,7 @@ local invalid
 -- Give icons to the item-group tabs
 build_groups()
 
--- New for v0.13.14 Adjust recycling machine recipes if Marathon mod is installed
+-- New for v0.12.38 and v0.13.14 Adjust recycling machine recipes if Marathon mod is installed
 if marathon then
 	-- For each assembling machine
 	for i=1,3 do
@@ -493,6 +514,9 @@ end -- marathon
 -- for all validtypes
 for _,validtype in pairs(validtypes) do
 	-- For all 'item' prototypes in this type
+	if data.raw[validtype] == nil then
+	error("Error Type: " .. validtype)
+	end
 	for name, item in pairs(data.raw[validtype]) do
 
 		-- Assume we have an invalid item
@@ -508,7 +532,7 @@ for _,validtype in pairs(validtypes) do
 
 		if invalid == false then
 		
-			-- New in v0.13.18. Look for all recipe(s) that have the result which is this item
+			-- New in v0.12.39 and v0.13.18. Look for all recipe(s) that have the result which is this item
 			-- Written to assume that there may be more than one recipe per item (Bob's Modules)
 			-- And that the recipe name may not be the same as the item name (Yuoki)
 			for name, recipe in pairs(data.raw.recipe) do
