@@ -227,6 +227,8 @@ local function matched(item,recipe)
 	-- 3 There is a 'results' with only 1 result that IS the default type but has just been coded that way by a modder)
 	-- 4 There is a 'results' with more than one product produced by the recipe
 	-- The 2nd and the 4th scenarios are things we cannot recycle.
+    
+    -- New for 0.15.x. Handle there being normal and expensive sets of ingredients
 	
 	local result
 	local can_recycle = true
@@ -235,8 +237,13 @@ local function matched(item,recipe)
 		-- Scenario 1
 		result = recipe.result
 		product_count = 1
+	elseif recipe.normal ~= nil and recipe.normal.result then
+		-- Scenario 1
+		result = recipe.normal.result
+		product_count = 1
 	else
-		-- There's no result so there must be results, even if there's only 1
+		-- TO DO: There's possibly results or (normal.results and expensive.results)
+        -- There's no result so there must be results, even if there's only 1
 		for i,v in pairs(recipe.results) do
 			product_count = product_count + 1
 			if product_count ~= 1 then
@@ -262,11 +269,19 @@ local function matched(item,recipe)
 	end
 
 	-- Fix for issues 11 and 12, caused by recipes that have NO ingredients!
-	-- http://http://stackoverflow.com/questions/1252539/most-efficient-way-to-determine-if-a-lua-table-is-empty-contains-no-entries
-	if next(recipe.ingredients) == nil then
-		can_recycle = false
-	end
-	
+	-- http://stackoverflow.com/questions/1252539/most-efficient-way-to-determine-if-a-lua-table-is-empty-contains-no-entries
+	if recipe.ingredients ~= nil then
+        if next(recipe.ingredients) == nil then
+            can_recycle = false
+        end
+    end
+    
+	if recipe.normal ~= nil then
+        if next(recipe.normal.ingredients) == nil then
+            can_recycle = false
+        end
+    end
+    
 	if can_recycle == true then
 		if item.name == result then
 			return true
@@ -294,7 +309,7 @@ local function add_reverse_recipe(item,recipe,newcategory)
 	-- We support only 1 (non-fluid) ingredient for recycling 
 	-- The recipe ingredients are our results!
 	
-	local result
+	local result, temprecipe
 	local result_count = recipe.result_count
 	if not result_count then
 		result_count = 1
@@ -302,9 +317,22 @@ local function add_reverse_recipe(item,recipe,newcategory)
 	if recipe.result then
 		result = recipe.result
 		product_count = 1
-	else
-		-- There's no result so there must be results, even if there's only 1
-		for i,v in pairs(recipe.results) do
+	elseif recipe.normal ~= nil and recipe.normal.result then
+		result = recipe.normal.result
+		product_count = 1
+    end
+    
+	if result == nil then
+        -- There's no result so there must be results, even if there's only 1
+-- error(serpent.block(recipe) .. "")
+        if recipe.results ~= nil then
+            temprecipe = recipe
+        elseif recipe.normal ~= nil then
+            temprecipe = recipe.normal
+        end
+           
+--error(serpent.block(temprecipe) .. "")
+		for i,v in pairs(temprecipe.results) do
 			result = v.name
 			result_count = v.amount and v.amount or 1
 		end
@@ -316,9 +344,17 @@ local function add_reverse_recipe(item,recipe,newcategory)
 	local recycle_count = 0
 	
 	-- Build the ingredients into results
+    -- TO DO: Need to handle normal and expensive
+    -- TO DO: Derping it for now
 	local rev_results = {}
 	local newrow
-	for k, v in pairs(recipe.ingredients) do
+    local temprecipe
+    if recipe.ingredients ~= nil then
+        temprecipe = recipe
+    else
+        temprecipe = recipe.normal
+    end
+	for k, v in pairs(temprecipe.ingredients) do
 		recycle_count = recycle_count + 1
 		newrow = {}
 		-- Examples of different ingredient formats
@@ -567,10 +603,13 @@ for _,validtype in pairs(validtypes) do
 						invalid = false
 					end
 					
-					-- Special case for Created Alien Artifacts mod. We don't want to recycle artefacts into circuits!
-					if recipe.name == "superconducting-alien-artifact" then
-						invalid = true
-					end
+					-- 0.15.x No alien-artefacts in 0.15 release
+                    if GameVersion ~= "0.15" then
+                        -- Special case for Created Alien Artifacts mod. We don't want to recycle artefacts into circuits!
+                        if recipe.name == "superconducting-alien-artifact" then
+                            invalid = true
+                        end
+                    end
 
 					-- Special case for vanilla and Omnibarrels
 					-- We only recycle empty barrels
@@ -605,11 +644,11 @@ data:extend(rev_recipes)
 
 -- Calls for debugging only. Dump local tables in factorio-current.log
 -- Stops game. Remove comment if you want the table dumped
---error(
---serpent.block(data.raw) ..
---serpent.block(data.raw.item) ..
---serpent.block(data.raw.recipe) ..
---serpent.block(recycling_groups) ..
---serpent.block(recycling_subgroups) .. 
---serpent.block(rev_recipes) ..
+-- error(
+-- --serpent.block(data.raw) ..
+-- serpent.block(data.raw.item) ..
+-- serpent.block(data.raw.recipe) ..
+-- --serpent.block(recycling_groups) ..
+-- --serpent.block(recycling_subgroups) .. 
+-- --serpent.block(rev_recipes) ..
 -- "")

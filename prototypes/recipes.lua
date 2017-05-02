@@ -35,15 +35,32 @@ data:extend(
   {
     type = "recipe",
     name = "recycling-machine-2",
-    enabled = false,
-    ingredients =
+    normal =
     {
-      {"iron-plate", 9},
-      {"electronic-circuit", 3},
-      {"iron-gear-wheel", 5},
-      {"recycling-machine-1", 1}
+      enabled = false,
+      ingredients =
+      {
+        {"iron-plate", 9},
+        {"electronic-circuit", 3},
+        {"iron-gear-wheel", 5},
+        {"recycling-machine-1", 1}
+      },
+      result = "recycling-machine-2",
+      requester_paste_multiplier = 4
     },
-    result = "recycling-machine-2"
+    expensive =
+    {
+      enabled = false,
+      ingredients =
+      {
+        {"iron-plate", 20},
+        {"electronic-circuit", 5},
+        {"iron-gear-wheel", 10},
+        {"recycling-machine-1", 1}
+      },
+      result = "recycling-machine-2",
+      requester_paste_multiplier = 4
+    },
   },
   {
     type = "recipe",
