@@ -242,9 +242,19 @@ local function matched(item,recipe)
 		result = recipe.normal.result
 		product_count = 1
 	else
-		-- TO DO: There's possibly results or (normal.results and expensive.results)
+--DEBUG:
+-- if recipe.results == nil then
+    -- error(serpent.block(recipe) .. "")
+-- end
         -- There's no result so there must be results, even if there's only 1
-		for i,v in pairs(recipe.results) do
+		-- There are results or (normal.results and expensive.results)
+        -- Assume the normal and expensive results are the same
+		local temprecipe = recipe
+        if recipe.normal ~= nil then
+            temprecipe = recipe.normal
+        end
+        
+        for i,v in pairs(temprecipe.results) do
 			product_count = product_count + 1
 			if product_count ~= 1 then
 				-- Scenario 4
@@ -491,37 +501,10 @@ end -- add_reverse_recipe
 -- MAIN CODE STARTS HERE
 --
 
---Set the recycle ratio. The user can enable a trigger mod to choose what they want
--- Default to 100% if they disabled all triggers
--- Set to the highest value if they enabled more than one
-if dry411smods == nil then
-	recycleratio = 100
-elseif dry411smods.recycling == nil then
-	recycleratio = 100
-else
-	recycleratio = 0
-	if dry411smods.recycling.recycleratio10 then
-		recycleratio = 10
-	end
-	if dry411smods.recycling.recycleratio20 then
-		recycleratio = recycleratio + 20
-	end
-	if dry411smods.recycling.recycleratio40 then
-		recycleratio = recycleratio +  40
-	end
-	if dry411smods.recycling.recycleratio50 then
-		recycleratio = recycleratio +  50
-	end
-	-- 60 and 80 issued at 0.12.30 as absolutes, not adds
-	-- Description says 'sets' not 'adds'
-	if dry411smods.recycling.recycleratio60 then
-		recycleratio = 60
-	end
-	if dry411smods.recycling.recycleratio80 then
-		recycleratio = 80
-	end
-end
-if recycleratio > 100 then recycleratio = 100 end	
+--Get the recycle ratio from mod-settings.
+--This is a fixed percentage when the map is generated for the first time.
+--Default is 100%
+recycleratio = settings.startup["ZRecycling-recoveryrate"].value
 
 -- a flag for this recipe if it is invalid for recycling
 local invalid
