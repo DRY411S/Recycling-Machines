@@ -5,6 +5,7 @@ data:extend(
     hidden = true,
 	name = "Recycling",
     icon = "__ZRecycling__/graphics/item-group/recycling.png",
+    icon_size = 64,
     inventory_order = "e",
     order = "e"
   },

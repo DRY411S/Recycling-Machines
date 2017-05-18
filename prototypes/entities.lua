@@ -1,4 +1,4 @@
--- Recycling Machine Entities based on 0.15.3
+-- Recycling Machine Entities based on factorio 0.15.3
 -- This is essentially a copy of the assembling machine entities
 -- Ingredients is always 1, so crafting categories are added to ensure that...
 -- If you can make it only in a level X machine, you can recycle it only at that level of recycling-machine
@@ -7,7 +7,6 @@
 --       instead of recycling only one type of a item at a time
 --       reverse-factory mod has this pretty much covered though
 
--- We need a special south facing pipe with a recycling logo on it for recycling-machine 2
 require ("prototypes.recyclingpipes")
 
 data:extend(
@@ -36,8 +35,8 @@ data:extend(
       layers =
       {
         {
-          -- filename = "__ZRecycling__/graphics/entity/recycling-machine-1/recycling-machine-1.png", -- a change from assembling machine
-          filename = "__base__/graphics/entity/assembling-machine-1/assembling-machine-1.png",
+          filename = "__ZRecycling__/graphics/entity/recycling-machine-1/recycling-machine-1.png", -- a change from assembling machine
+          -- filename = "__base__/graphics/entity/assembling-machine-1/assembling-machine-1.png",
           priority="high",
           width = 108,
           height = 114,
@@ -45,9 +44,8 @@ data:extend(
           line_length = 8,
           shift = util.by_pixel(0, 2),
           hr_version = {
-            -- TODO: HIGH RES GRAPHICS NEEDED
-            --filename = "__ZRecycling__/graphics/entity/recycling-machine-1/recycling-machine-1.png", -- a change from assembling machine
-            filename = "__base__/graphics/entity/assembling-machine-1/hr-assembling-machine-1.png",
+            filename = "__ZRecycling__/graphics/entity/recycling-machine-1/hr-recycling-machine-1.png", -- a change from assembling machine
+            --filename = "__base__/graphics/entity/assembling-machine-1/hr-assembling-machine-1.png",
             priority="high",
             width = 214,
             height = 226,
@@ -57,7 +55,6 @@ data:extend(
             scale = 0.5
           }
         },
-        -- TO DO: Need versions of these shadow graphics
         {
           filename = "__base__/graphics/entity/assembling-machine-1/assembling-machine-1-shadow.png",
           priority="high",
@@ -157,8 +154,8 @@ data:extend(
       layers =
       {
         {
-          -- filename = "__ZRecycling__/graphics/entity/recycling-machine-2/recycling-machine-2.png", -- a change from assembling machine
-          filename = "__base__/graphics/entity/assembling-machine-2/assembling-machine-2.png",
+          filename = "__ZRecycling__/graphics/entity/recycling-machine-2/recycling-machine-2.png", -- a change from assembling machine
+          -- filename = "__base__/graphics/entity/assembling-machine-2/assembling-machine-2.png",
           priority = "high",
           width = 108,
           height = 110,
@@ -166,9 +163,8 @@ data:extend(
           line_length = 8,
           shift = util.by_pixel(0, 4),
           hr_version = {
-            -- TO DO: Need high resolution graphics
-            --filename = "__ZRecycling__/graphics/entity/recycling-machine-2/recycling-machine-2.png", -- a change from assembling machine
-            filename = "__base__/graphics/entity/assembling-machine-2/hr-assembling-machine-2.png",
+            filename = "__ZRecycling__/graphics/entity/recycling-machine-2/hr-recycling-machine-2.png", -- a change from assembling machine
+            -- filename = "__base__/graphics/entity/assembling-machine-2/hr-assembling-machine-2.png",
             priority = "high",
             width = 214,
             height = 218,
@@ -179,7 +175,6 @@ data:extend(
           }
         },
         {
-          -- TO DO: Need shadow graphics
           filename = "__base__/graphics/entity/assembling-machine-2/assembling-machine-2-shadow.png",
           priority = "high",
           width = 98,
@@ -301,8 +296,8 @@ data:extend(
       layers =
       {
         {
-          --filename = "__ZRecycling__/graphics/entity/recycling-machine-3/recycling-machine-3.png", -- a change from assembling machine
-          filename = "__base__/graphics/entity/assembling-machine-3/assembling-machine-3.png",
+          filename = "__ZRecycling__/graphics/entity/recycling-machine-3/recycling-machine-3.png", -- a change from assembling machine
+          -- filename = "__base__/graphics/entity/assembling-machine-3/assembling-machine-3.png",
           priority = "high",
           width = 108,
           height = 119,
@@ -310,9 +305,8 @@ data:extend(
           line_length = 8,
           shift = util.by_pixel(0, -0.5),
           hr_version = {
-            -- TO DO: Need a high-res version
-            --filename = "__ZRecycling__/graphics/entity/recycling-machine-3/recycling-machine-3.png", -- a change from assembling machine
-            filename = "__base__/graphics/entity/assembling-machine-3/hr-assembling-machine-3.png",
+            filename = "__ZRecycling__/graphics/entity/recycling-machine-3/hr-recycling-machine-3.png", -- a change from assembling machine
+            -- filename = "__base__/graphics/entity/assembling-machine-3/hr-assembling-machine-3.png",
             priority = "high",
             width = 214,
             height = 237,
@@ -322,7 +316,7 @@ data:extend(
             scale = 0.5
           }
         },
-        {-- TO DO: Need shadow graphics
+        {
           filename = "__base__/graphics/entity/assembling-machine-3/assembling-machine-3-shadow.png",
           priority = "high",
           width = 130,

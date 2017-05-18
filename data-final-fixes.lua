@@ -160,6 +160,7 @@ local function build_groups()
 			local newgroup = {
 								type = "item-group",
 								icon = newicon,
+                                icon_size = 64,
 								inventory_order = group.inventory_order,
 								hidden = false,
 								name = group.name,
