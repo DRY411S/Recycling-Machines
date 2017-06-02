@@ -60,6 +60,12 @@ if GameVersion ~= "0.12" then
 	table.insert(validtypes,"rail-planner")
 end
 
+if GameVersion == "0.15" then
+	-- New type in v0.15 for vehicles
+	table.insert(validtypes,"item-with-entity-data")
+end
+
+
 -- There's a long lookup list of Recycling group tabs in this included file
 require("lookups.itemgrouptabs")
 
@@ -205,7 +211,7 @@ local function build_groups()
 	end -- each subgroup
 end -- build_groups
 
--- To add the recycycling prefix
+-- To add the recycling prefix
 -- when we're done with the groups and subgroups 'as is'
 local function create_reverse_groupsandsubgroups()
 	for _,group in pairs(recycling_groups) do
@@ -243,13 +249,11 @@ local function matched(item,recipe)
 		result = recipe.normal.result
 		product_count = 1
 	else
---DEBUG:
--- if recipe.results == nil then
-    -- error(serpent.block(recipe) .. "")
--- end
+
         -- There's no result so there must be results, even if there's only 1
 		-- There are results or (normal.results and expensive.results)
-        -- Assume the normal and expensive results are the same
+        -- Assume the normal and expensive results are both valid
+        -- In this part of the code, match against the normal recipe only
 		local temprecipe = recipe
         if recipe.normal ~= nil then
             temprecipe = recipe.normal
@@ -304,69 +308,17 @@ local function matched(item,recipe)
 	end
 end
 
--- Called when a recipe's results match an 'item'
--- and it is known that the recipe can be recycled
-local function add_reverse_recipe(item,recipe,newcategory)
 
-	-- Pick up icon, subgroup, and order from item
+-- Called to convert the ingredients into results
+-- Called separately for 'flat', normal and expensive recipes
+local function build_rev_results(ingredients)
 
-	-- There are 3 recipe result-scenarios
-	-- 1 The result_count is missing, in which case it is 1
-	-- 2 There is a single 'result'. This is our reversed recipe ingredient
-	-- 3 There is a 'results' with only 1 result that IS the default type but has just been coded that way by a modder)
-	-- Other invalid scenarios have been eliminated in the 'matched' routine
-	-- That routine has confirmed that there are not too many results or that the result is a fluid
-	-- The recipe result is our ingredient
-	-- We support only 1 (non-fluid) ingredient for recycling 
-	-- The recipe ingredients are our results!
-	
-	local result, temprecipe
-	local result_count = recipe.result_count
-	if not result_count then
-		result_count = 1
-	end
-	if recipe.result then
-		result = recipe.result
-		product_count = 1
-	elseif recipe.normal ~= nil and recipe.normal.result then
-		result = recipe.normal.result
-		product_count = 1
-    end
-    
-	if result == nil then
-        -- There's no result so there must be results, even if there's only 1
--- error(serpent.block(recipe) .. "")
-        if recipe.results ~= nil then
-            temprecipe = recipe
-        elseif recipe.normal ~= nil then
-            temprecipe = recipe.normal
-        end
-           
---error(serpent.block(temprecipe) .. "")
-		for i,v in pairs(temprecipe.results) do
-			result = v.name
-			result_count = v.amount and v.amount or 1
-		end
-	end
-
-	-- Create new recipe name and assign to a recycling group
-	local rec_name = rec_prefix .. recipe.name
-	local newgroup = rec_prefix .. data.raw["item-subgroup"][item.subgroup].group
-	local recycle_count = 0
-	
-	-- Build the ingredients into results
-    -- TO DO: Need to handle normal and expensive
-    -- TO DO: Derping it for now
-	local rev_results = {}
+	-- Build the ingredients into reverse results
 	local newrow
-    local temprecipe
-    if recipe.ingredients ~= nil then
-        temprecipe = recipe
-    else
-        temprecipe = recipe.normal
-    end
-	for k, v in pairs(temprecipe.ingredients) do
-		recycle_count = recycle_count + 1
+    local results_count = 0
+	local rev_results = {}
+    for k, v in pairs(ingredients) do
+		results_count = results_count + 1
 		newrow = {}
 		-- Examples of different ingredient formats
 		-- {"engine-unit", 1},
@@ -431,13 +383,84 @@ local function add_reverse_recipe(item,recipe,newcategory)
 				end
 			end
 		end
-	end -- recipe ingredients
+	end -- recipe ingredients loop
+    return results_count, rev_results
+end -- build_rev_results
 
+-- Called when a recipe's results match an 'item'
+-- and it is known that the recipe can be recycled
+local function add_reverse_recipe(item,recipe,newcategory)
+
+	-- Pick up icon, subgroup, and order from item
+
+	-- There are 3 recipe result-scenarios
+	-- 1 The result_count is missing, in which case it is 1
+	-- 2 There is a single 'result'. This is our reversed recipe ingredient
+	-- 3 There is a 'results' with only 1 result that IS the default type but has just been coded that way by a modder)
+	-- Other invalid scenarios have been eliminated in the 'matched' routine
+	-- That routine has confirmed that there are not too many results or that the result is a fluid
+	-- The recipe result is our ingredient
+	-- We support only 1 (non-fluid) ingredient for recycling 
+	-- The recipe ingredients are our results!
+	
+	local result, temprecipe
+	local result_count = recipe.result_count
+	if not result_count then
+		result_count = 1
+	end
+	if recipe.result then
+		result = recipe.result
+		product_count = 1
+	elseif recipe.normal ~= nil and recipe.normal.result then
+		result = recipe.normal.result
+		product_count = 1
+    end
+    
+	if result == nil then
+        -- There's no result so there must be results, even if there's only 1
+-- error(serpent.block(recipe) .. "")
+        if recipe.results ~= nil then
+            temprecipe = recipe
+        elseif recipe.normal ~= nil then
+            temprecipe = recipe.normal
+        end
+           
+--error(serpent.block(temprecipe) .. "")
+		for i,v in pairs(temprecipe.results) do
+			result = v.name
+			result_count = v.amount and v.amount or 1
+		end
+	end
+
+	-- Create new recipe name and assign to a recycling group
+	local rec_name = rec_prefix .. recipe.name
+	local newgroup = rec_prefix .. data.raw["item-subgroup"][item.subgroup].group
+	local max_count,recycle_count = 0
+	
+	local flat,normal,expensive = {}
+    if recipe.ingredients ~= nil then
+        recycle_count, flat = build_rev_results(recipe.ingredients)
+        if max_count <= recycle_count then
+            max_count = recycle_count
+        end
+    else
+        recycle_count, normal = build_rev_results(recipe.normal.ingredients)
+        if max_count <= recycle_count then
+            max_count = recycle_count
+        end
+        recycle_count, expensive = build_rev_results(recipe.expensive.ingredients)
+        if max_count <= recycle_count then
+            max_count = recycle_count
+        end
+    end
+
+    --Set recycle_count to maximum number of results
+    recycle_count = max_count
+    
 	-- Build the results into ingredients
 	local ingredients = {}
 	ingredients[1] = result
 	ingredients[2] = result_count
-	
 	-- Assign the category to force a recycling machine based on the number of results
 	if newcategory ~= "recycling-with-fluid" then
 		local recyclesuffix = "1"
@@ -457,18 +480,32 @@ local function add_reverse_recipe(item,recipe,newcategory)
 		type = "recipe",
 		name = rec_name,
 		-- localised_name = locale,
-		-- enabled is initially false and made true in the event handler
-		enabled = false,
 		hidden = false,
 		category = newcategory,
-		ingredients = {ingredients},
-		results = rev_results,
-		energy_required = recipe.energy_required,
-		-- main_product = "",
+        -- main_product = "",
 		group = newgroup,
 		subgroup = rec_prefix .. item.subgroup,
 		order = item.order,
 	}
+    
+    -- enabled is initially false and made true in the event handler
+    if next(flat) ~= nil then
+        new_recipe.enabled = false
+        new_recipe.ingredients = {ingredients}
+        new_recipe.energy_required = recipe.energy_required
+        new_recipe.results = flat
+    else
+        new_recipe.normal = {}
+        new_recipe.normal.enabled = false
+        new_recipe.normal.ingredients = {ingredients}
+        new_recipe.normal.energy_required = recipe.energy_required
+        new_recipe.normal.results = normal
+        new_recipe.expensive = {}
+        new_recipe.expensive.enabled = false
+        new_recipe.expensive.ingredients = {ingredients}
+        new_recipe.expensive.energy_required = recipe.energy_required
+        new_recipe.expensive.results = expensive
+    end
 	
 	-- Fix for issue 23. Provided by judos https://github.com/judos,
 	-- The else clause failed in testing, modified by me
@@ -487,8 +524,8 @@ local function add_reverse_recipe(item,recipe,newcategory)
 		-- Produce localised "Recycled <item> parts" if there is more than one result
 		-- If there is only one result, the game takes care of the locale
 		if recycle_count > 1 then
-			localise_text(item,recipe,result)
-			if localestring ~= "" then
+            localise_text(item,recipe,result)
+            if localestring ~= "" then
 				new_recipe.localised_name = localestring
 			end
 		end
@@ -629,10 +666,10 @@ data:extend(rev_recipes)
 -- Calls for debugging only. Dump local tables in factorio-current.log
 -- Stops game. Remove comment if you want the table dumped
 -- error(
--- --serpent.block(data.raw) ..
+-- serpent.block(data.raw) ..
 -- serpent.block(data.raw.item) ..
 -- serpent.block(data.raw.recipe) ..
--- --serpent.block(recycling_groups) ..
--- --serpent.block(recycling_subgroups) .. 
--- --serpent.block(rev_recipes) ..
+-- serpent.block(recycling_groups) ..
+-- serpent.block(recycling_subgroups) .. 
+-- serpent.block(rev_recipes) ..
 -- "")
