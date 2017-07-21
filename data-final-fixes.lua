@@ -523,7 +523,10 @@ local function add_reverse_recipe(item,recipe,newcategory)
 	if GameVersion ~= "0.12" then
 		-- Produce localised "Recycled <item> parts" if there is more than one result
 		-- If there is only one result, the game takes care of the locale
-		if recycle_count > 1 then
+        -- Fix for: https://github.com/DRY411S/Recycling-Machines/issues/36
+        -- for the Portable fusion reactor there is only 1 result but there are 3 stacks
+        -- which the game's locale does not handle
+		if recycle_count > 1 or item.name == "fusion-reactor-equipment" then
             localise_text(item,recipe,result)
             if localestring ~= "" then
 				new_recipe.localised_name = localestring
