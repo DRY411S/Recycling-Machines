@@ -7,6 +7,16 @@
 --       instead of recycling only one type of a item at a time
 --       reverse-factory mod has this pretty much covered though
 
+-- Enhancement https://github.com/DRY411S/Recycling-Machines/issues/37
+-- Convert the mod setting craft factor into a craft speed adjustment 
+local craftspeed = settings.startup["ZRecycling-recoveryspeed"].value
+if craftspeed == "=" then 
+    craftspeed = 1
+else
+    craftspeed = tonumber(string.sub(craftspeed,3))
+end
+
+
 require ("prototypes.recyclingpipes")
 
 data:extend(
@@ -79,7 +89,7 @@ data:extend(
       },
     },
     crafting_categories = {"recycling-1"}, -- a change from assembling machine
-    crafting_speed = 0.5,
+    crafting_speed = 0.5 / craftspeed,
     energy_source =
     {
       type = "electric",
@@ -216,7 +226,7 @@ data:extend(
       apparent_volume = 1.5,
     },
     crafting_categories = {"recycling-1", "recycling-2"}, -- a change from assembling machine
-    crafting_speed = 0.75,
+    crafting_speed = 0.75 / craftspeed,
     energy_source =
     {
       type = "electric",
@@ -341,7 +351,7 @@ data:extend(
     },
 
     crafting_categories = {"recycling-1", "recycling-2", "recycling-3", "recycling-with-fluid"}, -- a change from assembling machine
-    crafting_speed = 1.25,
+    crafting_speed = 1.25 / craftspeed,
     energy_source =
     {
       type = "electric",

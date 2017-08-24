@@ -12,6 +12,10 @@ local invalidsubgroups = {
 							"raw-material",
 							"terrain",
 							"fluid-recipes",
+                            -- New in 0.15
+                            "raw-resource",
+                            "fill-barrel",
+                            "empty-barrel",
 							-- Yuoki
 							"y-raw-material",
 							-- Bob's Mods
@@ -115,6 +119,8 @@ craftingbeforeandafter["yuoki-wonder-recipe"] = "recycling-"
 local recycling_groups = {}		-- New item-groups for reecycling
 local recycling_subgroups = {}	-- New subgroups for recycling
 local rev_recipes = {}			-- Where the reversed recipes will be stored
+-- Enhancement for https://github.com/DRY411S/Recycling-Machines/issues/41
+local recipe_handled = {}       -- flags for when recipes have either been excluded from recycling, or matched to an item
 
 --
 -- LOCAL FUNCTIONS
@@ -227,62 +233,97 @@ end
 -- and that the recipe is recyclable
 local function matched(item,recipe)
 
-	-- First we need the recipe result
-	-- There are 4 recipe result-scenarios
-	-- 1 There is a single 'result'. This is our reversed recipe ingredient
-	-- 2 There is a 'results' with only 1 result that isn't the default type i.e. not an 'item'
-	-- 3 There is a 'results' with only 1 result that IS the default type but has just been coded that way by a modder)
-	-- 4 There is a 'results' with more than one product produced by the recipe
-	-- The 2nd and the 4th scenarios are things we cannot recycle.
+    local can_recycle = true
     
-    -- New for 0.15.x. Handle there being normal and expensive sets of ingredients
-	
-	local result
-	local can_recycle = true
-	local product_count = 0
-	if recipe.result then
-		-- Scenario 1
-		result = recipe.result
-		product_count = 1
-	elseif recipe.normal ~= nil and recipe.normal.result then
-		-- Scenario 1
-		result = recipe.normal.result
-		product_count = 1
-	else
-
-        -- There's no result so there must be results, even if there's only 1
-		-- There are results or (normal.results and expensive.results)
-        -- Assume the normal and expensive results are both valid
-        -- In this part of the code, match against the normal recipe only
-		local temprecipe = recipe
-        if recipe.normal ~= nil then
-            temprecipe = recipe.normal
+    -- Fix for https://github.com/DRY411S/Recycling-Machines/issues/40
+    -- We don't recycle if the allow_decomposition flag is set to false
+    if recipe.allow_decomposition ~= nil and recipe.allow_decomposition == false then
+        can_recycle = false
+    elseif recipe.category == "smelting" then
+        -- Enhancement for https://github.com/DRY411S/Recycling-Machines/issues/41
+        -- We don't recycle what is smelted
+        can_recycle = false
+    elseif recipe.category == "chemistry" and recipe.name ~= "battery" then
+        -- Enhancement for https://github.com/DRY411S/Recycling-Machines/issues/41
+        -- We don't recycle what is made in chemical plants (apart from batteries)
+        can_recycle = false    
+    else
+        -- Enhancement for https://github.com/DRY411S/Recycling-Machines/issues/41
+        -- We don't recycle if the recipe is within invalid sub-groups
+        for _,invalidsubgroup in pairs(invalidsubgroups) do
+            if invalidsubgroup == recipe.subgroup then
+                can_recycle = false
+                break
+            else
+            end
         end
-        
-        for i,v in pairs(temprecipe.results) do
-			product_count = product_count + 1
-			if product_count ~= 1 then
-				-- Scenario 4
-				can_recycle = false
-				break
-			end	
-			-- Need to handle 'type' not being present
-			-- If not v.name, this implies that the elements have no 'friendly' key, are item types,
-			-- and are just in table in name, amount order
-			if not v.name then
-				v.name = v[1]
-				v.amount = v[2]
-			end
-			result = v.name
-			result_count = v.amount and v.amount or 1
-			if v.type and ( v.type == 1 or v.type == "fluid" )then -- 0 is 'item' 1 is 'fluid'
-				-- Scenario 2
-				can_recycle = false
-				break
-			end
-		end
-	end
+    end
 
+    local result
+    if can_recycle == true then
+    
+        -- Now we need the recipe result
+        -- There are 5 recipe result-scenarios
+        -- 1 There is a single 'result'. This is our reversed recipe ingredient
+        -- 2 There is a 'results' with only 1 result that isn't the default type i.e. not an 'item'
+        -- 3 There is a 'results' with only 1 result that IS the default type but has just been coded that way by a modder)
+        -- 4 There is a 'results' with more than one product produced by the recipe
+        -- 5 there are no results
+        -- The 2nd, 4th and 5th scenarios are things we cannot recycle.
+        
+        -- New for 0.15.x. Handle there being normal and expensive sets of ingredients
+        
+        local product_count = 0
+        if recipe.result then
+            -- Scenario 1
+            result = recipe.result
+            product_count = 1
+        elseif recipe.normal ~= nil and recipe.normal.result then
+            -- Scenario 1
+            result = recipe.normal.result
+            product_count = 1
+        else
+
+            -- There's no result so there must be results, even if there's only 1
+            -- There are results or (normal.results and expensive.results)
+            -- Assume the normal and expensive results are both valid
+            -- In this part of the code, match against the normal recipe only
+            local temprecipe = recipe
+            if recipe.normal ~= nil then
+                temprecipe = recipe.normal
+            end
+            -- Enhancement for https://github.com/DRY411S/Recycling-Machines/issues/40
+            -- Scenario 5
+            if temprecipe.results == nil then
+                can_recycle = false
+            else
+            
+                for i,v in pairs(temprecipe.results) do
+                    product_count = product_count + 1
+                    if product_count ~= 1 then
+                        -- Scenario 4
+                        can_recycle = false
+                        break
+                    end	
+                    -- Need to handle 'type' not being present
+                    -- If not v.name, this implies that the elements have no 'friendly' key, are item types,
+                    -- and are just in table in name, amount order
+                    if not v.name then
+                        v.name = v[1]
+                        v.amount = v[2]
+                    end
+                    result = v.name
+                    result_count = v.amount and v.amount or 1
+                    if v.type and ( v.type == 1 or v.type == "fluid" )then -- 0 is 'item' 1 is 'fluid'
+                        -- Scenario 2
+                        can_recycle = false
+                        break
+                    end
+                end
+            end -- no results
+        end
+    end -- can_recycle
+    
 	-- Fix for issues 11 and 12, caused by recipes that have NO ingredients!
 	-- http://stackoverflow.com/questions/1252539/most-efficient-way-to-determine-if-a-lua-table-is-empty-contains-no-entries
 	if recipe.ingredients ~= nil then
@@ -299,12 +340,16 @@ local function matched(item,recipe)
     
 	if can_recycle == true then
 		if item.name == result then
+            -- Enhancement for https://github.com/DRY411S/Recycling-Machines/issues/41
+            recipe_handled[recipe.name] = true
 			return true
 		else
 			return nil
 		end
 	else
-		return nil
+		-- Enhancement for https://github.com/DRY411S/Recycling-Machines/issues/41
+        recipe_handled[recipe.name] = true
+        return nil
 	end
 end
 
@@ -337,8 +382,6 @@ local function build_rev_results(ingredients)
 			newrow.name = v.name
 			newrow.amount = v.amount
 		end
-		-- Apply recycle ratio
-		newrow.amount = math.ceil((newrow.amount*recycleratio)/100)
 		
 		-- Just add it, if it's a fluid
 		if newrow.type and newrow.type == "fluid" then
@@ -432,6 +475,12 @@ local function add_reverse_recipe(item,recipe,newcategory)
 		end
 	end
 
+    -- New for 0.15.6 https://github.com/DRY411S/Recycling-Machines/issues/39
+    -- Don't get the percentage of original ingredients back from a single item
+    -- Instead need X of the items to get the original ingredients back for 1 item
+    -- Adjust result_count for recycleratio
+    result_count = result_count * recycleratio
+
 	-- Create new recipe name and assign to a recycling group
 	local rec_name = rec_prefix .. recipe.name
 	local newgroup = rec_prefix .. data.raw["item-subgroup"][item.subgroup].group
@@ -461,7 +510,8 @@ local function add_reverse_recipe(item,recipe,newcategory)
 	local ingredients = {}
 	ingredients[1] = result
 	ingredients[2] = result_count
-	-- Assign the category to force a recycling machine based on the number of results
+    
+    -- Assign the category to force a recycling machine based on the number of results
 	if newcategory ~= "recycling-with-fluid" then
 		local recyclesuffix = "1"
 		if recycle_count >= 5 then
@@ -543,9 +593,11 @@ end -- add_reverse_recipe
 --
 
 --Get the recycle ratio from mod-settings.
---This is a fixed percentage when the map is generated for the first time.
---Default is 100%
-recycleratio = settings.startup["ZRecycling-recoveryrate"].value
+-- Enhancement https://github.com/DRY411S/Recycling-Machines/issues/39
+--This is the number of items you must insert into the Recycling Machine
+-- before it will work, and give you back the ingredients for a single item
+--Default is 1
+recycleratio = tonumber(settings.startup["ZRecycling-recoveryrate"].value)
 
 -- a flag for this recipe if it is invalid for recycling
 local invalid
@@ -596,64 +648,70 @@ for _,validtype in pairs(validtypes) do
 			-- Written to assume that there may be more than one recipe per item (Bob's Modules)
 			-- And that the recipe name may not be the same as the item name (Yuoki)
 			for name, recipe in pairs(data.raw.recipe) do
+            
+                -- Enhancement for https://github.com/DRY411S/Recycling-Machines/issues/41
+                -- Don't check this recipe for a match if it has already been handled in previous match attempts
+                -- If handled means that it's either been matched or it cannot be recycled
+                if recipe_handled[recipe.name] == nil then
 			
-				-- Do the recipe results match the item?
-				-- And is the recipe recyclable?
-				if matched(item,recipe) == true then
-				
-					local newcategory
-					-- Only handle recipes where the category is nil or is produced in an assembling machine
-					-- Not strictly true for Yuoki, but allowed
-					invalid = true
-					newcategory = recipe.category
-					if not newcategory then
-						newcategory = "crafting"
-					end
-					for before,after in pairs(craftingbeforeandafter) do
-						if newcategory == before then
-							newcategory = after
-							invalid = false
-							break
-						end
-					end
-					
-					--
-					-- SPECIAL CASES
-					--
-					
-					-- Special case for batteries
-					if invalid == true and recipe.name == "battery" then
-						newcategory = "recycling-with-fluid"
-						invalid = false
-					end
-					
-					-- 0.15.x No alien-artefacts in 0.15 release
-                    if GameVersion ~= "0.15" then
-                        -- Special case for Created Alien Artifacts mod. We don't want to recycle artefacts into circuits!
-                        if recipe.name == "superconducting-alien-artifact" then
-                            invalid = true
+                    -- Do the recipe results match the item?
+                    -- And is the recipe recyclable?
+                    if matched(item,recipe) == true then
+                    
+                        local newcategory
+                        -- Only handle recipes where the category is nil or is produced in an assembling machine
+                        -- Not strictly true for Yuoki, but allowed
+                        invalid = true
+                        newcategory = recipe.category
+                        if not newcategory then
+                            newcategory = "crafting"
                         end
-                    end
+                        for before,after in pairs(craftingbeforeandafter) do
+                            if newcategory == before then
+                                newcategory = after
+                                invalid = false
+                                break
+                            end
+                        end
+                        
+                        --
+                        -- SPECIAL CASES
+                        --
+                        
+                        -- Special case for batteries
+                        if invalid == true and recipe.name == "battery" then
+                            newcategory = "recycling-with-fluid"
+                            invalid = false
+                        end
+                        
+                        -- 0.15.x No alien-artefacts in 0.15 release
+                        if GameVersion ~= "0.15" then
+                            -- Special case for Created Alien Artifacts mod. We don't want to recycle artefacts into circuits!
+                            if recipe.name == "superconducting-alien-artifact" then
+                                invalid = true
+                            end
+                        end
 
-					-- Special case for vanilla and Omnibarrels
-					-- We only recycle empty barrels
-					-- This code is dangerous!
-					-- It assumes that all mods with barreled fluids follow
-					-- the same empty/fill-<fluid>-barrel naming convention
-					if (string.find(recipe.name,"fill-") == 1 or string.find(recipe.name,"empty-") == 1) and string.find(recipe.name,"-barrel") ~= nil then
-						if recipe.name ~= "empty-barrel" then
-							invalid = true
-						end
-					end
+                        -- Special case for vanilla and Omnibarrels
+                        -- We only recycle empty barrels
+                        -- This code is dangerous!
+                        -- It assumes that all mods with barreled fluids follow
+                        -- the same empty/fill-<fluid>-barrel naming convention
+                        if (string.find(recipe.name,"fill-") == 1 or string.find(recipe.name,"empty-") == 1) and string.find(recipe.name,"-barrel") ~= nil then
+                            if recipe.name ~= "empty-barrel" then
+                                invalid = true
+                            end
+                        end
 
-					if invalid == false then
-						-- The 'item' contains useful things we need to construct the reverse recipe
-						-- It may be armor, gun, item, module etc.
-						-- Make the recipe
-						add_reverse_recipe(item,recipe,newcategory)
-					end
-				end -- matched recipe
-			end -- each recipe
+                        if invalid == false then
+                            -- The 'item' contains useful things we need to construct the reverse recipe
+                            -- It may be armor, gun, item, module etc.
+                            -- Make the recipe
+                            add_reverse_recipe(item,recipe,newcategory)
+                        end
+                    end -- matched recipe
+                end -- recipe_handled
+            end -- each recipe
 		end -- valid subgroup
 	end -- each prototype in this type
 end -- each validtype
@@ -667,12 +725,11 @@ data:extend(recycling_subgroups)
 data:extend(rev_recipes)
 
 -- Calls for debugging only. Dump local tables in factorio-current.log
--- Stops game. Remove comment if you want the table dumped
--- error(
--- serpent.block(data.raw) ..
--- serpent.block(data.raw.item) ..
--- serpent.block(data.raw.recipe) ..
--- serpent.block(recycling_groups) ..
--- serpent.block(recycling_subgroups) .. 
--- serpent.block(rev_recipes) ..
--- "")
+-- Remove comment if you want the table dumped
+-- log(serpent.block(data.raw))
+-- log(serpent.block(data.raw.item))
+-- log(serpent.block(data.raw.recipe))
+-- log(serpent.block(recycling_groups))
+-- log(serpent.block(recycling_subgroups)) 
+-- log(serpent.block(data.raw.recipe))
+-- log(serpent.block(rev_recipes))
