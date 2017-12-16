@@ -566,6 +566,8 @@ local function add_reverse_recipe(item,recipe,newcategory)
 	else
 		new_recipe.icon = "__base__/graphics/icons/" .. result .. ".png"
 	end
+    
+    new_recipe.icon_size = item.icon_size
 	
 	--
 	-- Unsupported in V0.12 of Factorio

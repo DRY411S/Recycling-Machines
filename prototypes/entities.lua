@@ -25,6 +25,7 @@ data:extend(
     type = "assembling-machine",
     name = "recycling-machine-1", -- a change from assembling machine
     icon = "__ZRecycling__/graphics/icons/recycling-machine-1.png", -- a change from assembling machine
+    icon_size = 32,
     flags = {"placeable-neutral", "placeable-player", "player-creation"},
     minable = {hardness = 0.2, mining_time = 0.5, result = "recycling-machine-1"}, -- a change from assembling machine
     max_health = 300,
@@ -122,6 +123,7 @@ data:extend(
     type = "assembling-machine",
     name = "recycling-machine-2", -- a change from assembling machine
     icon = "__ZRecycling__/graphics/icons/recycling-machine-2.png", -- a change from assembling machine
+    icon_size = 32,
     flags = {"placeable-neutral", "placeable-player", "player-creation"},
     minable = {hardness = 0.2, mining_time = 0.5, result = "recycling-machine-2"}, -- a change from assembling machine
     max_health = 350,
@@ -246,6 +248,7 @@ data:extend(
     type = "assembling-machine",
     name = "recycling-machine-3", -- a change from assembling machine
     icon = "__ZRecycling__/graphics/icons/recycling-machine-3.png", -- a change from assembling machine
+    icon_size = 32,
     flags = {"placeable-neutral","placeable-player", "player-creation"},
     minable = {hardness = 0.2, mining_time = 0.5, result = "recycling-machine-3"}, -- a change from assembling machine
     max_health = 400,
