@@ -52,6 +52,7 @@ end
 local force = nil
 
 -- LOCAL functions
+    
 
 -- When research is finished
 local function enable_reverse_recipes(event)
@@ -107,12 +108,18 @@ end
 
 -- GAME Event Handlers
 
-script.on_event(defines.events.on_research_finished,function(event)
-	if event.name == defines.events.on_research_finished then
-		enable_reverse_recipes(event)
-	end
-end
-)
+--
+-- Fix for https://github.com/DRY411S/Recycling-Machines/issues/43
+-- Recycling recipes are now embedded into the game's technology tree
+-- Therefore there is no longer a need for a handler for on_research_finished event
+-- 
+
+-- script.on_event(defines.events.on_research_finished,function(event)
+	-- if event.name == defines.events.on_research_finished then
+		-- enable_reverse_recipes(event)
+	-- end
+-- end
+-- )
 
 -- Future version
 -- script.on_event(defines.events.on_runtime_mod_setting_changed,function(event)
@@ -123,3 +130,29 @@ end
 -- )
 
 -- script.on_init(reset_mod_settings)
+
+--
+-- Fix for https://github.com/DRY411S/Recycling-Machines/issues/43
+-- Recycling Recipes are now added to the same technology that enables the original item
+-- Therefore the recycling recipes can be enabled with a call to reset_technology_effects()
+-- This must be done on_init because the previous method no longer works if other mods have called
+-- It's also required for on_configuration_changed in case other mods have blatted technology_effects
+-- reset_technology_effects()
+--
+
+script.on_init(function(event)
+	log("Recycling Machines Init")
+    for _, nextforce in pairs(game.forces) do
+        -- nextforce.reset_recipes()
+        -- nextforce.reset_technologies()    
+        nextforce.reset_technology_effects()
+    end
+end
+)
+
+script.on_configuration_changed(function(event)
+    log("Recycling Machines Configuration Change")
+    for index, force in pairs(game.forces) do
+        force.reset_technology_effects()
+    end
+end)
