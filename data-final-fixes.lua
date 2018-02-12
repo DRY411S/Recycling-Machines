@@ -432,7 +432,7 @@ end -- build_rev_results
 
 -- Called when a recipe's results match an 'item'
 -- and it is known that the recipe can be recycled
-local function add_reverse_recipe(item,recipe,newcategory)
+local function add_reverse_recipe(item,recipe,newcategory,tech)
 
 	-- Pick up icon, subgroup, and order from item
 
@@ -446,32 +446,63 @@ local function add_reverse_recipe(item,recipe,newcategory)
 	-- We support only 1 (non-fluid) ingredient for recycling 
 	-- The recipe ingredients are our results!
 	
-	local result, temprecipe
+    local result, temprecipe
 	local result_count = recipe.result_count
 	if not result_count then
-		result_count = 1
+        -- 
+        -- Fixed for https://github.com/DRY411S/Recycling-Machines/issues/44
+        -- Code was not handling that there could be different result_count for normal and expensive
+        -- 
+        if recipe.normal ~= nil then
+                result_count = recipe.normal.result_count
+        end
+        
+        if not result_count then
+            result_count = 1
+        end
 	end
+    
+    
+    local energy_required = recipe.energy_required
+	if not energy_required then
+        -- 
+        -- Fixed for https://github.com/DRY411S/Recycling-Machines/issues/44
+        -- Code was not handling that there could be different result_count and energy_required for normal and expensive
+        -- 
+        -- 
+        -- Enhancement https://github.com/DRY411S/Recycling-Machines/issues/45
+        -- Allow user decide whether take longer to recycle by using the Expensive energy_required setting
+        -- 
+        if recipe.normal ~= nil then
+            if difficulty == "Expensive" then
+                energy_required = recipe.expensive.energy_required
+            else
+                energy_required = recipe.normal.energy_required
+            end
+        end
+        
+        if not energy_required then
+            energy_required = 0.5
+        end
+	end
+    
 	if recipe.result then
 		result = recipe.result
-		product_count = 1
 	elseif recipe.normal ~= nil and recipe.normal.result then
 		result = recipe.normal.result
-		product_count = 1
     end
     
 	if result == nil then
         -- There's no result so there must be results, even if there's only 1
--- error(serpent.block(recipe) .. "")
         if recipe.results ~= nil then
             temprecipe = recipe
         elseif recipe.normal ~= nil then
             temprecipe = recipe.normal
         end
            
---error(serpent.block(temprecipe) .. "")
 		for i,v in pairs(temprecipe.results) do
 			result = v.name
-			result_count = v.amount and v.amount or 1
+			result_count = v.amount and (v.amount or 1)
 		end
 	end
 
@@ -539,21 +570,23 @@ local function add_reverse_recipe(item,recipe,newcategory)
 	}
     
     -- enabled is initially false and made true in the event handler
+    -- for the inital game items, and true when the corresponding unlock technology
+    -- is researched
     if next(flat) ~= nil then
         new_recipe.enabled = false
         new_recipe.ingredients = {ingredients}
-        new_recipe.energy_required = recipe.energy_required
+        new_recipe.energy_required = energy_required
         new_recipe.results = flat
     else
         new_recipe.normal = {}
         new_recipe.normal.enabled = false
         new_recipe.normal.ingredients = {ingredients}
-        new_recipe.normal.energy_required = recipe.energy_required
+        new_recipe.normal.energy_required = energy_required
         new_recipe.normal.results = normal
         new_recipe.expensive = {}
         new_recipe.expensive.enabled = false
         new_recipe.expensive.ingredients = {ingredients}
-        new_recipe.expensive.energy_required = recipe.energy_required
+        new_recipe.expensive.energy_required = energy_required
         new_recipe.expensive.results = expensive
     end
 	
@@ -587,7 +620,32 @@ local function add_reverse_recipe(item,recipe,newcategory)
 	end
 	
 	table.insert(rev_recipes,new_recipe)
-	
+    
+    --
+    -- Fix for https://github.com/DRY411S/Recycling-Machines/issues/43
+    --
+    
+    -- We need to add this reverse recipe to the technology tree so that mods that call reset_technology_effects don't disable all the recipes
+    -- tech[recipe.name] contains the name of the technology that unlocks the recipe we are reversing
+    local neweffect = {}
+    neweffect.recipe = new_recipe.name
+    neweffect.type = "unlock-recipe"
+    if data.raw["technology"][tech[recipe.name]] ~= nil then
+        if tech[recipe.name] == "automation" and recycle_count > 2 then
+            tech[recipe.name] = "automation-2"
+        end
+    else
+        if recycle_count <= 2 then 
+            tech[recipe.name] = "automation"
+        elseif recycle_count <= 4 then
+            tech[recipe.name] = "automation-2"
+        else
+            tech[recipe.name] = "automation-3"
+        end
+    end
+    table.insert(data.raw["technology"][tech[recipe.name]].effects,neweffect)
+
+
 end -- add_reverse_recipe
 
 --
@@ -600,6 +658,12 @@ end -- add_reverse_recipe
 -- before it will work, and give you back the ingredients for a single item
 --Default is 1
 recycleratio = tonumber(settings.startup["ZRecycling-recoveryrate"].value)
+
+--Get the time baseline from mod-settings.
+-- Enhancement https://github.com/DRY411S/Recycling-Machines/issues/45
+-- This is the base time to recycle. It can be either the original recipe's Expensive
+-- or Normal setting. Default is Expensive
+difficulty = settings.startup["ZRecycling-difficulty"].value
 
 -- a flag for this recipe if it is invalid for recycling
 local invalid
@@ -623,6 +687,23 @@ if marathon then
 		end -- each assembling machine's recipe ingredient
 	end -- each recycling machine
 end -- marathon
+
+-- Fix for https://github.com/DRY411S/Recycling-Machines/issues/43
+-- Build a local variable of the format tech[recipe] = <the research to unlock the recipe>
+
+local tech = {}
+for name,item in pairs(data.raw["technology"]) do
+    --log(serpent.block(item.effects))
+    if item.effects ~= nil then
+        for _,effect in pairs(item.effects) do
+        --log(serpent.block(effect))
+           if effect.type == "unlock-recipe" then
+                tech[effect.recipe] = name
+            end
+        end
+    end
+end
+--log(serpent.block(tech))
 
 -- MAIN LOOP
 -- for all validtypes
@@ -709,7 +790,7 @@ for _,validtype in pairs(validtypes) do
                             -- The 'item' contains useful things we need to construct the reverse recipe
                             -- It may be armor, gun, item, module etc.
                             -- Make the recipe
-                            add_reverse_recipe(item,recipe,newcategory)
+                            add_reverse_recipe(item,recipe,newcategory,tech)
                         end
                     end -- matched recipe
                 end -- recipe_handled

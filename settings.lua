@@ -15,6 +15,14 @@ data:extend({
 	  allowed_values = { "=", "1/2", "1/3", "1/4" }, 
       order = "ba",
    },
+   {
+      type = "string-setting",
+      name = "ZRecycling-difficulty",
+      setting_type = "startup",
+      default_value = "Expensive",
+	  allowed_values = { "Expensive", "Normal" }, 
+      order = "ba",
+   },
    -- For future version --
    -- {
    -- type = "bool-setting",
