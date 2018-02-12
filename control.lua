@@ -141,7 +141,8 @@ end
 --
 
 script.on_init(function(event)
-	for _, nextforce in pairs(game.forces) do
+	log("Recycling Machines Init")
+    for _, nextforce in pairs(game.forces) do
         -- nextforce.reset_recipes()
         -- nextforce.reset_technologies()    
         nextforce.reset_technology_effects()
@@ -150,7 +151,8 @@ end
 )
 
 script.on_configuration_changed(function(event)
-  for index, force in pairs(game.forces) do
-    force.reset_technology_effects()
-  end
+    log("Recycling Machines Configuration Change")
+    for index, force in pairs(game.forces) do
+        force.reset_technology_effects()
+    end
 end)

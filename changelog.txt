@@ -11,3 +11,15 @@ Date: 2018-02-11
     - Fix for incorrect calculation of the base Items Required to start the Recycling https://github.com/DRY411S/Recycling-Machines/issues/44
   Meta:
     - Began maintaining changelog.txt for display in-game after updates
+    - This release was not provided from factorio mod portal, it was provided for initial testing of what was a fairly major change
+---------------------------------------------------------------------------------------------------
+Version: 0.16.4
+Date: 2018-02-12
+
+  Features:
+    - New startup setting to define the base Time to Recycle to be equal to either the original item's Expensive or Normal recipe setting
+    - Bugfixes
+  Changes:
+    - New startup setting to define the base Time to Recycle https://github.com/DRY411S/Recycling-Machines/issues/45
+    - Fix for incompatability with mods that call research_technology_effects() https://github.com/DRY411S/Recycling-Machines/issues/43
+    - Fix for incorrect calculation of the base Items Required to start the Recycling https://github.com/DRY411S/Recycling-Machines/issues/44
