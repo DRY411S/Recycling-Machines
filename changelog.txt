@@ -37,3 +37,24 @@ Date: 2018-02-12
   Meta:
     - Began maintaining changelog.txt for display in-game after updates
     - This release aligns the 0.15 stream to 0.16
+---------------------------------------------------------------------------------------------------
+Version: 0.16.5
+Date: 2018-02-13
+
+  Features:
+    - No new features
+    - Bugfix
+  Changes:
+    - Bugfix for https://github.com/DRY411S/Recycling-Machines/issues/46
+    - Items required for recycling being null. Caused by recipes that have amount_min and amount_max results which was not handled in code
+---------------------------------------------------------------------------------------------------
+Version: 0.15.8
+Date: 2018-02-13
+
+  Features:
+    - No new features
+    - Bugfix to align with 0.16.5
+  Changes:
+    - Bugfix for https://github.com/DRY411S/Recycling-Machines/issues/46
+    - Items required for recycling being null. Caused by recipes that have amount_min and amount_max results which was not handled in code
+
