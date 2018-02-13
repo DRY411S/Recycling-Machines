@@ -453,14 +453,15 @@ local function add_reverse_recipe(item,recipe,newcategory,tech)
         -- Fixed for https://github.com/DRY411S/Recycling-Machines/issues/44
         -- Code was not handling that there could be different result_count for normal and expensive
         -- 
+        -- 
+        -- Fixed for https://github.com/DRY411S/Recycling-Machines/issues/46
+        -- Code was not calculating the number of items required to recycle correctly
+        -- 
         if recipe.normal ~= nil then
                 result_count = recipe.normal.result_count
+                -- may still be nil at this point https://github.com/DRY411S/Recycling-Machines/issues/46
         end
-        
-        if not result_count then
-            result_count = 1
-        end
-	end
+   	end
     
     
     local energy_required = recipe.energy_required
@@ -501,10 +502,25 @@ local function add_reverse_recipe(item,recipe,newcategory,tech)
         end
            
 		for i,v in pairs(temprecipe.results) do
-			result = v.name
-			result_count = v.amount and (v.amount or 1)
+            result = v.name
+            --
+            -- Fix for https://github.com/DRY411S/Recycling-Machines/issues/46
+            --
+            if not result_count then
+                result_count = v.amount
+                if not result_count then
+                    result_count = v.amount_max
+                end
+            end --may still be nil even now
 		end
 	end
+
+    --
+    -- Fix for https://github.com/DRY411S/Recycling-Machines/issues/46
+    --
+    if not result_count then
+        result_count = 1
+    end
 
     -- New for 0.15.6 https://github.com/DRY411S/Recycling-Machines/issues/39
     -- Don't get the percentage of original ingredients back from a single item
