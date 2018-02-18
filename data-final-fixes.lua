@@ -54,7 +54,9 @@ local validtypes =	{
 						"repair-tool",
 						"tool",
 						-- Yuoki (is also used by vanilla but there are no recipes)
-						"container"
+						"container",
+                        -- "item-with-tags" used in Useful Combinators
+                        "item-with-tags"
 					}
 --
 -- Unsupported type in v0.12
@@ -64,7 +66,7 @@ if GameVersion ~= "0.12" then
 	table.insert(validtypes,"rail-planner")
 end
 
-if GameVersion == "0.15" then
+if GameVersion == "0.15" or GameVersion == "0.16" then
 	-- New type in v0.15 for vehicles
 	table.insert(validtypes,"item-with-entity-data")
 end
@@ -72,17 +74,6 @@ end
 
 -- There's a long lookup list of Recycling group tabs in this included file
 require("lookups.itemgrouptabs")
-
---
--- Unsupported in V0.12 of Factorio
---
-if GameVersion ~= "0.12" then
-	-- Localisations are a huge lookup table
-	-- Placed in a separate file to aid readability of this main code
-	require("lookups.localisations")
-	local localestring = ""
-	local localetype = ""
-end
 
 -- Accepted crafting categories
 -- These are the categories which are accepted in assembling machines
@@ -116,7 +107,7 @@ craftingbeforeandafter["yuoki-watergen-recipe"] = "recycling-with-fluid"
 craftingbeforeandafter["yuoki-wonder-recipe"] = "recycling-"
 
 -- Local tables that are populated by the local functions
-local recycling_groups = {}		-- New item-groups for reecycling
+local recycling_groups = {}		-- New item-groups for recycling
 local recycling_subgroups = {}	-- New subgroups for recycling
 local rev_recipes = {}			-- Where the reversed recipes will be stored
 -- Enhancement for https://github.com/DRY411S/Recycling-Machines/issues/41
@@ -130,18 +121,27 @@ local recipe_handled = {}       -- flags for when recipes have either been exclu
 -- Unsupported in V0.12 of Factorio
 --
 if GameVersion ~= "0.12" then
-	-- Localise the reversed recipe name by wrapping the original recipe
-	-- with "Recycled <recipetext> parts"
-	-- Uses the lookup table from the localisations.lua
-	function localise_text(item,recipe,result)
-		if locale_section[item.subgroup] then
-			localestring = {"recipe-name.recycledparts",{locale_section[item.subgroup] .. result}}
-		else
-			-- Show the user the name of the unsupported subgroup,
-			-- when they hover over the Recycling Recipes
-			-- for future bug reporting and enhancement
-			localestring = {"recipe-name.recycledunknown", {item.subgroup}}
-		end
+	-- Localise the reversed recipe name by wrapping the original localised text
+	-- with "Recycled <localised_text> parts"
+    -- New localise_text() function replaces hardcoded lookups, as suggested by eradicator https://forums.factorio.com/memberlist.php?mode=viewprofile&u=24632
+    -- on factorio forums https://forums.factorio.com/57840
+    -- New method implemented in 0.16.6, and 0.15.9
+	function localise_text(item)
+
+        local result
+        if item.localised_name then
+            -- This is a table. I need the first v
+            result = item.localised_name[1]
+        elseif item.place_result then
+            result = 'entity-name.'..item.place_result
+        elseif item.placed_as_equipment_result then
+            result = 'equipment-name.'..item.placed_as_equipment_result
+        else
+            result = 'item-name.'..item.name
+        end
+            
+        return {"recipe-name.recycledparts",{result}}            
+        
 	end --localise_text
 end
 
@@ -628,10 +628,7 @@ local function add_reverse_recipe(item,recipe,newcategory,tech)
         -- for the Portable fusion reactor there is only 1 result but there are 3 stacks
         -- which the game's locale does not handle
 		if recycle_count > 1 or item.name == "fusion-reactor-equipment" then
-            localise_text(item,recipe,result)
-            if localestring ~= "" then
-				new_recipe.localised_name = localestring
-			end
+				new_recipe.localised_name = localise_text(item)
 		end
 	end
 	
@@ -784,7 +781,7 @@ for _,validtype in pairs(validtypes) do
                         end
                         
                         -- 0.15.x No alien-artefacts in 0.15 release
-                        if GameVersion ~= "0.15" then
+                        if GameVersion ~= "0.15" and GameVersion ~= "0.16" then
                             -- Special case for Created Alien Artifacts mod. We don't want to recycle artefacts into circuits!
                             if recipe.name == "superconducting-alien-artifact" then
                                 invalid = true
