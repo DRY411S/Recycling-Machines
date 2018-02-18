@@ -1,28 +1,51 @@
 ---------------------------------------------------------------------------------------------------
-Version: 0.16.3
-Date: 2018-02-11
+Version: 0.15.9
+Date: 2018-02-18
 
   Features:
-    - New startup setting to define the base Time to Recycle to be equal to either the original item's Expensive or Normal recipe setting
-    - Bugfixes
+    - New method of calculating the localised text from the original recipe that hopefully means less unknown type error messages are reported as bugs
+    - Bespoke Recycling Tabs for Angel's and Useful Combinators Mods
+    - Support for Recycling of Useful Combinators Mod
   Changes:
-    - New startup setting to define the base Time to Recycle https://github.com/DRY411S/Recycling-Machines/issues/45
-    - Fix for incompatability with mods that call research_technology_effects() https://github.com/DRY411S/Recycling-Machines/issues/43
-    - Fix for incorrect calculation of the base Items Required to start the Recycling https://github.com/DRY411S/Recycling-Machines/issues/44
-  Meta:
-    - Began maintaining changelog.txt for display in-game after updates
-    - This release was not provided from factorio mod portal, it was provided for initial testing of what was a fairly major change
+    - New localise_text() function as suggested by eradicator https://forums.factorio.com/memberlist.php?mode=viewprofile&u=24632 on factorio forums https://forums.factorio.com/57840
+    - New graphics icons for Recycling Tabs for Angel's and Useful Combinators
+    - Support for the "items-with-tags" type used by Useful Combinators
+  Meta
+    - Reordered Changelog so that most recent changes are shown first
 ---------------------------------------------------------------------------------------------------
-Version: 0.16.4
-Date: 2018-02-12
+Version: 0.16.6
+Date: 2018-02-18
 
   Features:
-    - New startup setting to define the base Time to Recycle to be equal to either the original item's Expensive or Normal recipe setting
-    - Bugfixes
+    - New method of calculating the localised text from the original recipe that hopefully means less unknown type error messages are reported as bugs
+    - Bespoke Recycling Tabs for Angel's and Useful Combinators Mods
+    - Support for Recycling of Useful Combinators Mod
   Changes:
-    - New startup setting to define the base Time to Recycle https://github.com/DRY411S/Recycling-Machines/issues/45
-    - Fix for incompatability with mods that call research_technology_effects() https://github.com/DRY411S/Recycling-Machines/issues/43
-    - Fix for incorrect calculation of the base Items Required to start the Recycling https://github.com/DRY411S/Recycling-Machines/issues/44
+    - New localise_text() function as suggested by eradicator https://forums.factorio.com/memberlist.php?mode=viewprofile&u=24632 on factorio forums https://forums.factorio.com/57840
+    - New graphics icons for Recycling Tabs for Angel's and Useful Combinators
+    - Support for the "items-with-tags" type used by Useful Combinators
+  Meta
+    - Reordered Changelog so that most recent changes are shown first
+---------------------------------------------------------------------------------------------------
+Version: 0.15.8
+Date: 2018-02-13
+
+  Features:
+    - No new features
+    - Bugfix to align with 0.16.5
+  Changes:
+    - Bugfix for https://github.com/DRY411S/Recycling-Machines/issues/46
+    - Items required for recycling being null. Caused by recipes that have amount_min and amount_max results which was not handled in code
+---------------------------------------------------------------------------------------------------
+Version: 0.16.5
+Date: 2018-02-13
+
+  Features:
+    - No new features
+    - Bugfix
+  Changes:
+    - Bugfix for https://github.com/DRY411S/Recycling-Machines/issues/46
+    - Items required for recycling being null. Caused by recipes that have amount_min and amount_max results which was not handled in code
 ---------------------------------------------------------------------------------------------------
 Version: 0.15.7
 Date: 2018-02-12
@@ -38,23 +61,27 @@ Date: 2018-02-12
     - Began maintaining changelog.txt for display in-game after updates
     - This release aligns the 0.15 stream to 0.16
 ---------------------------------------------------------------------------------------------------
-Version: 0.16.5
-Date: 2018-02-13
+Version: 0.16.4
+Date: 2018-02-12
 
   Features:
-    - No new features
-    - Bugfix
+    - New startup setting to define the base Time to Recycle to be equal to either the original item's Expensive or Normal recipe setting
+    - Bugfixes
   Changes:
-    - Bugfix for https://github.com/DRY411S/Recycling-Machines/issues/46
-    - Items required for recycling being null. Caused by recipes that have amount_min and amount_max results which was not handled in code
+    - New startup setting to define the base Time to Recycle https://github.com/DRY411S/Recycling-Machines/issues/45
+    - Fix for incompatability with mods that call research_technology_effects() https://github.com/DRY411S/Recycling-Machines/issues/43
+    - Fix for incorrect calculation of the base Items Required to start the Recycling https://github.com/DRY411S/Recycling-Machines/issues/44
 ---------------------------------------------------------------------------------------------------
-Version: 0.15.8
-Date: 2018-02-13
+Version: 0.16.3
+Date: 2018-02-11
 
   Features:
-    - No new features
-    - Bugfix to align with 0.16.5
+    - New startup setting to define the base Time to Recycle to be equal to either the original item's Expensive or Normal recipe setting
+    - Bugfixes
   Changes:
-    - Bugfix for https://github.com/DRY411S/Recycling-Machines/issues/46
-    - Items required for recycling being null. Caused by recipes that have amount_min and amount_max results which was not handled in code
-
+    - New startup setting to define the base Time to Recycle https://github.com/DRY411S/Recycling-Machines/issues/45
+    - Fix for incompatability with mods that call research_technology_effects() https://github.com/DRY411S/Recycling-Machines/issues/43
+    - Fix for incorrect calculation of the base Items Required to start the Recycling https://github.com/DRY411S/Recycling-Machines/issues/44
+  Meta:
+    - Began maintaining changelog.txt for display in-game after updates
+    - This release was not provided from factorio mod portal, it was provided for initial testing of what was a fairly major change

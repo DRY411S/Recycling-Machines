@@ -58,4 +58,19 @@ groups_supported =	{
 								["yuoki-energy"] = "__ZRecycling__/graphics/item-group/yuoki/yuoki-energy.png",
 								["yuoki-atomics"] = "__ZRecycling__/graphics/item-group/yuoki/yuoki-atomics-icon.png",
 								["yuoki_liquids"] = "__ZRecycling__/graphics/item-group/yuoki/yuoki-liquids.png",
-					}
+                                -- 
+                                -- Angels
+                                --
+                                ["resource-refining"] = "__ZRecycling__/graphics/item-group/angels/ore-refining.png",
+                                ["water-treatment"] = "__ZRecycling__/graphics/item-group/angels/water-treatment-group.png",
+                                ["angels-fluid-control"] = "__ZRecycling__/graphics/item-group/angels/heavy-pump-group.png",
+                                ["petrochem-refining"] = "__ZRecycling__/graphics/item-group/angels/petrochem.png",
+                                ["bio-processing"] = "__ZRecycling__/graphics/item-group/angels/algae-farm-group.png",
+                                ["bio-processing-alien"] = "__ZRecycling__/graphics/item-group/angels/algae-farm-group.png",
+                                ["angels-smelting"] = "__ZRecycling__/graphics/item-group/angels/blast-furnace-group.png",
+                                ["angels-casting"] = "__ZRecycling__/graphics/item-group/angels/induction-furnace-group.png",
+                                --
+                                -- Useful combinators
+                                --
+                                ["default"] = "__ZRecycling__/graphics/item-group/useful/clock.png",
+                    }
