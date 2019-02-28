@@ -2,7 +2,7 @@
 -- in only one place--
 
 --Switch for factorio versions. Some code in v0.13 and above will not work in v0.12
-GameVersion = "0.16"
+GameVersion = "0.17"
 
 -- The prefix used on the reverse recipes
 -- Personalised with mod author to avoid clashes with other mods

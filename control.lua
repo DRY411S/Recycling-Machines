@@ -66,7 +66,7 @@ local function enable_reverse_recipes(event)
 				-- Now we can recycle. Pick up reverse recipes for all the things
 				-- that can be crafted without automation
 				for _,v in pairs(force.recipes) do
-					if v.enabled == true then
+					if v.enabled == true or v.enabled == nil then
 						ZRecycling.Unlock_Recipe(force,v.name)
 					end
 				end
@@ -114,12 +114,14 @@ end
 -- Therefore there is no longer a need for a handler for on_research_finished event
 -- 
 
--- script.on_event(defines.events.on_research_finished,function(event)
-	-- if event.name == defines.events.on_research_finished then
-		-- enable_reverse_recipes(event)
-	-- end
--- end
--- )
+script.on_event(defines.events.on_research_finished,function(event)
+	if event.name == defines.events.on_research_finished then
+    if event.research.name == "automation" then
+      enable_reverse_recipes(event)
+    end
+	end
+end
+)
 
 -- Future version
 -- script.on_event(defines.events.on_runtime_mod_setting_changed,function(event)

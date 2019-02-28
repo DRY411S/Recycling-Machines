@@ -7,6 +7,49 @@ local rec_prefix = constant_rec_prefix
 -- LOCAL DATA
 --
 
+--[[
+-- Some code suggested by darkfrei on factorio forums PM for travesring the different type of recipe constructs
+-- Very elegant
+for recipe_name, recipe_prot in pairs (data.raw.recipe) do
+  local handlers = {recipe_prot, recipe_prot.normal, recipe_prot.expensive}
+  for i, handler in pairs (handlers) do
+    if handler.ingredients then
+      for j, ingredient_prot in pairs (handler.ingredients) do
+        local ingredient_name = ingredient_prot.name or ingredient_prot[1]
+        local ingredient_type = ingredient_prot.type or "item"
+        if not all_ingredients[ingredient_type] then all_ingredients[ingredient_type] = {} end
+        if not (is_value_in_list (ingredient_name, all_ingredients[ingredient_type])) then
+          table.insert(all_ingredients[ingredient_type], ingredient_name)
+        end
+      end
+    end
+    
+    if handler.result then
+      if not (is_value_in_list (handler.result, all_results.item)) then
+        table.insert(all_results.item, handler.result)
+      end
+    end
+    
+    if handler.main_product and not (handler.main_product == "") then
+      if not (is_value_in_list (handler.main_product, all_results.item)) then
+        table.insert(all_results.item, handler.main_product)
+      end
+    end
+    
+    if handler.results then
+      for j, result_prot in pairs (handler.results) do
+        local result_name = result_prot.name -- or result_prot[1]
+        local result_type = result_prot.type or "item"
+        if not all_results[result_type] then all_results[result_type] = {} end
+        if not (is_value_in_list (result_name, all_results[result_type])) then
+          table.insert(all_results[result_type], result_name)
+        end
+      end
+    end
+  end
+end
+]]
+
 -- These are the subgroups that cannot be recycled
 local invalidsubgroups = {	
 							"raw-material",
@@ -66,7 +109,7 @@ if GameVersion ~= "0.12" then
 	table.insert(validtypes,"rail-planner")
 end
 
-if GameVersion == "0.15" or GameVersion == "0.16" then
+if GameVersion == "0.15" or GameVersion == "0.16" or GameVersion == "0.17" then
 	-- New type in v0.15 for vehicles
 	table.insert(validtypes,"item-with-entity-data")
 end
@@ -258,6 +301,9 @@ local function matched(item,recipe)
             end
         end
     end
+    
+    if recipe.category == nil then
+end
 
     local result
     if can_recycle == true then
@@ -433,7 +479,8 @@ end -- build_rev_results
 -- Called when a recipe's results match an 'item'
 -- and it is known that the recipe can be recycled
 local function add_reverse_recipe(item,recipe,newcategory,tech)
-
+--log("Item: ".. item.name)
+-- .. ", Recipe: " .. recipe.name .. ", Category: " .. newcategory .. ", Tech: " .. tech[recipe.name])
 	-- Pick up icon, subgroup, and order from item
 
 	-- There are 3 recipe result-scenarios
@@ -446,7 +493,7 @@ local function add_reverse_recipe(item,recipe,newcategory,tech)
 	-- We support only 1 (non-fluid) ingredient for recycling 
 	-- The recipe ingredients are our results!
 	
-    local result, temprecipe
+  local result, temprecipe
 	local result_count = recipe.result_count
 	if not result_count then
         -- 
@@ -461,10 +508,10 @@ local function add_reverse_recipe(item,recipe,newcategory,tech)
                 result_count = recipe.normal.result_count
                 -- may still be nil at this point https://github.com/DRY411S/Recycling-Machines/issues/46
         end
-   	end
+  end
+   
     
-    
-    local energy_required = recipe.energy_required
+  local energy_required = recipe.energy_required
 	if not energy_required then
         -- 
         -- Fixed for https://github.com/DRY411S/Recycling-Machines/issues/44
@@ -491,8 +538,7 @@ local function add_reverse_recipe(item,recipe,newcategory,tech)
 		result = recipe.result
 	elseif recipe.normal ~= nil and recipe.normal.result then
 		result = recipe.normal.result
-    end
-    
+  end
 	if result == nil then
         -- There's no result so there must be results, even if there's only 1
         if recipe.results ~= nil then
@@ -521,6 +567,7 @@ local function add_reverse_recipe(item,recipe,newcategory,tech)
     if not result_count then
         result_count = 1
     end
+--log("result_count: " .. result_count .. ", recipe.result: " .. result)    
 
     -- New for 0.15.6 https://github.com/DRY411S/Recycling-Machines/issues/39
     -- Don't get the percentage of original ingredients back from a single item
@@ -552,7 +599,7 @@ local function add_reverse_recipe(item,recipe,newcategory,tech)
 
     --Set recycle_count to maximum number of results
     recycle_count = max_count
-    
+--log("recycle_count: " .. recycle_count)    
 	-- Build the results into ingredients
 	local ingredients = {}
 	ingredients[1] = result
@@ -561,14 +608,16 @@ local function add_reverse_recipe(item,recipe,newcategory,tech)
     -- Assign the category to force a recycling machine based on the number of results
 	if newcategory ~= "recycling-with-fluid" then
 		local recyclesuffix = "1"
+--[[ Always 1 in 0.17
 		if recycle_count >= 5 then
 			recyclesuffix = "3"
 		elseif recycle_count >= 3 then
 			recyclesuffix = "2"
 		end
+]]
 		newcategory = newcategory .. recyclesuffix
 	end
-
+--log("newcategory: " .. newcategory)
 	--New name, group assigned--
 	-- Results and ingredients are swopped
 	-- Build the recipe now we have all the parts
@@ -631,7 +680,7 @@ local function add_reverse_recipe(item,recipe,newcategory,tech)
 				new_recipe.localised_name = localise_text(item)
 		end
 	end
-	
+--log(serpent.block(new_recipe))	
 	table.insert(rev_recipes,new_recipe)
     
     --
@@ -656,6 +705,8 @@ local function add_reverse_recipe(item,recipe,newcategory,tech)
             tech[recipe.name] = "automation-3"
         end
     end
+    
+    -- Everything can be recycled in every machine in 0.17
     table.insert(data.raw["technology"][tech[recipe.name]].effects,neweffect)
 
 
@@ -781,7 +832,7 @@ for _,validtype in pairs(validtypes) do
                         end
                         
                         -- 0.15.x No alien-artefacts in 0.15 release
-                        if GameVersion ~= "0.15" and GameVersion ~= "0.16" then
+                        if GameVersion ~= "0.15" and GameVersion ~= "0.16"  and GameVersion ~= "0.16" then
                             -- Special case for Created Alien Artifacts mod. We don't want to recycle artefacts into circuits!
                             if recipe.name == "superconducting-alien-artifact" then
                                 invalid = true
