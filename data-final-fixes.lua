@@ -692,6 +692,9 @@ local function add_reverse_recipe(item,recipe,newcategory,tech)
     local neweffect = {}
     neweffect.recipe = new_recipe.name
     neweffect.type = "unlock-recipe"
+-- if recipe.name == "small-electric-pole" then
+  -- log(serpent.block(data.raw["technology"][tech[recipe.name]]))
+-- end
     if data.raw["technology"][tech[recipe.name]] ~= nil then
         if tech[recipe.name] == "automation" and recycle_count > 2 then
             tech[recipe.name] = "automation-2"
@@ -876,6 +879,7 @@ data:extend(rev_recipes)
 -- log(serpent.block(data.raw))
 -- log(serpent.block(data.raw.item))
 -- log(serpent.block(data.raw.recipe))
+-- log(serpent.block(data.raw.technology))
 -- log(serpent.block(recycling_groups))
 -- log(serpent.block(recycling_subgroups)) 
 -- log(serpent.block(data.raw.recipe))
