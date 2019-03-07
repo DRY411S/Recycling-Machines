@@ -1,4 +1,16 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.17.3
+Date: 2019-03-07
+  Info:
+    - For 0.71 experimental, limited testing with mods
+    - Lets you recycle anything in each level of recycling machine (like 0.17 vanilla assemblers)
+    - However, anything that produces fluids must be recycled in level 3 machine
+    - Supports the 0.17 upgrade planner
+  Bugfixes:
+    - Cannot recycle battereies https://github.com/DRY411S/Recycling-Machines/issues/50 
+    - Thumbnail missing https://github.com/DRY411S/Recycling-Machines/issues/51 
+    - Does not handle non-localised mods https://github.com/DRY411S/Recycling-Machines/issues/52 
+---------------------------------------------------------------------------------------------------
 Version: 0.17.2
 Date: 2019-03-02
   Info:

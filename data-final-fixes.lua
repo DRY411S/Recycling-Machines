@@ -52,7 +52,7 @@ end
 
 -- These are the subgroups that cannot be recycled
 local invalidsubgroups = {	
-							"raw-material",
+							-- "raw-material", -- enabled for batteries only fixes https://github.com/DRY411S/Recycling-Machines/issues/50
 							"terrain",
 							"fluid-recipes",
                             -- New in 0.15
@@ -166,15 +166,23 @@ local recipe_handled = {}       -- flags for when recipes have either been exclu
 if GameVersion ~= "0.12" then
 	-- Localise the reversed recipe name by wrapping the original localised text
 	-- with "Recycled <localised_text> parts"
-    -- New localise_text() function replaces hardcoded lookups, as suggested by eradicator https://forums.factorio.com/memberlist.php?mode=viewprofile&u=24632
-    -- on factorio forums https://forums.factorio.com/57840
-    -- New method implemented in 0.16.6, and 0.15.9
+  -- New localise_text() function replaces hardcoded lookups, as suggested by eradicator https://forums.factorio.com/memberlist.php?mode=viewprofile&u=24632
+  -- on factorio forums https://forums.factorio.com/57840
+  -- New method implemented in 0.16.6, and 0.15.9
 	function localise_text(item)
 
         local result
         if item.localised_name then
-            -- This is a table. I need the first v
-            result = item.localised_name[1]
+            if type(item.localised_name) == "table" then
+               -- This is a table. I need the first v
+              result = item.localised_name[1]
+            else
+              -- Oh my days, it's a string. Valid but highly unusual. Means that the mod does not support locale
+              -- and is hardcoded to a single language. Tsk.
+              -- Fixes https://github.com/DRY411S/Recycling-Machines/issues/52
+              result = item.localised_name
+              return {"recipe-name.recycledparts",result} 
+            end
         elseif item.place_result then
             result = 'entity-name.'..item.place_result
         elseif item.placed_as_equipment_result then
@@ -302,12 +310,8 @@ local function matched(item,recipe)
         end
     end
     
-    if recipe.category == nil then
-end
-
     local result
     if can_recycle == true then
-    
         -- Now we need the recipe result
         -- There are 5 recipe result-scenarios
         -- 1 There is a single 'result'. This is our reversed recipe ingredient
@@ -835,7 +839,7 @@ for _,validtype in pairs(validtypes) do
                         end
                         
                         -- 0.15.x No alien-artefacts in 0.15 release
-                        if GameVersion ~= "0.15" and GameVersion ~= "0.16"  and GameVersion ~= "0.16" then
+                        if GameVersion ~= "0.15" and GameVersion ~= "0.16"  and GameVersion ~= "0.17" then
                             -- Special case for Created Alien Artifacts mod. We don't want to recycle artefacts into circuits!
                             if recipe.name == "superconducting-alien-artifact" then
                                 invalid = true
@@ -882,5 +886,4 @@ data:extend(rev_recipes)
 -- log(serpent.block(data.raw.technology))
 -- log(serpent.block(recycling_groups))
 -- log(serpent.block(recycling_subgroups)) 
--- log(serpent.block(data.raw.recipe))
 -- log(serpent.block(rev_recipes))
