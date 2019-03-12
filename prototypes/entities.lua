@@ -63,6 +63,10 @@ newrecycler.animation.layers[1].filename = "__ZRecycling__/graphics/entity/recyc
 newrecycler.animation.layers[1].hr_version.filename = "__ZRecycling__/graphics/entity/recycling-machine-3/hr-recycling-machine-3.png"
 newrecycler.crafting_categories = {"recycling-1", "recycling-2", "recycling-3", "recycling-with-fluid"}
 newrecycler.crafting_speed = newrecycler.crafting_speed / craftspeed
+-- Fix for https://github.com/DRY411S/Recycling-Machines/issues/53
+-- Was referencing non-existent pipe pictures. Was not rendering correct pipe pictures
+newrecycler.fluid_boxes[1]["pipe_picture"] = recycling3pipepictures()
+newrecycler.fluid_boxes[2]["pipe_picture"] = recycling3pipepictures()
 table.insert(recyclingmachines,newrecycler)
 
 --Add the recycling machine prototypes into the raw data

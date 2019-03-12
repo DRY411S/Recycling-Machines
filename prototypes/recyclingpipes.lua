@@ -1,7 +1,7 @@
 -- Copy of factorio 0.15.11 data\base\prototypes\entity\assemblerpipes.lua
 -- With changes commented
 
-function assembler2pipepictures()
+function recycling2pipepictures()
   return
   {
     north =
@@ -75,19 +75,19 @@ function assembler2pipepictures()
   }
 end
 
-function assembler3pipepictures()
+function recycling3pipepictures()
   return
   {
     north =
     {
-      filename = "__ZRecycling__/graphics/entity/recycling-machine-3/recycling-machine-3-pipe-N.png",
+      filename = "__base__/graphics/entity/assembling-machine-3/assembling-machine-3-pipe-N.png",
       priority = "extra-high",
       width = 35,
       height = 18,
       shift = util.by_pixel(2.5, 14),
       hr_version =
       {
-        filename = "__ZRecycling__/graphics/entity/recycling-machine-3/hr-recycling-machine-3-pipe-N.png",
+        filename = "__base__/graphics/entity/assembling-machine-3/hr-assembling-machine-3-pipe-N.png",
         priority = "extra-high",
         width = 71,
         height = 38,
@@ -97,14 +97,14 @@ function assembler3pipepictures()
     },
     east =
     {
-      filename = "__ZRecycling__/graphics/entity/recycling-machine-3/recycling-machine-3-pipe-E.png",
+      filename = "__base__/graphics/entity/assembling-machine-3/assembling-machine-3-pipe-E.png",
       priority = "extra-high",
       width = 20,
       height = 38,
       shift = util.by_pixel(-25, 1),
       hr_version =
       {
-        filename = "__ZRecycling__/graphics/entity/recycling-machine-3/hr-recycling-machine-3-pipe-E.png",
+        filename = "__base__/graphics/entity/assembling-machine-3/hr-assembling-machine-3-pipe-E.png",
         priority = "extra-high",
         width = 42,
         height = 76,
@@ -114,14 +114,14 @@ function assembler3pipepictures()
     },
     south =
     {
-      filename = "__base__/graphics/entity/assembling-machine-3/assembling-machine-3-pipe-S.png",
+      filename = "__ZRecycling_/graphics/entity/recycling-machine-3/recycling-machine-3-pipe-S.png",
       priority = "extra-high",
       width = 44,
       height = 31,
       shift = util.by_pixel(0, -31.5),
       hr_version =
       {
-        filename = "__base__/graphics/entity/assembling-machine-3/hr-assembling-machine-3-pipe-S.png",
+        filename = "__ZRecycling__/graphics/entity/recycling-machine-3/hr-recycling-machine-3-pipe-S.png",
         priority = "extra-high",
         width = 88,
         height = 61,
