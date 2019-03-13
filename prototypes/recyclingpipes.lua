@@ -114,7 +114,8 @@ function recycling3pipepictures()
     },
     south =
     {
-      filename = "__ZRecycling_/graphics/entity/recycling-machine-3/recycling-machine-3-pipe-S.png",
+      -- Fix https://github.com/DRY411S/Recycling-Machines/issues/54
+      filename = "__ZRecycling__/graphics/entity/recycling-machine-3/recycling-machine-3-pipe-S.png",
       priority = "extra-high",
       width = 44,
       height = 31,
