@@ -1,3 +1,52 @@
+local recyclingrecipes = {}
+local newrecipe = {}
+
+function swopassemblerforrecycler(recipe,level)
+if recipe.ingredients  ~= nil then
+	for _,rec_ingredient in ipairs(recipe.ingredients) do
+		if rec_ingredient[1] == "assembling-machine-"..level then
+			rec_ingredient[1] = "recycling-machine-"..level
+		end
+	end -- each assembling machine's recipe ingredient
+	recipe.result = "recycling-machine-" .. level+1
+end
+if recipe.normal ~= nil then
+	for _,rec_ingredient in ipairs(recipe.normal.ingredients) do
+		if rec_ingredient[1] == "assembling-machine-"..level then
+			rec_ingredient[1] = "recycling-machine-"..level
+		end
+	end -- each assembling machine's normal recipe ingredient
+	recipe.normal.result = "recycling-machine-"..level+1
+end
+if recipe.expensive ~= nil  then
+	for _,rec_ingredient in ipairs(recipe.expensive.ingredients) do
+		if rec_ingredient[1] == "assembling-machine-"..level then
+			rec_ingredient[1] = "recycling-machine-"..level
+		end
+	end -- each assembling machine's expensive recipe ingredient
+	recipe.expensive.result = "recycling-machine-"..level+1
+end
+--log(serpent.block(recipe))
+return recipe
+end
+
+newrecipe = table.deepcopy(data.raw.recipe["assembling-machine-1"])
+newrecipe.name = "recycling-machine-1"
+newrecipe = swopassemblerforrecycler(newrecipe,0)
+table.insert(recyclingrecipes,newrecipe)
+
+newrecipe = table.deepcopy(data.raw.recipe["assembling-machine-2"])
+newrecipe.name = "recycling-machine-2"
+newrecipe = swopassemblerforrecycler(newrecipe,1)
+table.insert(recyclingrecipes,newrecipe)
+
+newrecipe = table.deepcopy(data.raw.recipe["assembling-machine-3"])
+newrecipe.name = "recycling-machine-3"
+newrecipe = swopassemblerforrecycler(newrecipe,2)
+table.insert(recyclingrecipes,newrecipe)
+
+
+data:extend(recyclingrecipes)
 data:extend(
 {
   {
@@ -20,58 +69,4 @@ data:extend(
 	type = "recipe-category",
 	name = "recycling-with-fluid"
   },
-  {
-    type = "recipe",
-    name = "recycling-machine-1",
-    enabled = false,
-    ingredients =
-    {
-      {"electronic-circuit", 3},
-      {"iron-gear-wheel", 5},
-      {"iron-plate", 9}
-    },
-    result = "recycling-machine-1"
-  },
-  {
-    type = "recipe",
-    name = "recycling-machine-2",
-    normal =
-    {
-      enabled = false,
-      ingredients =
-      {
-        {"iron-plate", 9},
-        {"electronic-circuit", 3},
-        {"iron-gear-wheel", 5},
-        {"recycling-machine-1", 1}
-      },
-      result = "recycling-machine-2",
-      requester_paste_multiplier = 4
-    },
-    expensive =
-    {
-      enabled = false,
-      ingredients =
-      {
-        {"iron-plate", 20},
-        {"electronic-circuit", 5},
-        {"iron-gear-wheel", 10},
-        {"recycling-machine-1", 1}
-      },
-      result = "recycling-machine-2",
-      requester_paste_multiplier = 4
-    },
-  },
-  {
-    type = "recipe",
-    name = "recycling-machine-3",
-    enabled = false,
-    ingredients =
-    {
-      {"speed-module", 4},
-      {"recycling-machine-2", 2}
-    },
-    result = "recycling-machine-3"
-  } 
-
 })

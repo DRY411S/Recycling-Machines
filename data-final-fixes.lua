@@ -526,7 +526,7 @@ local function add_reverse_recipe(item,recipe,newcategory,tech)
         -- Allow user decide whether take longer to recycle by using the Expensive energy_required setting
         -- 
         if recipe.normal ~= nil then
-            if difficulty == "Expensive" then
+            if difficulty == "expensive" then
                 energy_required = recipe.expensive.energy_required
             else
                 energy_required = recipe.normal.energy_required
@@ -591,7 +591,7 @@ local function add_reverse_recipe(item,recipe,newcategory,tech)
             max_count = recycle_count
         end
     else
-        recycle_count, normal = build_rev_results(recipe.normal.ingredients)
+ 		recycle_count, normal = build_rev_results(recipe.normal.ingredients)
         if max_count <= recycle_count then
             max_count = recycle_count
         end

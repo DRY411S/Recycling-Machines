@@ -19,8 +19,8 @@ data:extend({
       type = "string-setting",
       name = "ZRecycling-difficulty",
       setting_type = "startup",
-      default_value = "Expensive",
-	  allowed_values = { "Expensive", "Normal" }, 
+      default_value = "expensive" ,
+	  allowed_values = { "expensive" , "normal" }, 
       order = "ba",
    },
    -- For future version --
