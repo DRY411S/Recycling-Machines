@@ -59,6 +59,7 @@ newrecycler.name = "recycling-machine-3"
 newrecycler.icon = "__ZRecycling__/graphics/icons/recycling-machine-3.png"
 newrecycler.minable["result"] = "recycling-machine-3"
 newrecycler.fast_replaceable_group = "recycling-machine"
+newrecycler.next_upgrade = nil
 newrecycler.animation.layers[1].filename = "__ZRecycling__/graphics/entity/recycling-machine-3/recycling-machine-3.png"
 newrecycler.animation.layers[1].hr_version.filename = "__ZRecycling__/graphics/entity/recycling-machine-3/hr-recycling-machine-3.png"
 newrecycler.crafting_categories = {"recycling-1", "recycling-2", "recycling-3", "recycling-with-fluid"}
