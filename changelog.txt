@@ -8,8 +8,10 @@ Date: 2019-06-30
     - Supports the 0.17 upgrade planner
   Bugfixes:
     - Recycling Recipes for hidden items are produced https://github.com/DRY411S/Recycling-Machines/issues/61
-	- Early game what can be recycled is confusing https://github.com/DRY411S/Recycling-Machines/issues/64
-	- No recycle recipe for Explosives https://github.com/DRY411S/Recycling-Machines/issues/62
+    - Early game what can be recycled is confusing https://github.com/DRY411S/Recycling-Machines/issues/64
+    - No recycle recipe for Explosives https://github.com/DRY411S/Recycling-Machines/issues/62
+    - Items with small stack sizes cannot always be recycled https://github.com/DRY411S/Recycling-Machines/issues/63
+    - Changelog does not display in game https://github.com/DRY411S/Recycling-Machines/issues/65
 ---------------------------------------------------------------------------------------------------
 Version: 0.17.8
 Date: 2019-04-27
@@ -30,7 +32,7 @@ Date: 2019-04-13
     - Supports the 0.17 upgrade planner
   Bugfixes:
     - Difficulty setting was not displayed in the local language https://github.com/DRY411S/Recycling-Machines/issues/57
-	- The 0.17 Recycling Machine recipes don't match the Assembling Machine recipes https://github.com/DRY411S/Recycling-Machines/issues/58
+    - The 0.17 Recycling Machine recipes don't match the Assembling Machine recipes https://github.com/DRY411S/Recycling-Machines/issues/58
 ---------------------------------------------------------------------------------------------------
 Version: 0.17.6
 Date: 2019-03-30

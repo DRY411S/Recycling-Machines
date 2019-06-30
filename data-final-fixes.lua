@@ -603,22 +603,20 @@ local function add_reverse_recipe(item,recipe,newcategory,tech)
 
     --Set recycle_count to maximum number of results
     recycle_count = max_count
---log("recycle_count: " .. recycle_count)    
 	-- Build the results into ingredients
 	local ingredients = {}
 	ingredients[1] = result
 	ingredients[2] = result_count
     
-    -- Assign the category to force a recycling machine based on the number of results
+    -- Fix: https://github.com/DRY411S/Recycling-Machines/issues/63
+	-- If an item has a stack_size of less than the ingredient count, then the ingredient count needs reducing
+	if item.stack_size < result_count then
+		ingredients[2] = item.stack_size
+	end
+	
+	-- Assign the category to force a recycling machine based on the number of results
 	if newcategory ~= "recycling-with-fluid" then
 		local recyclesuffix = "1"
---[[ Always 1 in 0.17
-		if recycle_count >= 5 then
-			recyclesuffix = "3"
-		elseif recycle_count >= 3 then
-			recyclesuffix = "2"
-		end
-]]
 		newcategory = newcategory .. recyclesuffix
 	end
 --log("newcategory: " .. newcategory)
@@ -684,7 +682,6 @@ local function add_reverse_recipe(item,recipe,newcategory,tech)
 				new_recipe.localised_name = localise_text(item)
 		end
 	end
---log(serpent.block(new_recipe))	
 	table.insert(rev_recipes,new_recipe)
     
     --
