@@ -9,6 +9,7 @@ Date: 2019-06-30
   Bugfixes:
     - Recycling Recipes for hidden items are produced https://github.com/DRY411S/Recycling-Machines/issues/61
 	- Early game what can be recycled is confusing https://github.com/DRY411S/Recycling-Machines/issues/64
+	- No recycle recipe for Explosives https://github.com/DRY411S/Recycling-Machines/issues/62
 ---------------------------------------------------------------------------------------------------
 Version: 0.17.8
 Date: 2019-04-27

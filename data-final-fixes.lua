@@ -53,7 +53,7 @@ end
 -- These are the subgroups that cannot be recycled
 local invalidsubgroups = {	
 							-- "raw-material", -- enabled for batteries only fixes https://github.com/DRY411S/Recycling-Machines/issues/50
-							"terrain",
+							-- "terrain", -- Required to recycle cliff-explosives https://github.com/DRY411S/Recycling-Machines/issues/62
 							"fluid-recipes",
                             -- New in 0.15
                             "raw-resource",
@@ -298,7 +298,7 @@ local function matched(item,recipe)
         -- Enhancement for https://github.com/DRY411S/Recycling-Machines/issues/41
         -- We don't recycle what is made in chemical plants (apart from batteries)
         can_recycle = false    
-    else
+	else
         -- Enhancement for https://github.com/DRY411S/Recycling-Machines/issues/41
         -- We don't recycle if the recipe is within invalid sub-groups
         for _,invalidsubgroup in pairs(invalidsubgroups) do
@@ -844,7 +844,14 @@ for _,validtype in pairs(validtypes) do
                         -- SPECIAL CASES
                         --
                         
-                        -- Special case for batteries
+						-- Special case for terrain
+						-- https://github.com/DRY411S/Recycling-Machines/issues/62
+						-- Recycle cliff explosives
+						if item.subgroup == "terrain" and recipe.name ~= "cliff-explosives" then
+							invalid = true
+						end
+						
+						-- Special case for batteries
                         if invalid == true and recipe.name == "battery" then
                             newcategory = "recycling-with-fluid"
                             invalid = false
