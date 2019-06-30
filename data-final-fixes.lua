@@ -796,6 +796,18 @@ for _,validtype in pairs(validtypes) do
 			end
 		end
 
+		-- Fix for https://github.com/DRY411S/Recycling-Machines/issues/61
+		-- Recycling Recipes for hidden items are produced
+		-- Is this a hidden item?
+		if item.flags then
+			for _,v in pairs(item.flags) do
+				if v == "hidden" then
+					invalid = true
+					break
+				end
+			end
+		end
+		
 		if invalid == false then
 		
 			-- New in v0.12.39 and v0.13.18. Look for all recipe(s) that have the result which is this item

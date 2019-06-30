@@ -116,7 +116,8 @@ end
 
 script.on_event(defines.events.on_research_finished,function(event)
 	if event.name == defines.events.on_research_finished then
-    if event.research.name == "automation" then
+    log("Research Finished: " .. event.research.name)
+	if event.research.name == "automation" then
       enable_reverse_recipes(event)
     end
 	end
@@ -149,19 +150,16 @@ script.on_init(function(event)
   for _, nextforce in pairs(game.forces) do
     -- nextforce.reset_recipes()
     -- nextforce.reset_technologies()    
-    nextforce.reset_technology_effects()
+    -- nextforce.reset_technology_effects()
     force = nextforce
-    -- Don't reverse anything until automation has been researched (which allows a recycling machine)
-    if force.technologies["automation"].researched == true then
-      -- Now we can recycle. Pick up reverse recipes for all the things
-      -- that can be crafted without automation
-      for _,v in pairs(force.recipes) do
-        if v.enabled == true then
---log(v.name)
-          ZRecycling.Unlock_Recipe(force,v.name)
-        end
-      end
-    end
+	-- Fix for https://github.com/DRY411S/Recycling-Machines/issues/64
+	-- Flag everything that is available to the player at the start of the game, as recyclable,
+	-- even though there are no recycling machines yet
+	for _,v in pairs(force.recipes) do
+		if v.enabled == true then
+			ZRecycling.Unlock_Recipe(force,v.name)
+		end
+	end
   end
 end
 )
@@ -171,20 +169,17 @@ script.on_configuration_changed(function(event)
   -- which may be caused by a bug https://forums.factorio.com/viewtopic.php?t=66302
   -- log("Recycling Machines Configuration Change")
   for _, nextforce in pairs(game.forces) do
-    -- nextforce.reset_recipes()
-    -- nextforce.reset_technologies()    
+    nextforce.reset_recipes()
+    nextforce.reset_technologies()    
     nextforce.reset_technology_effects()
     force = nextforce
-    -- Don't reverse anything until automation has been researched (which allows a recycling machine)
-    if force.technologies["automation"].researched == true then
-      -- Now we can recycle. Pick up reverse recipes for all the things
-      -- that can be crafted without automation
-      for _,v in pairs(force.recipes) do
-        if v.enabled == true then
--- log(v.name)
-          ZRecycling.Unlock_Recipe(force,v.name)
-        end
-      end
-    end
+	-- Fix for https://github.com/DRY411S/Recycling-Machines/issues/64
+	-- Flag everything that is available to the player at the start of the game, as recyclable,
+	-- even though there are no recycling machines yet
+	for _,v in pairs(force.recipes) do
+		if v.enabled == true then
+			ZRecycling.Unlock_Recipe(force,v.name)
+		end
+	end
   end
 end)

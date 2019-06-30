@@ -1,4 +1,15 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.17.9
+Date: 2019-06-30
+  Info:
+    - For 0.71 experimental, limited testing with mods
+    - Lets you recycle anything in each level of recycling machine (like 0.17 vanilla assemblers)
+    - However, anything that produces fluids must be recycled in level 3 machine
+    - Supports the 0.17 upgrade planner
+  Bugfixes:
+    - Recycling Recipes for hidden items are produced https://github.com/DRY411S/Recycling-Machines/issues/61
+	- Early game what can be recycled is confusing https://github.com/DRY411S/Recycling-Machines/issues/64
+---------------------------------------------------------------------------------------------------
 Version: 0.17.8
 Date: 2019-04-27
   Info:
