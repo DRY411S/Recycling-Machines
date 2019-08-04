@@ -19,11 +19,11 @@ function ZRecycling.Unlock_Recipe(force,recipename)
 	local recipe = force.recipes[recipename]
 	if recipe then
 		--error(serpent.block(recipe))
-		--game.player.print("Recipe found: " .. recipename)
+		-- log("Recipe found: " .. recipename)
 		-- Enable the reversed version
 		local reverse_recipe = force.recipes[rec_prefix .. recipename]
 		if reverse_recipe then
-            --game.player.print("Reverse recipe found: " .. rec_prefix .. recipename)
+            -- log("Reverse recipe found: " .. rec_prefix .. recipename)
 			force.recipes[rec_prefix .. recipename].enabled = true
             -- After 0.15.6 Only enable it if the mod global runtime map setting wants it            
             -- TODO: Handle mods
@@ -114,12 +114,15 @@ end
 -- Therefore there is no longer a need for a handler for on_research_finished event
 -- 
 
--- script.on_event(defines.events.on_research_finished,function(event)
-	-- if event.name == defines.events.on_research_finished then
-		-- enable_reverse_recipes(event)
-	-- end
--- end
--- )
+script.on_event(defines.events.on_research_finished,function(event)
+	if event.name == defines.events.on_research_finished then
+    log("Research Finished: " .. event.research.name)
+	if event.research.name == "automation" then
+      enable_reverse_recipes(event)
+    end
+	end
+end
+)
 
 -- Future version
 -- script.on_event(defines.events.on_runtime_mod_setting_changed,function(event)
@@ -141,18 +144,42 @@ end
 --
 
 script.on_init(function(event)
-	log("Recycling Machines Init")
-    for _, nextforce in pairs(game.forces) do
-        -- nextforce.reset_recipes()
-        -- nextforce.reset_technologies()    
-        nextforce.reset_technology_effects()
-    end
+	-- Recoded for https://github.com/DRY411S/Recycling-Machines/issues/49
+  -- which may be caused by a bug https://forums.factorio.com/viewtopic.php?t=66302
+--log("Recycling Machines Init")
+  for _, nextforce in pairs(game.forces) do
+    -- nextforce.reset_recipes()
+    -- nextforce.reset_technologies()    
+    -- nextforce.reset_technology_effects()
+    force = nextforce
+	-- Fix for https://github.com/DRY411S/Recycling-Machines/issues/64
+	-- Flag everything that is available to the player at the start of the game, as recyclable,
+	-- even though there are no recycling machines yet
+	for _,v in pairs(force.recipes) do
+		if v.enabled == true then
+			ZRecycling.Unlock_Recipe(force,v.name)
+		end
+	end
+  end
 end
 )
 
 script.on_configuration_changed(function(event)
-    log("Recycling Machines Configuration Change")
-    for index, force in pairs(game.forces) do
-        force.reset_technology_effects()
-    end
+	-- Recoded for https://github.com/DRY411S/Recycling-Machines/issues/49
+  -- which may be caused by a bug https://forums.factorio.com/viewtopic.php?t=66302
+  -- log("Recycling Machines Configuration Change")
+  for _, nextforce in pairs(game.forces) do
+    nextforce.reset_recipes()
+    nextforce.reset_technologies()    
+    nextforce.reset_technology_effects()
+    force = nextforce
+	-- Fix for https://github.com/DRY411S/Recycling-Machines/issues/64
+	-- Flag everything that is available to the player at the start of the game, as recyclable,
+	-- even though there are no recycling machines yet
+	for _,v in pairs(force.recipes) do
+		if v.enabled == true then
+			ZRecycling.Unlock_Recipe(force,v.name)
+		end
+	end
+  end
 end)

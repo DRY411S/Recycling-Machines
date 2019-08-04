@@ -9,8 +9,8 @@ local rec_prefix = constant_rec_prefix
 
 -- These are the subgroups that cannot be recycled
 local invalidsubgroups = {	
-							"raw-material",
-							"terrain",
+							-- "raw-material", -- enabled for batteries only fixes https://github.com/DRY411S/Recycling-Machines/issues/50
+							-- "terrain", -- Required to recycle cliff-explosives https://github.com/DRY411S/Recycling-Machines/issues/62
 							"fluid-recipes",
                             -- New in 0.15
                             "raw-resource",
@@ -129,10 +129,18 @@ if GameVersion ~= "0.12" then
 	function localise_text(item)
 
         local result
-        if item.localised_name then
-            -- This is a table. I need the first v
-            result = item.localised_name[1]
-        elseif item.place_result then
+		if item.localised_name then
+			if type(item.localised_name) == "table" then
+				-- This is a table. I need the first v
+				esult = item.localised_name[1]
+			else
+				-- Oh my days, it's a string. Valid but highly unusual. Means that the mod does not support locale
+				-- and is hardcoded to a single language. Tsk.
+				-- Fixes https://github.com/DRY411S/Recycling-Machines/issues/52
+				result = item.localised_name
+				return {"recipe-name.recycledparts",result} 
+            end
+		elseif item.place_result then
             result = 'entity-name.'..item.place_result
         elseif item.placed_as_equipment_result then
             result = 'equipment-name.'..item.placed_as_equipment_result
@@ -475,7 +483,7 @@ local function add_reverse_recipe(item,recipe,newcategory,tech)
         -- Allow user decide whether take longer to recycle by using the Expensive energy_required setting
         -- 
         if recipe.normal ~= nil then
-            if difficulty == "Expensive" then
+            if difficulty == "expensive" then
                 energy_required = recipe.expensive.energy_required
             else
                 energy_required = recipe.normal.energy_required
@@ -558,7 +566,13 @@ local function add_reverse_recipe(item,recipe,newcategory,tech)
 	ingredients[1] = result
 	ingredients[2] = result_count
     
-    -- Assign the category to force a recycling machine based on the number of results
+    -- Fix: https://github.com/DRY411S/Recycling-Machines/issues/63
+	-- If an item has a stack_size of less than the ingredient count, then the ingredient count needs reducing
+	if item.stack_size < result_count then
+		ingredients[2] = item.stack_size
+	end
+	
+	-- Assign the category to force a recycling machine based on the number of results
 	if newcategory ~= "recycling-with-fluid" then
 		local recyclesuffix = "1"
 		if recycle_count >= 5 then
@@ -738,6 +752,18 @@ for _,validtype in pairs(validtypes) do
 			end
 		end
 
+		-- Fix for https://github.com/DRY411S/Recycling-Machines/issues/61
+		-- Recycling Recipes for hidden items are produced
+		-- Is this a hidden item?
+		if item.flags then
+			for _,v in pairs(item.flags) do
+				if v == "hidden" then
+					invalid = true
+					break
+				end
+			end
+		end
+
 		if invalid == false then
 		
 			-- New in v0.12.39 and v0.13.18. Look for all recipe(s) that have the result which is this item
@@ -774,7 +800,14 @@ for _,validtype in pairs(validtypes) do
                         -- SPECIAL CASES
                         --
                         
-                        -- Special case for batteries
+                        -- Special case for terrain
+						-- https://github.com/DRY411S/Recycling-Machines/issues/62
+						-- Recycle cliff explosives
+						if item.subgroup == "terrain" and recipe.name ~= "cliff-explosives" then
+							invalid = true
+						end
+						
+						-- Special case for batteries
                         if invalid == true and recipe.name == "battery" then
                             newcategory = "recycling-with-fluid"
                             invalid = false

@@ -1,87 +1,190 @@
 ---------------------------------------------------------------------------------------------------
-Version: 0.15.9
-Date: 2018-02-18
+Version: 0.16.7
+Date: 2019-08-04
 
   Features:
+    - Adds French localisation for 0.16 version https://github.com/DRY411S/Recycling-Machines/issues/67
+  Bugfixes:
+    - Fixes Machines will not always recycle some items https://github.com/DRY411S/Recycling-Machines/issues/49
+    - Fixes Cannot recycle batteries https://github.com/DRY411S/Recycling-Machines/issues/50
+    - Fixes Error constructing localised text https://github.com/DRY411S/Recycling-Machines/issues/52
+    - Fixes Recycling Recipes for hidden items are produced https://github.com/DRY411S/Recycling-Machines/issues/61
+    - Fixes No recycle recipe for Cliff Explosives https://github.com/DRY411S/Recycling-Machines/issues/62
+    - Fixes Items with small stack sizes cannot always be recycled https://github.com/DRY411S/Recycling-Machines/issues/63
+    - Fixes Early game what can be recycled is confusing https://github.com/DRY411S/Recycling-Machines/issues/64
+  Meta:
+    - Introduces bugfixes from 0.17 experimental branch
+---------------------------------------------------------------------------------------------------
+Version: 0.17.9
+Date: 2019-06-30
+  Info:
+    - For 0.71 experimental, limited testing with mods
+    - Lets you recycle anything in each level of recycling machine (like 0.17 vanilla assemblers)
+    - However, anything that produces fluids must be recycled in level 3 machine
+    - Supports the 0.17 upgrade planner
+  Bugfixes:
+    - Recycling Recipes for hidden items are produced https://github.com/DRY411S/Recycling-Machines/issues/61
+    - Early game what can be recycled is confusing https://github.com/DRY411S/Recycling-Machines/issues/64
+    - No recycle recipe for Explosives https://github.com/DRY411S/Recycling-Machines/issues/62
+    - Items with small stack sizes cannot always be recycled https://github.com/DRY411S/Recycling-Machines/issues/63
+    - Changelog does not display in game https://github.com/DRY411S/Recycling-Machines/issues/65
+---------------------------------------------------------------------------------------------------
+Version: 0.17.8
+Date: 2019-04-27
+  Info:
+    - For 0.71 experimental, limited testing with mods
+    - Lets you recycle anything in each level of recycling machine (like 0.17 vanilla assemblers)
+    - However, anything that produces fluids must be recycled in level 3 machine
+    - Supports the 0.17 upgrade planner
+  Bugfixes:
+    - Mod failed to load if other mods had set an upgrade for the vanilla Assembling Machine 3 https://github.com/DRY411S/Recycling-Machines/issues/59
+---------------------------------------------------------------------------------------------------
+Version: 0.17.7
+Date: 2019-04-13
+  Info:
+    - For 0.71 experimental, limited testing with mods
+    - Lets you recycle anything in each level of recycling machine (like 0.17 vanilla assemblers)
+    - However, anything that produces fluids must be recycled in level 3 machine
+    - Supports the 0.17 upgrade planner
+  Bugfixes:
+    - Difficulty setting was not displayed in the local language https://github.com/DRY411S/Recycling-Machines/issues/57
+    - The 0.17 Recycling Machine recipes don't match the Assembling Machine recipes https://github.com/DRY411S/Recycling-Machines/issues/58
+---------------------------------------------------------------------------------------------------
+Version: 0.17.6
+Date: 2019-03-30
+  Info:
+    - For 0.71 experimental, limited testing with mods
+    - Lets you recycle anything in each level of recycling machine (like 0.17 vanilla assemblers)
+    - However, anything that produces fluids must be recycled in level 3 machine
+    - Supports the 0.17 upgrade planner
+  Bugfixes:
+    - French locale added, with thanks to kryshnar https://github.com/kryshnar
+---------------------------------------------------------------------------------------------------
+Version: 0.17.5
+Date: 2019-03-13
+  Info:
+    - For 0.71 experimental, limited testing with mods
+    - Lets you recycle anything in each level of recycling machine (like 0.17 vanilla assemblers)
+    - However, anything that produces fluids must be recycled in level 3 machine
+    - Supports the 0.17 upgrade planner
+  Bugfixes:
+    - Fix for https://github.com/DRY411S/Recycling-Machines/issues/54
+    - Typo in previous version causing mod load errors for people playing in low-res
+---------------------------------------------------------------------------------------------------
+Version: 0.17.4
+Date: 2019-03-12
+  Info:
+    - For 0.71 experimental, limited testing with mods
+    - Lets you recycle anything in each level of recycling machine (like 0.17 vanilla assemblers)
+    - However, anything that produces fluids must be recycled in level 3 machine
+    - Supports the 0.17 upgrade planner
+  Bugfixes:
+    - Fix for https://github.com/DRY411S/Recycling-Machines/issues/53
+    - Was referencing non-existent pipe pictures. Was not rendering correct pipe pictures
+---------------------------------------------------------------------------------------------------
+Version: 0.17.3
+Date: 2019-03-07
+  Info:
+    - For 0.71 experimental, limited testing with mods
+    - Lets you recycle anything in each level of recycling machine (like 0.17 vanilla assemblers)
+    - However, anything that produces fluids must be recycled in level 3 machine
+    - Supports the 0.17 upgrade planner
+  Bugfixes:
+    - Cannot recycle battereies https://github.com/DRY411S/Recycling-Machines/issues/50 
+    - Thumbnail missing https://github.com/DRY411S/Recycling-Machines/issues/51 
+    - Does not handle non-localised mods https://github.com/DRY411S/Recycling-Machines/issues/52 
+---------------------------------------------------------------------------------------------------
+Version: 0.17.2
+Date: 2019-03-02
+  Info:
+    - Initial version for 0.71 experimental, tested with vanilla 0.17 only
+    - Lets you recycle anything in each level of recycling machine (like 0.17 vanilla assemblers)
+    - However, anything that produces fluids must be recycled in level 3 machine
+    - Supports the 0.17 upgrade planner
+  Bugfixes:
+    - https://github.com/DRY411S/Recycling-Machines/issues/49 Some new game items not recyclable if mod enabled after game started
+---------------------------------------------------------------------------------------------------
+Version: 0.17.1
+Date: 2019-02-27
+  Info:
+    - Initial version for 0.71 experimental, tested with vanilla 0.17 only
+    - Lets you recycle anything in each level of recycling machine (like 0.17 vanilla assemblers)
+    - However, anything that produces fluids must be recycled in level 3 machine
+    - Supports the 0.17 upgrade planner
+  Bugfixes:
+---------------------------------------------------------------------------------------------------
+Version: 0.15.9
+Date: 2018-02-18
+  Info:
     - New method of calculating the localised text from the original recipe that hopefully means less unknown type error messages are reported as bugs
     - Bespoke Recycling Tabs for Angel's and Useful Combinators Mods
     - Support for Recycling of Useful Combinators Mod
-  Changes:
     - New localise_text() function as suggested by eradicator https://forums.factorio.com/memberlist.php?mode=viewprofile&u=24632 on factorio forums https://forums.factorio.com/57840
     - New graphics icons for Recycling Tabs for Angel's and Useful Combinators
     - Support for the "items-with-tags" type used by Useful Combinators
-  Meta
-    - Reordered Changelog so that most recent changes are shown first
+  Bugfixes:
 ---------------------------------------------------------------------------------------------------
 Version: 0.16.6
 Date: 2018-02-18
 
-  Features:
+  Info:
     - New method of calculating the localised text from the original recipe that hopefully means less unknown type error messages are reported as bugs
     - Bespoke Recycling Tabs for Angel's and Useful Combinators Mods
     - Support for Recycling of Useful Combinators Mod
-  Changes:
     - New localise_text() function as suggested by eradicator https://forums.factorio.com/memberlist.php?mode=viewprofile&u=24632 on factorio forums https://forums.factorio.com/57840
     - New graphics icons for Recycling Tabs for Angel's and Useful Combinators
     - Support for the "items-with-tags" type used by Useful Combinators
-  Meta
-    - Reordered Changelog so that most recent changes are shown first
+  Bugfixes:
 ---------------------------------------------------------------------------------------------------
 Version: 0.15.8
 Date: 2018-02-13
 
-  Features:
+  Info:
     - No new features
     - Bugfix to align with 0.16.5
-  Changes:
+  Bugfixes:
     - Bugfix for https://github.com/DRY411S/Recycling-Machines/issues/46
     - Items required for recycling being null. Caused by recipes that have amount_min and amount_max results which was not handled in code
 ---------------------------------------------------------------------------------------------------
 Version: 0.16.5
 Date: 2018-02-13
 
-  Features:
+  Info:
     - No new features
     - Bugfix
-  Changes:
+  Bugfixes:
     - Bugfix for https://github.com/DRY411S/Recycling-Machines/issues/46
     - Items required for recycling being null. Caused by recipes that have amount_min and amount_max results which was not handled in code
 ---------------------------------------------------------------------------------------------------
 Version: 0.15.7
 Date: 2018-02-12
 
-  Features:
+  Info:
     - New startup setting to define the base Time to Recycle to be equal to either the original item's Expensive or Normal recipe setting
-    - Bugfixes
-  Changes:
     - New startup setting to define the base Time to Recycle https://github.com/DRY411S/Recycling-Machines/issues/45
+    - Bugfixes
+  Bugfixes:
     - Fix for incompatability with mods that call research_technology_effects() https://github.com/DRY411S/Recycling-Machines/issues/43
     - Fix for incorrect calculation of the base Items Required to start the Recycling https://github.com/DRY411S/Recycling-Machines/issues/44
-  Meta:
-    - Began maintaining changelog.txt for display in-game after updates
-    - This release aligns the 0.15 stream to 0.16
 ---------------------------------------------------------------------------------------------------
 Version: 0.16.4
 Date: 2018-02-12
 
-  Features:
+  Info:
     - New startup setting to define the base Time to Recycle to be equal to either the original item's Expensive or Normal recipe setting
-    - Bugfixes
-  Changes:
     - New startup setting to define the base Time to Recycle https://github.com/DRY411S/Recycling-Machines/issues/45
+    - Bugfixes
+  Bugfixes:
     - Fix for incompatability with mods that call research_technology_effects() https://github.com/DRY411S/Recycling-Machines/issues/43
     - Fix for incorrect calculation of the base Items Required to start the Recycling https://github.com/DRY411S/Recycling-Machines/issues/44
 ---------------------------------------------------------------------------------------------------
 Version: 0.16.3
 Date: 2018-02-11
 
-  Features:
+  Info:
     - New startup setting to define the base Time to Recycle to be equal to either the original item's Expensive or Normal recipe setting
-    - Bugfixes
-  Changes:
     - New startup setting to define the base Time to Recycle https://github.com/DRY411S/Recycling-Machines/issues/45
+    - Bugfixes
+  Bugfixes:
     - Fix for incompatability with mods that call research_technology_effects() https://github.com/DRY411S/Recycling-Machines/issues/43
     - Fix for incorrect calculation of the base Items Required to start the Recycling https://github.com/DRY411S/Recycling-Machines/issues/44
-  Meta:
-    - Began maintaining changelog.txt for display in-game after updates
-    - This release was not provided from factorio mod portal, it was provided for initial testing of what was a fairly major change
