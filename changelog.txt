@@ -1,4 +1,14 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.16.8
+Date: 2019-08-06
+
+  Features:
+    - No New Features
+  Bugfixes:
+    - Fixes Error while loading recipe prototype "dry411srev-factory-1" (recipe) https://github.com/DRY411S/Recycling-Machines/issues/68
+  Meta:
+    - Fixes bad implementation of previous fix https://github.com/DRY411S/Recycling-Machines/issues/52
+---------------------------------------------------------------------------------------------------
 Version: 0.16.7
 Date: 2019-08-04
 

@@ -132,7 +132,7 @@ if GameVersion ~= "0.12" then
 		if item.localised_name then
 			if type(item.localised_name) == "table" then
 				-- This is a table. I need the first v
-				esult = item.localised_name[1]
+				result = item.localised_name[1]
 			else
 				-- Oh my days, it's a string. Valid but highly unusual. Means that the mod does not support locale
 				-- and is hardcoded to a single language. Tsk.
