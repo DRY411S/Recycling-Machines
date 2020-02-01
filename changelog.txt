@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.17.10
+Date: 2020-02-01
+  Info:
+    - First Stable Release for factorio 0.17 stable
+    - Lets you recycle anything in each level of recycling machine (like 0.17 vanilla assemblers)
+    - However, anything that produces fluids must be recycled in level 3 machine
+    - Supports the 0.17 upgrade planner
+---------------------------------------------------------------------------------------------------
 Version: 0.17.9
 Date: 2019-06-30
   Info:
