@@ -10,7 +10,7 @@ groups_supported =	{
 								["production"] = "__ZRecycling__/graphics/item-group/production.png",
 								["combat"] = "__ZRecycling__/graphics/item-group/military.png",
 								["intermediate-products"] = "__ZRecycling__/graphics/item-group/intermediate-products.png",
-								--
+--[[								--
 								-- Bob's Mods
 								--
 								["bob-logistics"] = "__ZRecycling__/graphics/item-group/boblogistics/logistics.png",
@@ -73,4 +73,5 @@ groups_supported =	{
                                 -- Useful combinators
                                 --
                                 ["default"] = "__ZRecycling__/graphics/item-group/useful/clock.png",
+]]--
                     }

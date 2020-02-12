@@ -1,4 +1,30 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.18.1
+Date: 2020-02-11
+  Features:
+    - First Release for factorio 0.18 experimental
+    - Supports vanilla and any mods that add items into default vanilla item groups
+    - Support for for other mods that have their own item group tabs be reintroduced later
+  Graphics:
+    - No changes to 0.17
+  Sounds:
+    - Uses vanilla assembling machine soundssounds
+  Optimizations:
+    - No changes to 0.17
+  Changes:
+    - First Release for factorio 0.18 experimental
+  Bugfixes:
+    - First Release for factorio 0.18 experimental
+  Modding:
+    - First Release for factorio 0.18 experimental
+    - Supports vanilla and any mods that add items into default vanilla item groups
+    - Support for for other mods that have their own item group tabs be reintroduced later
+  Scripts:
+    - No changes to 0.17
+    - Enables recycling recipes that match any items already researched using on_init event
+    - Enables recycling recipes that match any items already researched using on_configuration_changed event
+    - Enables recycling recipes that match any items just researched using research_finished event
+---------------------------------------------------------------------------------------------------
 Version: 0.17.10
 Date: 2020-02-01
   Info:
@@ -6,6 +32,32 @@ Date: 2020-02-01
     - Lets you recycle anything in each level of recycling machine (like 0.17 vanilla assemblers)
     - However, anything that produces fluids must be recycled in level 3 machine
     - Supports the 0.17 upgrade planner
+---------------------------------------------------------------------------------------------------
+Version: 0.16.8
+Date: 2019-08-06
+
+  Features:
+    - No New Features
+  Bugfixes:
+    - Fixes Error while loading recipe prototype "dry411srev-factory-1" (recipe) https://github.com/DRY411S/Recycling-Machines/issues/68
+  Meta:
+    - Fixes bad implementation of previous fix https://github.com/DRY411S/Recycling-Machines/issues/52
+---------------------------------------------------------------------------------------------------
+Version: 0.16.7
+Date: 2019-08-04
+
+  Features:
+    - Adds French localisation for 0.16 version https://github.com/DRY411S/Recycling-Machines/issues/67
+  Bugfixes:
+    - Fixes Machines will not always recycle some items https://github.com/DRY411S/Recycling-Machines/issues/49
+    - Fixes Cannot recycle batteries https://github.com/DRY411S/Recycling-Machines/issues/50
+    - Fixes Error constructing localised text https://github.com/DRY411S/Recycling-Machines/issues/52
+    - Fixes Recycling Recipes for hidden items are produced https://github.com/DRY411S/Recycling-Machines/issues/61
+    - Fixes No recycle recipe for Cliff Explosives https://github.com/DRY411S/Recycling-Machines/issues/62
+    - Fixes Items with small stack sizes cannot always be recycled https://github.com/DRY411S/Recycling-Machines/issues/63
+    - Fixes Early game what can be recycled is confusing https://github.com/DRY411S/Recycling-Machines/issues/64
+  Meta:
+    - Introduces bugfixes from 0.17 experimental branch
 ---------------------------------------------------------------------------------------------------
 Version: 0.17.9
 Date: 2019-06-30

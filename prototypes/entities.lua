@@ -25,6 +25,7 @@ local newrecycler = table.deepcopy(data.raw["assembling-machine"]["assembling-ma
 
 -- Recycle it :)
 newrecycler.name = "recycling-machine-1"
+newrecycler.icon_size = 32
 newrecycler.icon = "__ZRecycling__/graphics/icons/recycling-machine-1.png"
 newrecycler.minable["result"] = "recycling-machine-1"
 newrecycler.fast_replaceable_group = "recycling-machine"
@@ -41,6 +42,7 @@ local newrecycler = table.deepcopy(data.raw["assembling-machine"]["assembling-ma
 
 -- Recycle it :)
 newrecycler.name = "recycling-machine-2"
+newrecycler.icon_size = 32
 newrecycler.icon = "__ZRecycling__/graphics/icons/recycling-machine-2.png"
 newrecycler.minable["result"] = "recycling-machine-2"
 newrecycler.fast_replaceable_group = "recycling-machine"
@@ -56,6 +58,7 @@ local newrecycler = table.deepcopy(data.raw["assembling-machine"]["assembling-ma
 
 -- Recycle it :)
 newrecycler.name = "recycling-machine-3"
+newrecycler.icon_size = 32
 newrecycler.icon = "__ZRecycling__/graphics/icons/recycling-machine-3.png"
 newrecycler.minable["result"] = "recycling-machine-3"
 newrecycler.fast_replaceable_group = "recycling-machine"

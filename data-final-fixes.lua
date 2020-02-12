@@ -6,6 +6,12 @@ local rec_prefix = constant_rec_prefix
 --
 -- LOCAL DATA
 --
+-- Will be using this mods structure to test for the presence of mods
+log(serpent.block(mods))
+--[[
+  ZRecycling = "0.18.1",
+  base = "0.18.0",
+--]]
 
 --[[
 -- Some code suggested by darkfrei on factorio forums PM for travesring the different type of recipe constructs
@@ -59,13 +65,14 @@ local invalidsubgroups = {
                             "raw-resource",
                             "fill-barrel",
                             "empty-barrel",
-							-- Yuoki
+--[[							-- Yuoki
 							"y-raw-material",
 							-- Bob's Mods
 							"bob-gems-ore",
 							"bob-gems-raw",
 							"bob-gems-cut",
 							"bob-gems-polished",
+]]--
 						}
 
 -- These are the vanilla groups. Those in the table that are not commented have no recipes attached to them that we want to reverse
@@ -96,10 +103,12 @@ local validtypes =	{
 						"module",
 						"repair-tool",
 						"tool",
+--[[
 						-- Yuoki (is also used by vanilla but there are no recipes)
 						"container",
                         -- "item-with-tags" used in Useful Combinators
                         "item-with-tags"
+]]--
 					}
 --
 -- Unsupported type in v0.12
@@ -128,6 +137,7 @@ craftingbeforeandafter["crafting"] = "recycling-"
 craftingbeforeandafter["advanced-crafting"] = "recycling-"
 craftingbeforeandafter["crafting-with-fluid"] = "recycling-with-fluid"
 
+--[[
 -- Special crafting for Bob's Mods
 craftingbeforeandafter["electronics"] = "recycling-"
 craftingbeforeandafter["electronics-machine"] = "recycling-with-fluid"
@@ -148,6 +158,7 @@ craftingbeforeandafter["yuoki-stargate-recipe"] = "recycling-"
 craftingbeforeandafter["yuoki_trader_ultimate"] = "recycling-"
 craftingbeforeandafter["yuoki-watergen-recipe"] = "recycling-with-fluid"
 craftingbeforeandafter["yuoki-wonder-recipe"] = "recycling-"
+]]--
 
 -- Local tables that are populated by the local functions
 local recycling_groups = {}		-- New item-groups for recycling
