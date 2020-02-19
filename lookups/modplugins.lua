@@ -1,16 +1,69 @@
--- A table of mods (and vanilla) where I've tested and provide a 'recycling' item-group icon
--- All other mods are shown in the default 'Recycling' item-group
+--[[
+	TODO: This file will contain extensions to data tables to allow support for mods
+	Mods extend the vanilla Recycling Machines mod with additional:
+		Crafting methods that need an equivalent recycling method
+		Prototype 'types' that extend the base
+		subgroups that I may not want to handle in the mod
+		Item groups (tabs in the player crafting menu) that need to appear in Recycling Machines
+		locale (not handled here)
+]]--
+
+--[[
+	TODO: Reintroduce this code lifted from its inline inserttion in the mod
+]]--
+
+--[[
+	Crafting methods
+-- Special crafting for Bob's Mods
+craftingbeforeandafter["electronics"] = "recycling-"
+craftingbeforeandafter["electronics-machine"] = "recycling-with-fluid"
+craftingbeforeandafter["crafting-machine"] = "recycling-"
+
+-- Special crafting for Yuoki Industries
+-- TODO: Maybe constrain this to allow recycling of things that can only be assembled
+-- TODO: Wait for feedback
+craftingbeforeandafter["yuoki-alien-recipe"] = "recycling-"
+craftingbeforeandafter["yuoki-archaeology-wash"] = "recycling-with-fluid"
+craftingbeforeandafter["yuoki-atomics-recipe"] = "recycling-"
+craftingbeforeandafter["y-crushing-recipe"] = "recycling-"
+craftingbeforeandafter["yuoki-fame-recipe"] = "recycling-"
+craftingbeforeandafter["yuoki-formpress-recipe"] = "recycling-"
+craftingbeforeandafter["yuoki-raw-material-recipe"] = "recycling-"
+craftingbeforeandafter["yuoki-repair-recipe"] = "recycling-"
+craftingbeforeandafter["yuoki-stargate-recipe"] = "recycling-"
+craftingbeforeandafter["yuoki_trader_ultimate"] = "recycling-"
+craftingbeforeandafter["yuoki-watergen-recipe"] = "recycling-with-fluid"
+craftingbeforeandafter["yuoki-wonder-recipe"] = "recycling-"
+]]--	
+
+--[[
+	New types
+local validtypes =	{	
+
+						-- Yuoki (is also used by vanilla but there are no recipes)
+						"container",
+                        -- "item-with-tags" used in Useful Combinators
+                        "item-with-tags"
+					}
+--]]
+					
+--[[
+	Subgroups
+local invalidsubgroups = {	
+							-- Yuoki
+							"y-raw-material",
+							-- Bob's Mods
+							"bob-gems-ore",
+							"bob-gems-raw",
+							"bob-gems-cut",
+							"bob-gems-polished",
+						}
+]]--
+
+--[[
+	Item group tabs
+-- Item-group icons for Recycling
 groups_supported =	{
-								["default"] = "__ZRecycling__/graphics/item-group/recycling.png",
-								["Recycling"] = "__ZRecycling__/graphics/item-group/recycling.png",
-								--
-								-- Vanilla
-								--
-								["logistics"] = "__ZRecycling__/graphics/item-group/logistics.png",
-								["production"] = "__ZRecycling__/graphics/item-group/production.png",
-								["combat"] = "__ZRecycling__/graphics/item-group/military.png",
-								["intermediate-products"] = "__ZRecycling__/graphics/item-group/intermediate-products.png",
---[[								--
 								-- Bob's Mods
 								--
 								["bob-logistics"] = "__ZRecycling__/graphics/item-group/boblogistics/logistics.png",
@@ -73,5 +126,6 @@ groups_supported =	{
                                 -- Useful combinators
                                 --
                                 ["default"] = "__ZRecycling__/graphics/item-group/useful/clock.png",
+					)
 ]]--
-                    }
+

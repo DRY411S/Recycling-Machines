@@ -1,4 +1,31 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.18.2
+Date: 2020-02-19
+  Features:
+    - Supports vanilla and any mods that add items into default vanilla item groups
+    - Support for for other mods that have their own item group tabs be reintroduced later
+    - Recycling Tabs no longer appear in the player crafting menus
+  Graphics:
+    - No changes to 0.17
+    - No remnants
+  Sounds:
+    - Uses vanilla assembling machine sounds
+  Optimizations:
+    - Vanilla Recycling Recipe Generation times improved by 13.5%
+  Changes:
+    - Recycling Tabs no longer appear in the player crafting menus https://github.com/DRY411S/Recycling-Machines/issues/1 (June 2016!)
+    - Recycling Recipe Generation times improved with 'fast match' attempts before original slow method
+    - Conditional code for factorio versions 0.15 and earlier removed	
+  Bugfixes:
+    - None
+  Modding:
+    - Supports vanilla and any mods that add items into default vanilla item groups
+    - Support for for other mods that have their own item group tabs be reintroduced later
+  Scripts:
+    - Migration Script included
+    - Enables recycling recipes that match any items already researched using on_init event
+    - Enables recycling recipes that match any items already researched using on_configuration_changed event
+---------------------------------------------------------------------------------------------------
 Version: 0.18.1
 Date: 2020-02-11
   Features:
@@ -23,7 +50,6 @@ Date: 2020-02-11
     - No changes to 0.17
     - Enables recycling recipes that match any items already researched using on_init event
     - Enables recycling recipes that match any items already researched using on_configuration_changed event
-    - Enables recycling recipes that match any items just researched using research_finished event
 ---------------------------------------------------------------------------------------------------
 Version: 0.17.10
 Date: 2020-02-01

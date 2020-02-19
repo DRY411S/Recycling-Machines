@@ -14,47 +14,25 @@ rec_prefix = constant_rec_prefix
 if not ZRecycling then ZRecycling = {} end
 
 function ZRecycling.Unlock_Recipe(force,recipename)
-	--game.player.print("Recipe: " .. recipename)
 	-- Need to enable the reverse recipe for this one, in the Recycling group
 	local recipe = force.recipes[recipename]
 	if recipe then
-		--error(serpent.block(recipe))
-		-- log("Recipe found: " .. recipename)
+log(recipename)
 		-- Enable the reversed version
 		local reverse_recipe = force.recipes[rec_prefix .. recipename]
 		if reverse_recipe then
-            -- log("Reverse recipe found: " .. rec_prefix .. recipename)
 			force.recipes[rec_prefix .. recipename].enabled = true
-            -- After 0.15.6 Only enable it if the mod global runtime map setting wants it            
-            -- TODO: Handle mods
-            -- if force.recipes[rec_prefix .. recipename].subgroup ~= nil then        
-                -- local start,finish = string.find(force.recipes[rec_prefix .. recipename].subgroup.name , rec_prefix)
-                -- if start ~= nil then
-                    -- local setting = "ZRecycling" .. string.sub(force.recipes[rec_prefix .. recipename].subgroup.name , finish + 2 , -1)
-                    -- -- game.player.print("Setting before: " .. force.recipes[rec_prefix .. recipename].subgroup.name .." and after: ".. setting)
-                    -- if settings.global[setting] ~= nil then
-                        -- --game.player.print("Reverse recipe found: " .. rec_prefix .. recipename)
-                        -- force.recipes[rec_prefix .. recipename].enabled = settings.global[setting].value
-                    -- else
-                        -- force.recipes[rec_prefix .. recipename].enabled = true
-                    -- end
-                -- end
-            -- end
-		else
-			--game.player.print("Reverse recipe missing: " .. recipename)
 		end
-	else
-		--game.player.print("Recipe passed by event is missing " .. recipename)
 	end
 end
 
 -- LOCAL Variables
 local force = nil
 
--- LOCAL functions
-    
+-- LOCAL functions    
 
--- When research is finished
+-- No longer called because the mod does not handle research_finished events
+--[[-- When research is finished
 local function enable_reverse_recipes(event)
 
 	for _, nextforce in pairs(game.forces) do
@@ -80,31 +58,7 @@ local function enable_reverse_recipes(event)
 		end
 	end
 end
-
--- When the mod settings change
--- Future version
--- local function adjust_reverse_recipes(event)
-
-	-- for _, nextforce in pairs(game.forces) do
-		-- force = nextforce
-		-- -- Don't reverse anything until automation has been researched (which allows a recycling machine)
-		-- if force.technologies["automation"].researched and force.technologies["automation"].researched == true then
-            -- -- Now we can recycle. Unlock (or lock) Recycling Recipes according
-            -- -- to whether there counterpart is enabled and the mod-setting wants them to be recyclable
-            -- for _,v in pairs(force.recipes) do
-                -- if v.enabled == true then
-                    -- ZRecycling.Unlock_Recipe(force,v.name)
-                -- end
-            -- end
-		-- end
-	-- end
--- end
-
--- -- New game
--- local function reset_mod_settings()
--- -- Traverse the mod settings for ZRecycling strings, and reset to defaults
--- end
-
+]]--
 
 -- GAME Event Handlers
 
@@ -114,25 +68,16 @@ end
 -- Therefore there is no longer a need for a handler for on_research_finished event
 -- 
 
+--[[
 script.on_event(defines.events.on_research_finished,function(event)
 	if event.name == defines.events.on_research_finished then
-    log("Research Finished: " .. event.research.name)
 	if event.research.name == "automation" then
       enable_reverse_recipes(event)
     end
 	end
 end
 )
-
--- Future version
--- script.on_event(defines.events.on_runtime_mod_setting_changed,function(event)
-	-- if event.name == defines.events.on_runtime_mod_setting_changed then
-		-- adjust_reverse_recipes(event)
-	-- end
--- end
--- )
-
--- script.on_init(reset_mod_settings)
+]]--
 
 --
 -- Fix for https://github.com/DRY411S/Recycling-Machines/issues/43
@@ -144,42 +89,43 @@ end
 --
 
 script.on_init(function(event)
+log("init")
+	-- Used mainly for the case where a save game has been loaded but this mod had previously not been loaded
+	-- But also on_init to unlock the Recycling versions of the game's initial recipes
 	-- Recoded for https://github.com/DRY411S/Recycling-Machines/issues/49
-  -- which may be caused by a bug https://forums.factorio.com/viewtopic.php?t=66302
---log("Recycling Machines Init")
-  for _, nextforce in pairs(game.forces) do
-    -- nextforce.reset_recipes()
-    -- nextforce.reset_technologies()    
-    -- nextforce.reset_technology_effects()
-    force = nextforce
-	-- Fix for https://github.com/DRY411S/Recycling-Machines/issues/64
-	-- Flag everything that is available to the player at the start of the game, as recyclable,
-	-- even though there are no recycling machines yet
-	for _,v in pairs(force.recipes) do
-		if v.enabled == true then
-			ZRecycling.Unlock_Recipe(force,v.name)
+	for _, nextforce in pairs(game.forces) do
+		force = nextforce
+		-- Enable the recycling machine if the equivalent assembling machine is enabled
+		for i=1,3 do
+			force.recipes["recycling-machine-" .. i].enabled = force.recipes["assembling-machine-" .. i].enabled
+		end
+		-- Fix for https://github.com/DRY411S/Recycling-Machines/issues/64
+		-- Flag everything that is available to the player at the start of the game, as recyclable,
+		-- even though there are no recycling machines yet
+		for _,v in pairs(force.recipes) do
+			if v.enabled == true then
+				ZRecycling.Unlock_Recipe(force,v.name)
+			end
 		end
 	end
-  end
 end
 )
 
 script.on_configuration_changed(function(event)
+log("configchange")
+	-- When other mods are loaded that weren't used before or have been changed, recycling recipes would have been produced
+	-- I need to unlock the recycling recipes if the non-recycling recipe is itself unlocked
 	-- Recoded for https://github.com/DRY411S/Recycling-Machines/issues/49
-  -- which may be caused by a bug https://forums.factorio.com/viewtopic.php?t=66302
-  -- log("Recycling Machines Configuration Change")
-  for _, nextforce in pairs(game.forces) do
-    nextforce.reset_recipes()
-    nextforce.reset_technologies()    
-    nextforce.reset_technology_effects()
-    force = nextforce
-	-- Fix for https://github.com/DRY411S/Recycling-Machines/issues/64
-	-- Flag everything that is available to the player at the start of the game, as recyclable,
-	-- even though there are no recycling machines yet
-	for _,v in pairs(force.recipes) do
-		if v.enabled == true then
-			ZRecycling.Unlock_Recipe(force,v.name)
+	for _, nextforce in pairs(game.forces) do
+		force = nextforce
+		-- Fix for https://github.com/DRY411S/Recycling-Machines/issues/64
+		-- Flag everything that is available to the player at the start of the game, as recyclable,
+		-- even though there are no recycling machines yet
+		for _,v in pairs(force.recipes) do
+			if v.enabled == true then
+				ZRecycling.Unlock_Recipe(force,v.name)
+			end
 		end
 	end
-  end
-end)
+end
+)

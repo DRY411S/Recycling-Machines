@@ -58,21 +58,13 @@ end
 
 -- These are the subgroups that cannot be recycled
 local invalidsubgroups = {	
-							-- "raw-material", -- enabled for batteries only fixes https://github.com/DRY411S/Recycling-Machines/issues/50
-							-- "terrain", -- Required to recycle cliff-explosives https://github.com/DRY411S/Recycling-Machines/issues/62
+							-- "raw-material", -- enabled only for batteries  fixes https://github.com/DRY411S/Recycling-Machines/issues/50
+							-- "terrain", -- enabled only for cliff-explosives https://github.com/DRY411S/Recycling-Machines/issues/62
 							"fluid-recipes",
                             -- New in 0.15
                             "raw-resource",
                             "fill-barrel",
                             "empty-barrel",
---[[							-- Yuoki
-							"y-raw-material",
-							-- Bob's Mods
-							"bob-gems-ore",
-							"bob-gems-raw",
-							"bob-gems-cut",
-							"bob-gems-polished",
-]]--
 						}
 
 -- These are the vanilla groups. Those in the table that are not commented have no recipes attached to them that we want to reverse
@@ -86,12 +78,14 @@ local invalid_item_groups = {
 							"other",
 							--"production",
 							"signals",
+							"effects",
 							}
 
--- These are the types found in development
--- Mods may invent more, but not likely
--- TODO: Maybe let people decide what they want to recycle to unclutter the menus
--- TODO: Would need a GUI or trigger mods
+--[[
+	These are the valid types associated with crafting
+	If they are commented out, they are not applicable for crafting in machines
+	Mods may invent more, but not likely
+]]--
 local validtypes =	{	
 						"ammo",
 						"armor",
@@ -103,29 +97,24 @@ local validtypes =	{
 						"module",
 						"repair-tool",
 						"tool",
---[[
-						-- Yuoki (is also used by vanilla but there are no recipes)
-						"container",
-                        -- "item-with-tags" used in Useful Combinators
-                        "item-with-tags"
-]]--
+						-- Introduced in factorio v0.13
+						"rail-planner",
+						-- Introduced in factorio v0.15
+						"item-with-entity-data",
 					}
---
--- Unsupported type in v0.12
---
-if GameVersion ~= "0.12" then
-	-- New in v0.13
-	table.insert(validtypes,"rail-planner")
-end
-
-if GameVersion == "0.15" or GameVersion == "0.16" or GameVersion == "0.17" then
-	-- New type in v0.15 for vehicles
-	table.insert(validtypes,"item-with-entity-data")
-end
 
 
--- There's a long lookup list of Recycling group tabs in this included file
-require("lookups.itemgrouptabs")
+-- Item-groups icons for Recycling
+groups_supported =	{
+						["Recycling"] = "__ZRecycling__/graphics/item-group/recycling.png",
+						--
+						-- Vanilla
+						--
+						["logistics"] = "__ZRecycling__/graphics/item-group/logistics.png",
+						["production"] = "__ZRecycling__/graphics/item-group/production.png",
+						["combat"] = "__ZRecycling__/graphics/item-group/military.png",
+						["intermediate-products"] = "__ZRecycling__/graphics/item-group/intermediate-products.png",
+					}
 
 -- Accepted crafting categories
 -- These are the categories which are accepted in assembling machines
@@ -137,28 +126,12 @@ craftingbeforeandafter["crafting"] = "recycling-"
 craftingbeforeandafter["advanced-crafting"] = "recycling-"
 craftingbeforeandafter["crafting-with-fluid"] = "recycling-with-fluid"
 
---[[
--- Special crafting for Bob's Mods
-craftingbeforeandafter["electronics"] = "recycling-"
-craftingbeforeandafter["electronics-machine"] = "recycling-with-fluid"
-craftingbeforeandafter["crafting-machine"] = "recycling-"
 
--- Special crafting for Yuoki Industries
--- TODO: Maybe constrain this to allow recycling of things that can only be assembled
--- TODO: Wait for feedback
-craftingbeforeandafter["yuoki-alien-recipe"] = "recycling-"
-craftingbeforeandafter["yuoki-archaeology-wash"] = "recycling-with-fluid"
-craftingbeforeandafter["yuoki-atomics-recipe"] = "recycling-"
-craftingbeforeandafter["y-crushing-recipe"] = "recycling-"
-craftingbeforeandafter["yuoki-fame-recipe"] = "recycling-"
-craftingbeforeandafter["yuoki-formpress-recipe"] = "recycling-"
-craftingbeforeandafter["yuoki-raw-material-recipe"] = "recycling-"
-craftingbeforeandafter["yuoki-repair-recipe"] = "recycling-"
-craftingbeforeandafter["yuoki-stargate-recipe"] = "recycling-"
-craftingbeforeandafter["yuoki_trader_ultimate"] = "recycling-"
-craftingbeforeandafter["yuoki-watergen-recipe"] = "recycling-with-fluid"
-craftingbeforeandafter["yuoki-wonder-recipe"] = "recycling-"
-]]--
+--[[
+	That's all the vanilla code setup
+	Mods that require extra bespoke setup are held in the plugins file
+--]]
+require("lookups.modplugins")
 
 -- Local tables that are populated by the local functions
 local recycling_groups = {}		-- New item-groups for recycling
@@ -171,42 +144,36 @@ local recipe_handled = {}       -- flags for when recipes have either been exclu
 -- LOCAL FUNCTIONS
 --
 
---
--- Unsupported in V0.12 of Factorio
---
-if GameVersion ~= "0.12" then
-	-- Localise the reversed recipe name by wrapping the original localised text
-	-- with "Recycled <localised_text> parts"
-  -- New localise_text() function replaces hardcoded lookups, as suggested by eradicator https://forums.factorio.com/memberlist.php?mode=viewprofile&u=24632
-  -- on factorio forums https://forums.factorio.com/57840
-  -- New method implemented in 0.16.6, and 0.15.9
-	function localise_text(item)
+-- Localise the reversed recipe name by wrapping the original localised text
+-- with "Recycled <localised_text> parts"
+-- New localise_text() function replaces hardcoded lookups, as suggested by eradicator https://forums.factorio.com/memberlist.php?mode=viewprofile&u=24632
+-- on factorio forums https://forums.factorio.com/57840
+-- New method implemented in 0.16.6, and 0.15.9
+function localise_text(item)
 
-        local result
-        if item.localised_name then
-            if type(item.localised_name) == "table" then
-               -- This is a table. I need the first v
-              result = item.localised_name[1]
-            else
-              -- Oh my days, it's a string. Valid but highly unusual. Means that the mod does not support locale
-              -- and is hardcoded to a single language. Tsk.
-              -- Fixes https://github.com/DRY411S/Recycling-Machines/issues/52
-              result = item.localised_name
-              return {"recipe-name.recycledparts",result} 
-            end
-        elseif item.place_result then
-            result = 'entity-name.'..item.place_result
-        elseif item.placed_as_equipment_result then
-            result = 'equipment-name.'..item.placed_as_equipment_result
-        else
-            result = 'item-name.'..item.name
-        end
-            
-        return {"recipe-name.recycledparts",{result}}            
-        
-	end --localise_text
-end
-
+	local result
+	if item.localised_name then
+		if type(item.localised_name) == "table" then
+		   -- This is a table. I need the first v
+		  result = item.localised_name[1]
+		else
+		  -- Oh my days, it's a string. Valid but highly unusual. Means that the mod does not support locale
+		  -- and is hardcoded to a single language. Tsk.
+		  -- Fixes https://github.com/DRY411S/Recycling-Machines/issues/52
+		  result = item.localised_name
+		  return {"recipe-name.recycledparts",result} 
+		end
+	elseif item.place_result then
+		result = 'entity-name.'..item.place_result
+	elseif item.placed_as_equipment_result then
+		result = 'equipment-name.'..item.placed_as_equipment_result
+	else
+		result = 'item-name.'..item.name
+	end
+		
+	return {"recipe-name.recycledparts",{result}}            
+	
+end --localise_text
 
 local function build_groups()
 	-- build local item-groups and subgroups as candidates for recycling
@@ -293,7 +260,7 @@ end
 
 -- Check whether the item matches the recipe result
 -- and that the recipe is recyclable
-local function matched(item,recipe)
+local function matched(item,recipe,tech)
 
     local can_recycle = true
     
@@ -401,7 +368,53 @@ local function matched(item,recipe)
     
 	if can_recycle == true then
 		if item.name == result then
-            -- Enhancement for https://github.com/DRY411S/Recycling-Machines/issues/41
+            -- v0.18.2 Moved the code to build the reverse recipe here
+-- **************			
+                        if recipe.name ~= item.name then
+							log("Matched item: " .. item.name .. " with recipe: " .. recipe.name)
+						end
+						local newcategory
+                        -- Only handle recipes where the category is nil or is produced in an assembling machine
+                        -- Not strictly true for Yuoki, but allowed
+                        local invalid = true
+                        newcategory = recipe.category
+                        if not newcategory then
+                            newcategory = "crafting"
+                        end
+                        for before,after in pairs(craftingbeforeandafter) do
+                            if newcategory == before then
+                                newcategory = after
+                                invalid = false
+                                break
+                            end
+                        end
+                        
+                        --
+                        -- SPECIAL CASES
+                        --
+                        
+						-- Special case for terrain
+						-- https://github.com/DRY411S/Recycling-Machines/issues/62
+						-- Recycle cliff explosives
+						if item.subgroup == "terrain" and recipe.name ~= "cliff-explosives" then
+							invalid = true
+						end
+						
+						-- Special case for batteries
+                        if invalid == true and recipe.name == "battery" then
+                            newcategory = "recycling-with-fluid"
+                            invalid = false
+                        end
+                        
+                        if invalid == false then
+                            -- The 'item' contains useful things we need to construct the reverse recipe
+                            -- It may be armor, gun, item, module etc.
+                            -- Make the recipe
+                            add_reverse_recipe(item,recipe,newcategory,tech)
+                        end
+-- **************			
+			
+			-- Enhancement for https://github.com/DRY411S/Recycling-Machines/issues/41
             recipe_handled[recipe.name] = true
 			return true
 		else
@@ -412,7 +425,7 @@ local function matched(item,recipe)
         recipe_handled[recipe.name] = true
         return nil
 	end
-end
+end --match function
 
 
 -- Called to convert the ingredients into results
@@ -493,7 +506,7 @@ end -- build_rev_results
 
 -- Called when a recipe's results match an 'item'
 -- and it is known that the recipe can be recycled
-local function add_reverse_recipe(item,recipe,newcategory,tech)
+function add_reverse_recipe(item,recipe,newcategory,tech)
 --log("Item: ".. item.name)
 -- .. ", Recipe: " .. recipe.name .. ", Category: " .. newcategory .. ", Tech: " .. tech[recipe.name])
 	-- Pick up icon, subgroup, and order from item
@@ -652,17 +665,23 @@ local function add_reverse_recipe(item,recipe,newcategory,tech)
     -- is researched
     if next(flat) ~= nil then
         new_recipe.enabled = false
+		-- Finally a fix for issue #1 https://github.com/DRY411S/Recycling-Machines/issues/1
+		new_recipe.hide_from_player_crafting = true
         new_recipe.ingredients = {ingredients}
         new_recipe.energy_required = energy_required
         new_recipe.results = flat
     else
         new_recipe.normal = {}
         new_recipe.normal.enabled = false
+		-- Finally a fix for issue #1 https://github.com/DRY411S/Recycling-Machines/issues/1
+		new_recipe.normal.hide_from_player_crafting = true
         new_recipe.normal.ingredients = {ingredients}
         new_recipe.normal.energy_required = energy_required
         new_recipe.normal.results = normal
         new_recipe.expensive = {}
         new_recipe.expensive.enabled = false
+		-- Finally a fix for issue #1 https://github.com/DRY411S/Recycling-Machines/issues/1
+		new_recipe.expensive.hide_from_player_crafting = true
         new_recipe.expensive.ingredients = {ingredients}
         new_recipe.expensive.energy_required = energy_required
         new_recipe.expensive.results = expensive
@@ -680,19 +699,15 @@ local function add_reverse_recipe(item,recipe,newcategory,tech)
     
     new_recipe.icon_size = item.icon_size
 	
-	--
-	-- Unsupported in V0.12 of Factorio
-	--
-	if GameVersion ~= "0.12" then
-		-- Produce localised "Recycled <item> parts" if there is more than one result
-		-- If there is only one result, the game takes care of the locale
-        -- Fix for: https://github.com/DRY411S/Recycling-Machines/issues/36
-        -- for the Portable fusion reactor there is only 1 result but there are 3 stacks
-        -- which the game's locale does not handle
-		if recycle_count > 1 or item.name == "fusion-reactor-equipment" then
-				new_recipe.localised_name = localise_text(item)
-		end
+	-- Produce localised "Recycled <item> parts" if there is more than one result
+	-- If there is only one result, the game takes care of the locale
+	-- Fix for: https://github.com/DRY411S/Recycling-Machines/issues/36
+	-- for the Portable fusion reactor there is only 1 result but there are 3 stacks
+	-- which the game's locale does not handle
+	if recycle_count > 1 or item.name == "fusion-reactor-equipment" then
+			new_recipe.localised_name = localise_text(item)
 	end
+
 	table.insert(rev_recipes,new_recipe)
     
     --
@@ -704,9 +719,6 @@ local function add_reverse_recipe(item,recipe,newcategory,tech)
     local neweffect = {}
     neweffect.recipe = new_recipe.name
     neweffect.type = "unlock-recipe"
--- if recipe.name == "small-electric-pole" then
-  -- log(serpent.block(data.raw["technology"][tech[recipe.name]]))
--- end
     if data.raw["technology"][tech[recipe.name]] ~= nil then
         if tech[recipe.name] == "automation" and recycle_count > 2 then
             tech[recipe.name] = "automation-2"
@@ -751,41 +763,23 @@ local invalid
 -- Give icons to the item-group tabs
 build_groups()
 
--- New for v0.12.38 and v0.13.14 Adjust recycling machine recipes if Marathon mod is installed
-if marathon then
-	-- For each assembling machine
-	for i=1,3 do
-		local assembler = data.raw.recipe["assembling-machine-" .. i]
-		for _,ass_ingredient in ipairs(assembler.ingredients) do
-			for _,rec_ingredient in ipairs(data.raw.recipe["recycling-machine-" .. i].ingredients) do
-				if ass_ingredient[1] == rec_ingredient[1] then
-					rec_ingredient[2] = ass_ingredient[2]
-					break
-				end
-			end
-		end -- each assembling machine's recipe ingredient
-	end -- each recycling machine
-end -- marathon
-
 -- Fix for https://github.com/DRY411S/Recycling-Machines/issues/43
 -- Build a local variable of the format tech[recipe] = <the research to unlock the recipe>
 
 local tech = {}
 for name,item in pairs(data.raw["technology"]) do
-    --log(serpent.block(item.effects))
     if item.effects ~= nil then
         for _,effect in pairs(item.effects) do
-        --log(serpent.block(effect))
            if effect.type == "unlock-recipe" then
                 tech[effect.recipe] = name
             end
         end
     end
 end
---log(serpent.block(tech))
 
 -- MAIN LOOP
 -- for all validtypes
+log("***************** Start matching")
 for _,validtype in pairs(validtypes) do
 	-- For all 'item' prototypes in this type
 	if data.raw[validtype] == nil then
@@ -821,6 +815,13 @@ for _,validtype in pairs(validtypes) do
 			-- New in v0.12.39 and v0.13.18. Look for all recipe(s) that have the result which is this item
 			-- Written to assume that there may be more than one recipe per item (Bob's Modules)
 			-- And that the recipe name may not be the same as the item name (Yuoki)
+			
+			-- New in version 0.18.2 attempt to fast match
+			name = item.name
+			recipe = data.raw.recipe[name]
+			if recipe ~= nil and matched(item,recipe,tech) then
+			elseif recipe ~= nil and recipe_handled[recipe.name] == nil then
+				log("Slow matching: " .. item.name .. " of type: " .. item.type .." subgroup: " .. item.subgroup)
 			for name, recipe in pairs(data.raw.recipe) do
             
                 -- Enhancement for https://github.com/DRY411S/Recycling-Machines/issues/41
@@ -830,72 +831,16 @@ for _,validtype in pairs(validtypes) do
 			
                     -- Do the recipe results match the item?
                     -- And is the recipe recyclable?
-                    if matched(item,recipe) == true then
+                    if matched(item,recipe,tech) == true then
                     
-                        local newcategory
-                        -- Only handle recipes where the category is nil or is produced in an assembling machine
-                        -- Not strictly true for Yuoki, but allowed
-                        invalid = true
-                        newcategory = recipe.category
-                        if not newcategory then
-                            newcategory = "crafting"
-                        end
-                        for before,after in pairs(craftingbeforeandafter) do
-                            if newcategory == before then
-                                newcategory = after
-                                invalid = false
-                                break
-                            end
-                        end
-                        
-                        --
-                        -- SPECIAL CASES
-                        --
-                        
-						-- Special case for terrain
-						-- https://github.com/DRY411S/Recycling-Machines/issues/62
-						-- Recycle cliff explosives
-						if item.subgroup == "terrain" and recipe.name ~= "cliff-explosives" then
-							invalid = true
-						end
-						
-						-- Special case for batteries
-                        if invalid == true and recipe.name == "battery" then
-                            newcategory = "recycling-with-fluid"
-                            invalid = false
-                        end
-                        
-                        -- 0.15.x No alien-artefacts in 0.15 release
-                        if GameVersion ~= "0.15" and GameVersion ~= "0.16"  and GameVersion ~= "0.17" then
-                            -- Special case for Created Alien Artifacts mod. We don't want to recycle artefacts into circuits!
-                            if recipe.name == "superconducting-alien-artifact" then
-                                invalid = true
-                            end
-                        end
-
-                        -- Special case for vanilla and Omnibarrels
-                        -- We only recycle empty barrels
-                        -- This code is dangerous!
-                        -- It assumes that all mods with barreled fluids follow
-                        -- the same empty/fill-<fluid>-barrel naming convention
-                        if (string.find(recipe.name,"fill-") == 1 or string.find(recipe.name,"empty-") == 1) and string.find(recipe.name,"-barrel") ~= nil then
-                            if recipe.name ~= "empty-barrel" then
-                                invalid = true
-                            end
-                        end
-
-                        if invalid == false then
-                            -- The 'item' contains useful things we need to construct the reverse recipe
-                            -- It may be armor, gun, item, module etc.
-                            -- Make the recipe
-                            add_reverse_recipe(item,recipe,newcategory,tech)
-                        end
                     end -- matched recipe
                 end -- recipe_handled
             end -- each recipe
+			end -- fast match
 		end -- valid subgroup
 	end -- each prototype in this type
 end -- each validtype
+log("***************** End matching")
 
 
 -- Recipes all done, Create new subgroups and groups
