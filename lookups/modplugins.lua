@@ -3,8 +3,8 @@
 	Mods extend the vanilla Recycling Machines mod with additional:
 		Crafting methods that need an equivalent recycling method
 		Prototype 'types' that extend the base
-		subgroups that I may not want to handle in the mod
 		Item groups (tabs in the player crafting menu) that need to appear in Recycling Machines
+		subgroups that I may not want to handle in the mod
 		locale (not handled here)
 ]]--
 
@@ -17,7 +17,6 @@
 -- Special crafting for Bob's Mods
 craftingbeforeandafter["electronics"] = "recycling-"
 craftingbeforeandafter["electronics-machine"] = "recycling-with-fluid"
-craftingbeforeandafter["crafting-machine"] = "recycling-"
 
 -- Special crafting for Yuoki Industries
 -- TODO: Maybe constrain this to allow recycling of things that can only be assembled
@@ -48,30 +47,11 @@ local validtypes =	{
 --]]
 					
 --[[
-	Subgroups
-local invalidsubgroups = {	
-							-- Yuoki
-							"y-raw-material",
-							-- Bob's Mods
-							"bob-gems-ore",
-							"bob-gems-raw",
-							"bob-gems-cut",
-							"bob-gems-polished",
-						}
-]]--
-
---[[
 	Item group tabs
 -- Item-group icons for Recycling
 groups_supported =	{
 								-- Bob's Mods
 								--
-								["bob-logistics"] = "__ZRecycling__/graphics/item-group/boblogistics/logistics.png",
-								["bob-fluid-products"] = "__ZRecycling__/graphics/item-group/bobelectronics/fluids.png",
-								["bob-resource-products"] = "__ZRecycling__/graphics/item-group/bobelectronics/resources.png",
-								["bob-intermediate-products"] = "__ZRecycling__/graphics/item-group/bobelectronics/intermediates.png",
-								["void"] = "__ZRecycling__/graphics/item-group/bobplates/void.png",
-								["bob-gems"] = "__ZRecycling__/graphics/item-group/bobplates/diamond-5.png",
 								["bobmodules"] = "__ZRecycling__/graphics/item-group/bobmodules/module.png",
 								--
 								-- DyTech
@@ -129,3 +109,196 @@ groups_supported =	{
 					)
 ]]--
 
+--[[
+	Subgroups
+local validsubgroups = {	
+							-- Yuoki
+							"y-raw-material",
+							-- Bob's Mods
+							"bob-gems-ore",
+							"bob-gems-raw",
+							"bob-gems-cut",
+							"bob-gems-polished",
+						}
+]]--
+
+--[[
+	Mod handling starts here
+]]--
+ignoredcrafts = {}
+modsubgroups = {}
+
+-- Model
+if mods["model"] ~= nil then
+	-- Add crafting methods
+	-- Ignore crafting methods
+	-- Add types
+	-- Add item-groups
+	-- Add item-subgroups
+	-- Test locale	
+end
+
+-- Bob's Metals, Chemicals and Intermediates (bobplates)
+if mods["bobplates"] ~= nil then
+	-- Add crafting methods
+	craftingbeforeandafter["crafting-machine"] = "recycling-"
+	-- Ignore crafting methods
+	table.insert(ignoredcrafts,"distillery")
+	table.insert(ignoredcrafts,"air-pump")
+	table.insert(ignoredcrafts,"electrolysis")
+	table.insert(ignoredcrafts,"chemical-furnace")
+	table.insert(ignoredcrafts,"mixing-furnace")
+	table.insert(ignoredcrafts,"void-fluid")
+	table.insert(ignoredcrafts,"barrelling")
+	-- Add types
+	-- None for bobplates
+	-- Add item-groups
+	groups_supported["bob-logistics"] = data.raw["item-group"]["bob-logistics"].icon
+	groups_supported["bob-fluid-products"] = data.raw["item-group"]["bob-fluid-products"].icon
+	groups_supported["bob-resource-products"] = data.raw["item-group"]["bob-resource-products"].icon
+	groups_supported["bob-intermediate-products"] = data.raw["item-group"]["bob-intermediate-products"].icon
+	groups_supported["void"] = data.raw["item-group"]["void"].icon
+	groups_supported["bob-gems"] = data.raw["item-group"]["bob-gems"].icon -- Nothing is recyclable
+	-- Test locale	
+end
+
+--[[
+	Load the data structures that document all the types, item-groups, and item-subgrupds that exist in vanilla
+	First add a table (for debug purposes of all the item-subgroups introduced by mods, then
+	run some debug code to write into the log the identities of discovered protypes that the mod does not currently handle
+]]--
+require("lookups.vanilla")
+
+-- Add modded item-subgroups for all supported mods
+for subgroupname, subgroup in pairs(data.raw["item-subgroup"]) do
+	local matched = false
+	groupname = subgroup.group
+	for _,invalidsubgroup in pairs(invalidsubgroups) do
+		if invalidsubgroup == subgroupname then
+			matched = true
+			break
+		end
+	end
+	if not matched then
+		for _,subname in pairs(vanillasubgroups) do
+			if subname == subgroup.name then
+				matched = true
+				break
+			end
+		end
+	end
+	if not matched then
+		for group,icon in pairs(groups_supported) do
+			if groupname == group then
+				matched = true
+				table.insert(modsubgroups,subgroup.name)
+				break
+			end
+		end
+	end
+end -- each subgroup
+
+--[[
+	Identify whether there are new prototypes that this mod does not handle.
+	If so, publish warnings in the log. These are not mod breaking,
+	but good to know for future inclusion
+]]--
+
+-- Item-groups
+for _, group in pairs(data.raw["item-group"]) do
+	local matched = false
+	for _, vanilla in pairs(vanillaitem_groups) do
+		if group.name == vanilla then
+			matched = true
+			break
+		end
+	end
+	if not matched then
+		for modded,_ in pairs(groups_supported) do
+			if group.name == modded then
+				matched = true
+				break
+			end
+		end
+	end
+	if not matched then
+		log("Warning: Recycling Machines unsupported item-group: " .. group.name)
+	end
+end
+
+--Subgroups
+for subgroupname, subgroup in pairs(data.raw["item-subgroup"]) do
+	local matched = false
+	groupname = subgroup.name
+	for _,invalidsubgroup in pairs(invalidsubgroups) do
+		if invalidsubgroup == subgroupname then
+			matched = true
+			break
+		end
+	end
+	if not matched then
+		for _, vanilla in pairs(vanillasubgroups) do
+			if groupname == vanilla then
+				matched = true
+				break
+			end
+		end
+	end
+	if not matched then
+		for _,subgroup in pairs(modsubgroups) do
+			if groupname == subgroup then
+				matched = true
+				break
+			end
+		end
+	end
+	if not matched then
+		log("Warning: Recycling Machines unsupported item-subgroup: " .. groupname)
+	end
+end -- each subgroup
+
+-- Types
+for name, this in pairs(data.raw) do
+	local typefound = false
+	for _,vanilla in pairs(vanillatypes) do
+		if vanilla == name then
+			typefound = true
+			break
+		end
+	end
+	if not typefound then
+		log("Warning: Recycling Machines unsupported type: " .. name)
+	end
+end
+
+--Crafting types
+for _,recipe in pairs(data.raw.recipe) do
+	if recipe.category ~= nil then
+		local catfound = false
+		for _,craft in pairs(vanillacrafts) do
+			if recipe.category == craft then
+				catfound = true
+				break
+			end
+		end
+		if not catfound then
+			for craft, recycle in pairs(craftingbeforeandafter) do
+				if recipe.category == craft then
+					catfound = true
+					break
+				end
+			end
+		end
+		if not catfound then
+			for _,craft in pairs(ignoredcrafts) do
+				if recipe.category == craft then
+					catfound = true
+					break
+				end
+			end
+		end
+		if not catfound then
+			log("Warning: Recycling Machines unsupported craft: " .. recipe.category)
+		end
+	end
+end

@@ -17,10 +17,10 @@ function ZRecycling.Unlock_Recipe(force,recipename)
 	-- Need to enable the reverse recipe for this one, in the Recycling group
 	local recipe = force.recipes[recipename]
 	if recipe then
-log(recipename)
 		-- Enable the reversed version
 		local reverse_recipe = force.recipes[rec_prefix .. recipename]
 		if reverse_recipe then
+log(recipename)
 			force.recipes[rec_prefix .. recipename].enabled = true
 		end
 	end
@@ -32,7 +32,8 @@ local force = nil
 -- LOCAL functions    
 
 -- No longer called because the mod does not handle research_finished events
---[[-- When research is finished
+--[[
+-- When research is finished
 local function enable_reverse_recipes(event)
 
 	for _, nextforce in pairs(game.forces) do

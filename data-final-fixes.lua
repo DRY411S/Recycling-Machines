@@ -57,7 +57,7 @@ end
 ]]
 
 -- These are the subgroups that cannot be recycled
-local invalidsubgroups = {	
+invalidsubgroups = {	
 							-- "raw-material", -- enabled only for batteries  fixes https://github.com/DRY411S/Recycling-Machines/issues/50
 							-- "terrain", -- enabled only for cliff-explosives https://github.com/DRY411S/Recycling-Machines/issues/62
 							"fluid-recipes",
@@ -67,18 +67,20 @@ local invalidsubgroups = {
                             "empty-barrel",
 						}
 
--- These are the vanilla groups. Those in the table that are not commented have no recipes attached to them that we want to reverse
-local invalid_item_groups = {
-							--"combat",
-							"enemies",
-							"environment",
-							"fluids",
-							--"intermediate-products",
-							--"logistics",
-							"other",
-							--"production",
-							"signals",
-							"effects",
+-- These are the vanilla groups. Those in the table that are not commented out are the ones we support
+-- Fix for: https://github.com/DRY411S/Recycling-Machines/issues/70
+-- We now list valid item groups not invalid ones
+valid_item_groups = {
+							"combat",
+							--"enemies",
+							--"environment",
+							--"fluids",
+							"intermediate-products",
+							"logistics",
+							--"other",
+							"production",
+							--"signals",
+							--"effects",
 							}
 
 --[[
@@ -119,7 +121,7 @@ groups_supported =	{
 -- Accepted crafting categories
 -- These are the categories which are accepted in assembling machines
 -- This mod only recycles things that can be assembled in machines
-local craftingbeforeandafter =	{}
+craftingbeforeandafter =	{}
 
 -- Crafting for Vanilla
 craftingbeforeandafter["crafting"] = "recycling-"
@@ -182,22 +184,25 @@ local function build_groups()
 	local invalid
 	-- For each item-group
 	for _, group in pairs(data.raw["item-group"]) do
-		invalid = false
-		for _, invalid_item_group in pairs(invalid_item_groups) do
-			if group.name == invalid_item_group then
-				invalid = true
+		-- Fix for: https://github.com/DRY411S/Recycling-Machines/issues/70
+		-- We now test for valid item groups not invalid ones, and assume we don't have one
+		invalid = true
+		local newicon = groups_supported["default"]
+		for _, valid_item_group in pairs(valid_item_groups) do
+			if group.name == valid_item_group then
+				invalid = false
+				break
+			end
+		end
+		for nextname,nextpath in pairs(groups_supported) do
+			if group.name == nextname then
+				newicon = nextpath
+				invalid = false
 				break
 			end
 		end
 		if invalid == false then
-			local newicon = groups_supported["default"]
-			for nextname,nextpath in pairs(groups_supported) do
-				if group.name == nextname then
-					newicon = nextpath
-					break
-				end
-			end
-			
+	
 			local newgroup = {
 								type = "item-group",
 								icon = newicon,
@@ -205,24 +210,22 @@ local function build_groups()
 								inventory_order = group.inventory_order,
 								hidden = false,
 								name = group.name,
-								order = "z" .. group.order .. "z"
+								order = group.order
 							}
 			table.insert(recycling_groups,newgroup)
 		end
 	end -- each item-group
 	
 	-- For each subgroup
-	invalid = false
 	for subgroupname, subgroup in pairs(data.raw["item-subgroup"]) do
-		-- It's valid unless we find a reason that it's not
-		invalid = false
+		-- Fix for: https://github.com/DRY411S/Recycling-Machines/issues/70
+		-- We now test for valid item groups not invalid ones, and assume we don't have one
+		invalid = true
 		groupname = subgroup.group
-		if invalid == false then
-			for _, invalid_item_group in pairs(invalid_item_groups) do
-				if groupname == invalid_item_group then
-					invalid = true
-					break
-				end
+		for valid_item_group,icon in pairs(groups_supported) do
+			if groupname == valid_item_group then
+				invalid = false
+				break
 			end
 		end
 		if invalid == false then
@@ -230,7 +233,6 @@ local function build_groups()
 				if invalidsubgroup == subgroupname then
 					invalid = true
 					break
-				else
 				end
 			end
 		end
@@ -663,8 +665,15 @@ function add_reverse_recipe(item,recipe,newcategory,tech)
     -- enabled is initially false and made true in the event handler
     -- for the inital game items, and true when the corresponding unlock technology
     -- is researched
+	--[[
+	Fix for https://github.com/DRY411S/Recycling-Machines/issues/69 is to set the recipe enablement to what it
+	is at start of game. This handles when mods use reset_technology_effects() after our on_configuration_changed event
+	Previously we hid the recipes because they were appearing as recylable before recycling machines were created
+	However, now we have the hide_from_player_crafting parameter, they won't appear.
+	]]--
     if next(flat) ~= nil then
-        new_recipe.enabled = false
+        -- Fix for https://github.com/DRY411S/Recycling-Machines/issues/69
+		new_recipe.enabled = recipe.enabled
 		-- Finally a fix for issue #1 https://github.com/DRY411S/Recycling-Machines/issues/1
 		new_recipe.hide_from_player_crafting = true
         new_recipe.ingredients = {ingredients}
@@ -672,14 +681,16 @@ function add_reverse_recipe(item,recipe,newcategory,tech)
         new_recipe.results = flat
     else
         new_recipe.normal = {}
-        new_recipe.normal.enabled = false
+        -- Fix for https://github.com/DRY411S/Recycling-Machines/issues/69
+        new_recipe.normal.enabled = recipe.normal.enabled
 		-- Finally a fix for issue #1 https://github.com/DRY411S/Recycling-Machines/issues/1
 		new_recipe.normal.hide_from_player_crafting = true
         new_recipe.normal.ingredients = {ingredients}
         new_recipe.normal.energy_required = energy_required
         new_recipe.normal.results = normal
         new_recipe.expensive = {}
-        new_recipe.expensive.enabled = false
+        -- Fix for https://github.com/DRY411S/Recycling-Machines/issues/69
+        new_recipe.expensive.enabled = recipe.expensive.enabled
 		-- Finally a fix for issue #1 https://github.com/DRY411S/Recycling-Machines/issues/1
 		new_recipe.expensive.hide_from_player_crafting = true
         new_recipe.expensive.ingredients = {ingredients}
