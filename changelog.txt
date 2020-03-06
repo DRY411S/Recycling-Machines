@@ -1,4 +1,32 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.18.4
+Date: 2020-03-06
+  Features:
+    - Supports vanilla and any mods that add items into default vanilla item groups
+    - Supports all Bob's Mods
+    - More mod support to be added later
+    - Recycling Tabs no longer appear in the player crafting menus
+  Graphics:
+    - No changes to 0.17
+    - No remnants
+  Sounds:
+    - Uses vanilla assembling machine sounds
+  Optimizations:
+    - Vanilla Recycling Recipe Generation times improved by 13.5%
+  Changes:
+    - Support for all Bob's Mods added
+    - Mods that have required bespoke code in this mod are shown as conditional dependencies
+    - Debug logging added into factorio logs about unsupported mods
+  Bugfixes:
+    - None in this release
+  Modding:
+    - Supports vanilla and any mods that add items into default vanilla item groups
+    - Support for other mods will be gradually reintroduced. This versions supports all Bob's Mods
+  Scripts:
+    - Migration Script included
+    - Enables recycling recipes that match any items already researched using on_init event
+    - Enables recycling recipes that match any items already researched using on_configuration_changed event
+---------------------------------------------------------------------------------------------------
 Version: 0.18.3
 Date: 2020-02-26
   Features:

@@ -1,7 +1,7 @@
 --[[
 	TODO: This file will contain extensions to data tables to allow support for mods
 	Mods extend the vanilla Recycling Machines mod with additional:
-		Crafting methods that need an equivalent recycling method
+		Crafting methods that need an equivalent recycling method or to be excluded from Recycling
 		Prototype 'types' that extend the base
 		Item groups (tabs in the player crafting menu) that need to appear in Recycling Machines
 		subgroups that I may not want to handle in the mod
@@ -14,9 +14,6 @@
 
 --[[
 	Crafting methods
--- Special crafting for Bob's Mods
-craftingbeforeandafter["electronics"] = "recycling-"
-craftingbeforeandafter["electronics-machine"] = "recycling-with-fluid"
 
 -- Special crafting for Yuoki Industries
 -- TODO: Maybe constrain this to allow recycling of things that can only be assembled
@@ -50,9 +47,6 @@ local validtypes =	{
 	Item group tabs
 -- Item-group icons for Recycling
 groups_supported =	{
-								-- Bob's Mods
-								--
-								["bobmodules"] = "__ZRecycling__/graphics/item-group/bobmodules/module.png",
 								--
 								-- DyTech
 								--
@@ -162,6 +156,35 @@ if mods["bobplates"] ~= nil then
 	-- Test locale	
 end
 
+-- Bob's Modules (bobmodules)
+if mods["bobmodules"] ~= nil then
+	-- Add crafting methods
+	craftingbeforeandafter["electronics"] = "recycling-"
+	craftingbeforeandafter["electronics-machine"] = "recycling-with-fluid"
+	-- Ignore crafting methods
+	-- None for bobmodules
+	-- Add types
+	-- None for bobmodules
+	-- Add item-groups
+	groups_supported["bobmodules"] = data.raw["item-group"]["bobmodules"].icon
+	-- Test locale	
+end
+
+-- Bob's Greenhouse (bobgreenhouse)
+if mods["bobgreenhouse"] ~= nil then
+	-- Add crafting methods
+	-- None for bobgreenhouse
+	-- Ignore crafting methods
+	table.insert(ignoredcrafts,"bob-greenhouse")
+	-- Add types
+	-- None for bobgreenhouse
+	-- Add item-groups
+	-- None for bobgreenhouse
+	-- Test locale	
+end
+
+-- All other Bob's mods should be supported now
+
 --[[
 	Load the data structures that document all the types, item-groups, and item-subgrupds that exist in vanilla
 	First add a table (for debug purposes of all the item-subgroups introduced by mods, then
@@ -169,7 +192,7 @@ end
 ]]--
 require("lookups.vanilla")
 
--- Add modded item-subgroups for all supported mods
+-- Add modded item-subgroups for all supported item-groups
 for subgroupname, subgroup in pairs(data.raw["item-subgroup"]) do
 	local matched = false
 	groupname = subgroup.group
@@ -199,6 +222,7 @@ for subgroupname, subgroup in pairs(data.raw["item-subgroup"]) do
 end -- each subgroup
 
 --[[
+	*** DEBUG SECTION FROM HERE ***
 	Identify whether there are new prototypes that this mod does not handle.
 	If so, publish warnings in the log. These are not mod breaking,
 	but good to know for future inclusion
