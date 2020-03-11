@@ -9,7 +9,7 @@
 ]]--
 
 --[[
-	TODO: Reintroduce this code lifted from its inline inserttion in the mod
+	TODO: Reintroduce this code lifted from its inline insertion in the mod
 ]]--
 
 --[[
@@ -85,17 +85,6 @@ groups_supported =	{
 								["yuoki-energy"] = "__ZRecycling__/graphics/item-group/yuoki/yuoki-energy.png",
 								["yuoki-atomics"] = "__ZRecycling__/graphics/item-group/yuoki/yuoki-atomics-icon.png",
 								["yuoki_liquids"] = "__ZRecycling__/graphics/item-group/yuoki/yuoki-liquids.png",
-                                -- 
-                                -- Angels
-                                --
-                                ["resource-refining"] = "__ZRecycling__/graphics/item-group/angels/ore-refining.png",
-                                ["water-treatment"] = "__ZRecycling__/graphics/item-group/angels/water-treatment-group.png",
-                                ["angels-fluid-control"] = "__ZRecycling__/graphics/item-group/angels/heavy-pump-group.png",
-                                ["petrochem-refining"] = "__ZRecycling__/graphics/item-group/angels/petrochem.png",
-                                ["bio-processing"] = "__ZRecycling__/graphics/item-group/angels/algae-farm-group.png",
-                                ["bio-processing-alien"] = "__ZRecycling__/graphics/item-group/angels/algae-farm-group.png",
-                                ["angels-smelting"] = "__ZRecycling__/graphics/item-group/angels/blast-furnace-group.png",
-                                ["angels-casting"] = "__ZRecycling__/graphics/item-group/angels/induction-furnace-group.png",
                                 --
                                 -- Useful combinators
                                 --
@@ -108,11 +97,6 @@ groups_supported =	{
 local validsubgroups = {	
 							-- Yuoki
 							"y-raw-material",
-							-- Bob's Mods
-							"bob-gems-ore",
-							"bob-gems-raw",
-							"bob-gems-cut",
-							"bob-gems-polished",
 						}
 ]]--
 
@@ -121,6 +105,29 @@ local validsubgroups = {
 ]]--
 ignoredcrafts = {}
 modsubgroups = {}
+groups_supported = {}
+
+--[[
+	*** EXPERIMENTAL *** ADD all item groups,unconditionally ***
+	*** If there are no recycling items in that group, then the tab does not display anyway ***
+	*** MODS can overload other mods icons so need to test for this ***
+	*** https://wiki.factorio.com/Types/IconSpecification ***
+	*** DO VANILLA HERE BECAUSE OF THE ABOVE ***
+]]--
+for k,v in pairs(data.raw["item-group"]) do
+	groups_supported[k] = {
+							icon = v.icon,
+							icon_size = v.icon_size,
+							scale = v.scale,
+							["shift"] = v.shift
+						}
+	if v.icons ~= nil then
+		groups_supported[k].icons = {}
+		for i,j in ipairs(v.icons) do
+			groups_supported[k].icons[i] = j
+		end
+	end
+end
 
 -- Model
 if mods["model"] ~= nil then
@@ -128,7 +135,6 @@ if mods["model"] ~= nil then
 	-- Ignore crafting methods
 	-- Add types
 	-- Add item-groups
-	-- Add item-subgroups
 	-- Test locale	
 end
 
@@ -145,14 +151,8 @@ if mods["bobplates"] ~= nil then
 	table.insert(ignoredcrafts,"void-fluid")
 	table.insert(ignoredcrafts,"barrelling")
 	-- Add types
-	-- None for bobplates
 	-- Add item-groups
-	groups_supported["bob-logistics"] = data.raw["item-group"]["bob-logistics"].icon
-	groups_supported["bob-fluid-products"] = data.raw["item-group"]["bob-fluid-products"].icon
-	groups_supported["bob-resource-products"] = data.raw["item-group"]["bob-resource-products"].icon
-	groups_supported["bob-intermediate-products"] = data.raw["item-group"]["bob-intermediate-products"].icon
-	groups_supported["void"] = data.raw["item-group"]["void"].icon
-	groups_supported["bob-gems"] = data.raw["item-group"]["bob-gems"].icon -- Nothing is recyclable
+	-- None for bobplates
 	-- Test locale	
 end
 
@@ -166,7 +166,6 @@ if mods["bobmodules"] ~= nil then
 	-- Add types
 	-- None for bobmodules
 	-- Add item-groups
-	groups_supported["bobmodules"] = data.raw["item-group"]["bobmodules"].icon
 	-- Test locale	
 end
 
@@ -184,6 +183,126 @@ if mods["bobgreenhouse"] ~= nil then
 end
 
 -- All other Bob's mods should be supported now
+
+--[[
+	Angels
+]]--
+
+-- Angel's Refining
+if mods["angelsrefining"] ~= nil then
+	-- Add crafting methods
+	-- Ignore crafting methods
+	table.insert(ignoredcrafts,"barreling-pump")
+	table.insert(ignoredcrafts,"liquifying")
+	table.insert(ignoredcrafts,"filtering")
+	table.insert(ignoredcrafts,"ore-sorting")
+	table.insert(ignoredcrafts,"ore-sorting-t1")
+	table.insert(ignoredcrafts,"ore-sorting-t1-5")
+	table.insert(ignoredcrafts,"ore-sorting-t2")
+	table.insert(ignoredcrafts,"ore-sorting-t3")
+	table.insert(ignoredcrafts,"ore-sorting-t3-5")
+	table.insert(ignoredcrafts,"ore-sorting-t4")
+	table.insert(ignoredcrafts,"crystallizing")
+	table.insert(ignoredcrafts,"water-treatment")
+	table.insert(ignoredcrafts,"salination-plant")
+	table.insert(ignoredcrafts,"washing-plant")
+	table.insert(ignoredcrafts,"angels-water-void")
+	-- Add types
+	-- Add item-groups
+	-- Add invalid sub-groups
+	table.insert(invalidsubgroups,"fluids-refining")
+	-- Test locale	
+end
+
+-- Angel's Petro Chemical Processing
+if mods["angelspetrochem"] ~= nil then
+	-- Add crafting methods
+	-- Ignore crafting methods
+	table.insert(ignoredcrafts,"petrochem-electrolyser")
+	table.insert(ignoredcrafts,"advanced-chemistry")
+	table.insert(ignoredcrafts,"petrochem-separation")
+	table.insert(ignoredcrafts,"gas-refining")
+	table.insert(ignoredcrafts,"steam-cracking")
+	table.insert(ignoredcrafts,"petrochem-air-filtering")
+	table.insert(ignoredcrafts,"angels-converter")
+	table.insert(ignoredcrafts,"angels-chemical-void")
+	-- Add types
+	-- Add item-groups
+	-- Add invalid sub-groups
+	-- Test locale	
+end
+
+-- Angel's Smelting
+if mods["angelssmelting"] ~= nil then
+	-- Add crafting methods
+	craftingbeforeandafter["pellet-pressing"] = "recycling-"
+	craftingbeforeandafter["powder-mixing"] = "recycling-"
+	-- Ignore crafting methods
+	table.insert(ignoredcrafts,"blast-smelting")
+	table.insert(ignoredcrafts,"induction-smelting")
+	table.insert(ignoredcrafts,"strand-casting")
+	table.insert(ignoredcrafts,"casting")
+	table.insert(ignoredcrafts,"ore-processing")
+	table.insert(ignoredcrafts,"chemical-smelting")
+	table.insert(ignoredcrafts,"cooling")
+	table.insert(ignoredcrafts,"sintering")
+	-- Add types
+	-- Add item-groups
+	-- Add invalid sub-groups
+	table.insert(invalidsubgroups,"fluids-smelting")
+	-- Test locale	
+end
+
+-- Angel's Bio Processing
+if mods["angelsbioprocessing"] ~= nil then
+	-- Add crafting methods
+	craftingbeforeandafter["bio-processor"] = "recycling-"
+	-- Ignore crafting methods
+	table.insert(ignoredcrafts,"bio-processing")
+	table.insert(ignoredcrafts,"angels-tree")
+	table.insert(ignoredcrafts,"angels-arboretum")
+	table.insert(ignoredcrafts,"angels-tree-temperate")
+	table.insert(ignoredcrafts,"angels-tree-swamp")
+	table.insert(ignoredcrafts,"angels-tree-desert")
+	table.insert(ignoredcrafts,"seed-extractor")
+	table.insert(ignoredcrafts,"temperate-farming")
+	table.insert(ignoredcrafts,"desert-farming")
+	table.insert(ignoredcrafts,"swamp-farming")
+	table.insert(ignoredcrafts,"nutrient-extractor")
+	table.insert(ignoredcrafts,"bio-pressing")
+	table.insert(ignoredcrafts,"bio-refugium-fish")
+	table.insert(ignoredcrafts,"bio-butchery")
+	table.insert(ignoredcrafts,"bio-refugium-puffer")
+	table.insert(ignoredcrafts,"bio-hatchery")
+	table.insert(ignoredcrafts,"bio-refugium-biter")
+	table.insert(ignoredcrafts,"bio-refugium-hogger")
+	table.insert(ignoredcrafts,"angels-bio-void")
+	-- Add types
+	-- Add item-groups
+	-- Add invalid sub-groups
+--	table.insert(invalidsubgroups,"fluids-smelting")
+	-- Test locale	
+end
+
+-- Angel's Industries
+if mods["angelsindustries"] ~= nil then
+	-- Add crafting methods
+	-- Ignore crafting methods
+	-- Add types
+	-- Add item-groups
+	-- Add invalid sub-groups
+	-- Test locale	
+	-- Test locale	
+	-- Test locale	
+	-- Test locale	
+	-- Test locale	
+	-- Test locale	
+	-- Test locale	
+	-- Test locale	
+	-- Test locale	
+	-- Test locale	
+	-- Test locale	
+end
 
 --[[
 	Load the data structures that document all the types, item-groups, and item-subgrupds that exist in vanilla

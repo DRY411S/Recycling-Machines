@@ -20,7 +20,6 @@ function ZRecycling.Unlock_Recipe(force,recipename)
 		-- Enable the reversed version
 		local reverse_recipe = force.recipes[rec_prefix .. recipename]
 		if reverse_recipe then
-log(recipename)
 			force.recipes[rec_prefix .. recipename].enabled = true
 		end
 	end

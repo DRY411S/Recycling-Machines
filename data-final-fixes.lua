@@ -106,18 +106,6 @@ local validtypes =	{
 					}
 
 
--- Item-groups icons for Recycling
-groups_supported =	{
-						["Recycling"] = "__ZRecycling__/graphics/item-group/recycling.png",
-						--
-						-- Vanilla
-						--
-						["logistics"] = "__ZRecycling__/graphics/item-group/logistics.png",
-						["production"] = "__ZRecycling__/graphics/item-group/production.png",
-						["combat"] = "__ZRecycling__/graphics/item-group/military.png",
-						["intermediate-products"] = "__ZRecycling__/graphics/item-group/intermediate-products.png",
-					}
-
 -- Accepted crafting categories
 -- These are the categories which are accepted in assembling machines
 -- This mod only recycles things that can be assembled in machines
@@ -196,22 +184,23 @@ local function build_groups()
 		end
 		for nextname,nextpath in pairs(groups_supported) do
 			if group.name == nextname then
-				newicon = nextpath
+--				newicon = nextpath
 				invalid = false
 				break
 			end
 		end
 		if invalid == false then
 	
-			local newgroup = {
-								type = "item-group",
-								icon = newicon,
-                                icon_size = 64,
-								inventory_order = group.inventory_order,
-								hidden = false,
-								name = group.name,
-								order = group.order
-							}
+			local newgroup = groups_supported[group.name]
+--			local newgroup = {
+								newgroup.type = "item-group"
+--								icon = newicon,
+--                                icon_size = 32,
+								newgroup.inventory_order = group.inventory_order
+								newgroup.hidden = false
+								newgroup.name = group.name
+								newgroup.order = group.order
+--							}
 			table.insert(recycling_groups,newgroup)
 		end
 	end -- each item-group
