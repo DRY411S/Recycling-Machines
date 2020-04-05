@@ -157,12 +157,12 @@ if mods["bobplates"] ~= nil then
 end
 
 -- Bob's Modules (bobmodules)
-if mods["bobmodules"] ~= nil then
+if mods["bobmodules"] ~= nil or mods["bobelectronics"] ~= nil then
 	-- Add crafting methods
 	craftingbeforeandafter["electronics"] = "recycling-"
 	craftingbeforeandafter["electronics-machine"] = "recycling-with-fluid"
 	-- Ignore crafting methods
-	-- None for bobmodules
+	table.insert(ignoredcrafts,"crafting-machine")
 	-- Add types
 	-- None for bobmodules
 	-- Add item-groups
@@ -304,6 +304,23 @@ if mods["angelsindustries"] ~= nil then
 	-- Test locale	
 end
 
+-- Model
+if mods["Bio_Industries"] ~= nil then
+	-- Add crafting methods
+	-- None
+	-- Ignore crafting methods
+	table.insert(ignoredcrafts,"biofarm-mod-greenhouse")
+	table.insert(ignoredcrafts,"biofarm-mod-farm")
+	table.insert(ignoredcrafts,"biofarm-mod-crushing")
+	table.insert(ignoredcrafts,"biofarm-mod-smelting")
+	table.insert(ignoredcrafts,"bi-arboretum")
+	table.insert(ignoredcrafts,"clean-air")
+	table.insert(ignoredcrafts,"biofarm-mod-bioreactor")
+	-- Add types
+	-- Add item-groups
+	-- Test locale	
+end
+ 
 --[[
 	Load the data structures that document all the types, item-groups, and item-subgrupds that exist in vanilla
 	First add a table (for debug purposes of all the item-subgroups introduced by mods, then
@@ -314,7 +331,7 @@ require("lookups.vanilla")
 -- Add modded item-subgroups for all supported item-groups
 for subgroupname, subgroup in pairs(data.raw["item-subgroup"]) do
 	local matched = false
-	groupname = subgroup.group
+	groupname = subgroup.name
 	for _,invalidsubgroup in pairs(invalidsubgroups) do
 		if invalidsubgroup == subgroupname then
 			matched = true
@@ -331,7 +348,7 @@ for subgroupname, subgroup in pairs(data.raw["item-subgroup"]) do
 	end
 	if not matched then
 		for group,icon in pairs(groups_supported) do
-			if groupname == group then
+			if subgroup.group == group then
 				matched = true
 				table.insert(modsubgroups,subgroup.name)
 				break
@@ -339,7 +356,7 @@ for subgroupname, subgroup in pairs(data.raw["item-subgroup"]) do
 		end
 	end
 end -- each subgroup
-
+-- log(serpent.block(modsubgroups))
 --[[
 	*** DEBUG SECTION FROM HERE ***
 	Identify whether there are new prototypes that this mod does not handle.

@@ -8,7 +8,7 @@ local rec_prefix = constant_rec_prefix
 --
 -- Will be using this mods structure to test for the presence of mods
 log(serpent.block(mods))
---[[
+--[[ Example
   ZRecycling = "0.18.1",
   base = "0.18.0",
 --]]
@@ -257,9 +257,12 @@ local function matched(item,recipe,tech)
     
     -- Fix for https://github.com/DRY411S/Recycling-Machines/issues/40
     -- We don't recycle if the allow_decomposition flag is set to false
-    if recipe.allow_decomposition ~= nil and recipe.allow_decomposition == false then
+	-- In fact the issue was that there were no results. No results is now handled,
+	-- and we have to allow allow_decomposition to be false to 
+    -- Fix for https://github.com/DRY411S/Recycling-Machines/issues/73	
+    if --[[ recipe.allow_decomposition ~= nil and recipe.allow_decomposition == false then
         can_recycle = false
-    elseif recipe.category == "smelting" then
+    elseif --]] recipe.category == "smelting" then
         -- Enhancement for https://github.com/DRY411S/Recycling-Machines/issues/41
         -- We don't recycle what is smelted
         can_recycle = false
@@ -362,7 +365,7 @@ local function matched(item,recipe,tech)
             -- v0.18.2 Moved the code to build the reverse recipe here
 -- **************			
                         if recipe.name ~= item.name then
-							log("Matched item: " .. item.name .. " with recipe: " .. recipe.name)
+							-- log("Matched item: " .. item.name .. " with recipe: " .. recipe.name)
 						end
 						local newcategory
                         -- Only handle recipes where the category is nil or is produced in an assembling machine
@@ -689,15 +692,19 @@ function add_reverse_recipe(item,recipe,newcategory,tech)
 	
 	-- Fix for issue 23. Provided by judos https://github.com/judos,
 	-- The else clause failed in testing, modified by me
-	if item.icon then
-		new_recipe.icon = item.icon
-	elseif item.icons then	
+	-- Fix for https://github.com/DRY411S/Recycling-Machines/issues/78
+	if item.icons then	
 		new_recipe.icons = item.icons
-	else
+	elseif item.icon and item.icon_size then
+		new_recipe.icon = item.icon
+	end
+	-- Default if no icons
+	if new_recipe.icon == nil and new_recipe.icons == nil then
+		log("Weird icon case")
 		new_recipe.icon = "__base__/graphics/icons/" .. result .. ".png"
 	end
-    
-    new_recipe.icon_size = item.icon_size
+	new_recipe.icon_size = item.icon_size
+   
 	
 	-- Produce localised "Recycled <item> parts" if there is more than one result
 	-- If there is only one result, the game takes care of the locale
@@ -857,5 +864,7 @@ data:extend(rev_recipes)
 -- log(serpent.block(data.raw.recipe))
 -- log(serpent.block(data.raw.technology))
 -- log(serpent.block(recycling_groups))
+-- log(serpent.block(data.raw["item-group"]))
+-- log(serpent.block(data.raw["item-subgroup"]))
 -- log(serpent.block(recycling_subgroups)) 
 -- log(serpent.block(rev_recipes))
