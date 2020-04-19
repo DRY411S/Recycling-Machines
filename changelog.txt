@@ -1,4 +1,33 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.18.7
+Date: 2020-04-19
+  Features:
+    - Supports vanilla and any mods that add items into default vanilla item groups
+    - Supports all Bob's, Angel's Mods, Bio Industries and 5dim
+    - More mod support to be added later
+    - Recycling Tabs no longer appear in the player crafting menus
+  Graphics:
+    - No changes to 0.17
+    - No remnants
+  Sounds:
+    - Uses vanilla assembling machine sounds
+  Optimizations:
+    - Vanilla Recycling Recipe Generation times improved by 13.5% versus 0.17
+  Changes:
+    - Support for 5dim mods added
+  Bugfixes:
+    - Some Angel's Mod locale is missing https://github.com/DRY411S/Recycling-Machines/issues/74
+    - Angels makes some vanilla items recyclable, that vanilla does not allow https://github.com/DRY411S/Recycling-Machines/issues/77
+  Known Issues:
+    - Minor: Cliff explosives are not recyclable when 5dim-core mod is installed https://github.com/DRY411S/Recycling-Machines/issues/81
+  Modding:
+    - Supports vanilla and any mods that add items into default vanilla item groups
+    - Support for other mods will be gradually reintroduced. This versions supports all Bob's, Angel's, Bio Industries and 5dim Mods
+  Scripts:
+    - Migration Script included
+    - Enables recycling recipes that match any items already researched using on_init event
+    - Enables recycling recipes that match any items already researched using on_configuration_changed event
+---------------------------------------------------------------------------------------------------
 Version: 0.18.6
 Date: 2020-04-05
   Features:

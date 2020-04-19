@@ -229,6 +229,8 @@ if mods["angelspetrochem"] ~= nil then
 	-- Add types
 	-- Add item-groups
 	-- Add invalid sub-groups
+	-- Fixes: https://github.com/DRY411S/Recycling-Machines/issues/77
+	table.insert(invalidsubgroups,"angels-stone-casting")
 	-- Test locale	
 end
 
@@ -292,19 +294,9 @@ if mods["angelsindustries"] ~= nil then
 	-- Add item-groups
 	-- Add invalid sub-groups
 	-- Test locale	
-	-- Test locale	
-	-- Test locale	
-	-- Test locale	
-	-- Test locale	
-	-- Test locale	
-	-- Test locale	
-	-- Test locale	
-	-- Test locale	
-	-- Test locale	
-	-- Test locale	
 end
 
--- Model
+-- Bio Industries
 if mods["Bio_Industries"] ~= nil then
 	-- Add crafting methods
 	-- None
@@ -320,7 +312,96 @@ if mods["Bio_Industries"] ~= nil then
 	-- Add item-groups
 	-- Test locale	
 end
+
+-- AAI Industry
+if mods["aai-industry"] ~= nil then
+	-- Add crafting methods
+	-- Ignore crafting methods
+	table.insert(ignoredcrafts,"fuel-processing")
+	-- Add types
+	-- Add item-groups
+	-- Test locale	
+end
+
+--[[
+	5dim
+]]--
+
+if mods["5dim_core"] ~= nil then
+	-- Add crafting methods
+--[[
+   mashering
+   industrial-furnace
+   trade
+]]--
+	-- Ignore crafting methods
+	-- Add types
+	-- Add item-groups
+	-- Add invalid sub-groups
+	table.insert(invalidsubgroups,"decoration-floor")
+	-- Test locale	
+end
+
+if mods["5dim_mining"] ~= nil then
+	-- Add crafting methods
+	-- Ignore crafting methods
+	table.insert(ignoredcrafts,"water")
+	-- Add types
+	-- Add item-groups
+	-- Add invalid sub-groups
+	-- Test locale	
+end
+
+if mods["5dim_module"] ~= nil then
+	-- Add crafting methods
+	craftingbeforeandafter["welding"] = "recycling-"
+	-- Ignore crafting methods
+	-- Add types
+	-- Add item-groups
+	-- Add invalid sub-groups
+	-- Test locale	
+end
+
+if mods["5dim_ores"] ~= nil or mods["5dim_resources"] ~= nil then
+	-- Add crafting methods
+	-- Ignore crafting methods
+	table.insert(ignoredcrafts,"mashering")
+	-- Add types
+	-- Add item-groups
+	-- Add invalid sub-groups
+	-- Test locale	
+end
+
+if mods["5dim_resources"] ~= nil then
+	-- Add crafting methods
+	-- Ignore crafting methods
+	table.insert(ignoredcrafts,"industrial-furnace")
+	-- Add types
+	-- Add item-groups
+	-- Add invalid sub-groups
+	-- Test locale	
+end
  
+if mods["5dim_trade"] ~= nil then
+	-- Add crafting methods
+	craftingbeforeandafter["trade"] = "recycling-"
+	-- Ignore crafting methods
+	-- Add types
+	-- Add item-groups
+	-- Add invalid sub-groups
+	-- Test locale	
+end
+
+if mods["WaterWell"] ~= nil then
+	-- Add crafting methods
+	-- Ignore crafting methods
+	table.insert(ignoredcrafts,"water-well-production")
+	-- Add types
+	-- Add item-groups
+	-- Add invalid sub-groups
+	-- Test locale	
+end
+
 --[[
 	Load the data structures that document all the types, item-groups, and item-subgrupds that exist in vanilla
 	First add a table (for debug purposes of all the item-subgroups introduced by mods, then

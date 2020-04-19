@@ -852,6 +852,13 @@ log("***************** End matching")
 
 -- Recipes all done, Create new subgroups and groups
 create_reverse_groupsandsubgroups()
+
+--[[
+	Adjust any vanilla recycling recipes that have been enabled by mods
+	that would normally be disabled
+--]]
+require("lookups.modadjustments")
+
 -- Add the new groups, new subgroups and reverse recipes to raw data
 data:extend(recycling_groups)
 data:extend(recycling_subgroups)
