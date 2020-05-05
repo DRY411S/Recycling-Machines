@@ -540,6 +540,7 @@ for _,recipe in pairs(data.raw.recipe) do
 		end
 		if not catfound then
 			log("Warning: Recycling Machines unsupported craft: " .. recipe.category)
+			table.insert(ignoredcrafts,recipe.category)
 		end
 	end
 end
