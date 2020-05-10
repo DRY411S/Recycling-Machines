@@ -67,7 +67,6 @@ craftingbeforeandafter["crafting"] = "recycling-"
 craftingbeforeandafter["advanced-crafting"] = "recycling-"
 craftingbeforeandafter["crafting-with-fluid"] = "recycling-with-fluid"
 
-
 --[[
 	That's all the vanilla code setup
 	Mods that require extra bespoke setup are held in the plugins file
@@ -195,7 +194,7 @@ function removeIneligibleRecipes()
 		-- http://stackoverflow.com/questions/1252539/most-efficient-way-to-determine-if-a-lua-table-is-empty-contains-no-entries
 		local recipeLayers = {recipe, recipe.normal, recipe.expensive}
 		for i, recipeLayer in pairs(recipeLayers) do
-			if recipeLayer ~= nil and recipeLayer ~= false and recipeLayer.ingredients ~= nil and next(recipeLayer.ingredients) == nil then
+			if recipeLayer ~= nil and recipeLayer ~= false and recipeLayer.ingredients ~= nil and ( next(recipeLayer.ingredients) == nil or recipeLayer.ingredients == 0 ) then
 				can_recycle = false
 			end
 		end
@@ -228,23 +227,6 @@ function removeIneligibleRecipes()
 				else
 				end
 			end
-		end
-		
-		-- Test recipe categories
-		if can_recycle == true then
-			-- NOTE: Is the smelting and centrifuging code above handled by the category loop sbove(and therefore redundant)?
-			if recipe.category == "smelting" then
-				-- Enhancement for https://github.com/DRY411S/Recycling-Machines/issues/41
-				-- We don't recycle what is smelted
-				can_recycle = false
-			elseif recipe.category == "chemistry" and recipe.name ~= "battery" then
-				-- Enhancement for https://github.com/DRY411S/Recycling-Machines/issues/41
-				-- We don't recycle what is made in chemical plants (apart from batteries)
-				can_recycle = false    
-			elseif recipe.category == "centrifuging" then
-				-- v0.18.8 improvement to exclude centrifuging recipes earlier in testing
-				can_recycle = false
-			end			
 		end
 		
 		if can_recycle == true then

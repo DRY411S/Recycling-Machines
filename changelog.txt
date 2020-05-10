@@ -1,4 +1,40 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.18.9
+Date: 2020-05-10
+  Features:
+    - The Pyanodon version
+    - Supports vanilla and any mods that add items into default vanilla item groups
+    - Supports all Bob's, Angel's Mods, Bio Industries, 5dim and Pyanodon
+    - More mod support to be added later
+    - Recycling Tabs no longer appear in the player crafting menus
+  Graphics:
+    - No changes to 0.17
+    - No remnants
+  Sounds:
+    - Uses vanilla assembling machine sounds
+  Optimizations:
+    - Vanilla Recycling Recipe Generation times improved by 13.5% versus 0.17
+  Changes:
+    - Added Pyanodon mod support
+    - Recycles all the Pyanodon machines
+    - Recycles glassworks, tar, solid separator crafting methods from PyCoal
+    - Recycles handcrafting crafting methods from Py RawOres and Py HighTech
+    - Recycles chip, nano, electronic and pcb crafting methods from Py HighTech
+    - Disables Recycling py-tiles crafting methods from Py Industry
+    - Disables Recycling all crafting in Py AlienLife that involves food, animals, genetics and flora
+    - Note. Recycling Machines cannot recycle anything that has more than one fluid, either as an ingredient or a result (or both)
+  Bugfixes:
+    - None in this version
+  Known Issues:
+    - Minor: Cliff explosives are not recyclable when 5dim-core mod is installed https://github.com/DRY411S/Recycling-Machines/issues/81
+  Modding:
+    - Supports vanilla and any mods that add items into default vanilla item groups
+    - Support for other mods will be gradually reintroduced. This versions supports all Bob's, Angel's, Bio Industries, 5dim and Pyanodon Mods
+  Scripts:
+    - Migration Script included
+    - Enables recycling recipes that match any items already researched using on_init event
+    - Enables recycling recipes that match any items already researched using on_configuration_changed event
+---------------------------------------------------------------------------------------------------
 Version: 0.18.8
 Date: 2020-05-05
   Features:

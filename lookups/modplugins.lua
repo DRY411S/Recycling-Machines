@@ -61,24 +61,6 @@ groups_supported =	{
 								["dytech-nuclear"] = "__ZRecycling__/graphics/item-group/DyTech-Core/nuclear.png",
 								["dytech-invisible"] = "__ZRecycling__/graphics/item-group/DyTech-Core/danger.png",
 								--
-								-- 5dim
-								--
-								["inserters"] = "__ZRecycling__/graphics/item-group/5dim_core/automatization.png",
-								["energy"] = "__ZRecycling__/graphics/item-group/5dim_core/energy.png",
-								["logistic"] = "__ZRecycling__/graphics/item-group/5dim_core/logistic.png",
-								["mining"] = "__ZRecycling__/graphics/item-group/5dim_core/mining.png",
-								["module"] = "__ZRecycling__/graphics/item-group/5dim_core/module.png",
-								["nuclear"] = "__ZRecycling__/graphics/item-group/5dim_core/enuclear.png",
-								["transport"] = "__ZRecycling__/graphics/item-group/5dim_core/transport.png",
-								["trains"] = "__ZRecycling__/graphics/item-group/5dim_core/trains.png",
-								["decoration"] = "__ZRecycling__/graphics/item-group/5dim_core/decorative.png",
-								["vehicles"] = "__ZRecycling__/graphics/item-group/5dim_core/vehicles.png",
-								["armor"] = "__ZRecycling__/graphics/item-group/5dim_core/armor.png",
-								["plates"] = "__ZRecycling__/graphics/item-group/5dim_core/plates.png",
-								["intermediate"] = "__ZRecycling__/graphics/item-group/5dim_core/intermediate.png",
-								["defense"] = "__ZRecycling__/graphics/item-group/5dim_core/defense.png",
-								["liquid"] = "__ZRecycling__/graphics/item-group/5dim_core/liquids.png",
-								--
 								-- Yuoki
 								--
 								["yuoki"] = "__ZRecycling__/graphics/item-group/yuoki/yuoki-ind-icon.png",
@@ -401,6 +383,291 @@ if mods["WaterWell"] ~= nil then
 	-- Add invalid sub-groups
 	-- Test locale	
 end
+
+--[[
+	Pyanodon
+	Many of Pyandon recipes involve more than 1 fluid either as input or output
+	sometimes both. In fact there are very few Pyanodon recipes that can be recycled
+	because Recycling Machines have only 1 fluid interface, either input or output
+	And most also have more than 1 result, but Recycling Machines will accept only
+	one ingredient
+	Most of the Pyandon recipes are therefore flagged as not recyclable for this reason
+	and their recipe crafting categories don't need to be explicitly excluded here
+	Nevertheless, the code belows does exclude them so there is a clear record
+--]]
+
+if mods["pycoalprocessing"] ~= nil then
+	-- Add crafting methods
+	craftingbeforeandafter["glassworks"] = "recycling-"
+	craftingbeforeandafter["tar"] = "recycling-with-fluid"
+	craftingbeforeandafter["solid-separator"] = "recycling-"
+	-- Ignore crafting methods
+	table.insert(ignoredcrafts,"fts-reactor")
+	table.insert(ignoredcrafts,"ulric")
+	table.insert(ignoredcrafts,"gasifier")
+	table.insert(ignoredcrafts,"ralesia")
+	table.insert(ignoredcrafts,"niobium")
+	table.insert(ignoredcrafts,"fawogae")
+	table.insert(ignoredcrafts,"advanced-foundry")
+	table.insert(ignoredcrafts,"ground-borer")
+	table.insert(ignoredcrafts,"wpu")
+	table.insert(ignoredcrafts,"ball-mill")
+	table.insert(ignoredcrafts,"carbonfilter")
+	table.insert(ignoredcrafts,"classifier")
+	table.insert(ignoredcrafts,"desulfurization")
+	table.insert(ignoredcrafts,"distilator")
+	table.insert(ignoredcrafts,"evaporator")
+	table.insert(ignoredcrafts,"fluid-separator")
+	table.insert(ignoredcrafts,"hpf")
+	table.insert(ignoredcrafts,"methanol")
+	table.insert(ignoredcrafts,"olefin")
+	table.insert(ignoredcrafts,"crusher")
+	table.insert(ignoredcrafts,"combustion")
+	table.insert(ignoredcrafts,"quenching-tower")
+	table.insert(ignoredcrafts,"rectisol")
+	table.insert(ignoredcrafts,"co2")
+	table.insert(ignoredcrafts,"cooling")
+	table.insert(ignoredcrafts,"washer")
+	table.insert(ignoredcrafts,"soil-extraction")
+	table.insert(ignoredcrafts,"sand-extractor")
+	table.insert(ignoredcrafts,"nursery")
+	table.insert(ignoredcrafts,"mukmoux")
+	table.insert(ignoredcrafts,"borax")
+	-- Add types
+	-- Add item-groups
+	-- Add invalid sub-groups
+	-- Test locale	
+end
+
+if mods["pyindustry"] ~= nil then
+	-- Add crafting methods
+	-- Ignore crafting methods
+	table.insert(ignoredcrafts,"py-runoff")
+	table.insert(ignoredcrafts,"py-venting")
+	table.insert(ignoredcrafts,"py-incineration")
+	table.insert(ignoredcrafts,"hydroclassifier")
+	-- Add types
+	-- Add item-groups
+	-- Add invalid sub-groups
+	table.insert(invalidsubgroups,"py-tiles")
+	-- Test locale	
+end
+
+if mods["pyrawores"] ~= nil then
+	-- Add crafting methods
+	craftingbeforeandafter["handcrafting"] = "recycling-"
+	-- Ignore crafting methods
+	table.insert(ignoredcrafts,"bof")
+	table.insert(ignoredcrafts,"casting")
+	table.insert(ignoredcrafts,"eaf")
+	table.insert(ignoredcrafts,"electrolyzer")
+	table.insert(ignoredcrafts,"flotation")
+	table.insert(ignoredcrafts,"impact-crusher")
+	table.insert(ignoredcrafts,"leaching")
+	table.insert(ignoredcrafts,"scrubber")
+	table.insert(ignoredcrafts,"wet-scrubber")
+	table.insert(ignoredcrafts,"flotation")
+	table.insert(ignoredcrafts,"sinter")
+	table.insert(ignoredcrafts,"drp")
+	-- Add types
+	-- Add item-groups
+	-- Add invalid sub-groups
+	-- table.insert(invalidsubgroups,"py-tiles")
+	-- Test locale	
+end
+
+if mods["pyfusionenergy"] ~= nil then
+	-- Add crafting methods
+	-- Ignore crafting methods
+	table.insert(ignoredcrafts,"heat-exchanger")
+	table.insert(ignoredcrafts,"nmf")
+	table.insert(ignoredcrafts,"hydrocyclone")
+	table.insert(ignoredcrafts,"plankton")
+	table.insert(ignoredcrafts,"xyhiphoe")
+	table.insert(ignoredcrafts,"thickener")
+	table.insert(ignoredcrafts,"screener")
+	table.insert(ignoredcrafts,"secondary-crusher")
+	table.insert(ignoredcrafts,"grease")
+	table.insert(ignoredcrafts,"genlab")
+	table.insert(ignoredcrafts,"kmauts")
+	table.insert(ignoredcrafts,"compressor")
+	table.insert(ignoredcrafts,"gas-separator")
+	table.insert(ignoredcrafts,"mixer")
+	table.insert(ignoredcrafts,"fusion-01")
+	table.insert(ignoredcrafts,"fusion-02")
+	table.insert(ignoredcrafts,"agitator")
+	table.insert(ignoredcrafts,"vacuum")
+	table.insert(ignoredcrafts,"pan")
+	table.insert(ignoredcrafts,"jig")
+	table.insert(ignoredcrafts,"bio-reactor")
+	-- Add types
+	-- Add item-groups
+	-- Add invalid sub-groups
+	-- Test locale	
+end
+
+if mods["pyhightech"] ~= nil then
+	-- Add crafting methods
+	craftingbeforeandafter["glassworks"] = "recycling-with-fluid"
+	-- ++coal processing ^
+	craftingbeforeandafter["chip"] = "recycling-"
+	craftingbeforeandafter["nano"] = "recycling-with-fluid"
+	craftingbeforeandafter["electronic"] = "recycling-with-fluid"
+	craftingbeforeandafter["pcb"] = "recycling-with-fluid"
+	craftingbeforeandafter["handcrafting"] = "recycling-"
+	-- Ignore crafting methods
+	table.insert(ignoredcrafts,"fbreactor")
+	table.insert(ignoredcrafts,"auog")
+	table.insert(ignoredcrafts,"clay")
+	table.insert(ignoredcrafts,"pulp")
+	table.insert(ignoredcrafts,"kicalk")
+	table.insert(ignoredcrafts,"pa")
+	table.insert(ignoredcrafts,"zipir")
+	table.insert(ignoredcrafts,"quantum")
+	table.insert(ignoredcrafts,"moon")
+	table.insert(ignoredcrafts,"arum")
+	table.insert(ignoredcrafts,"blackhole-energy")
+	-- Add types
+	-- Add item-groups
+	-- Add invalid sub-groups
+	-- Test locale	
+end
+
+if mods["pypetroleumhandling"] ~= nil then
+	-- Add crafting methods
+	-- None, treating all these as chemical reactions
+	-- and therefore not recyclable
+	-- NOTE: havent actually bothered to check
+	-- Losing the will to live with Pyanodon!
+	-- Ignore crafting methods
+	table.insert(ignoredcrafts,"upgrader")
+	table.insert(ignoredcrafts,"cracker")
+	table.insert(ignoredcrafts,"reformer")
+	table.insert(ignoredcrafts,"hor")
+	table.insert(ignoredcrafts,"gas-refinery")
+	table.insert(ignoredcrafts,"guar")
+	table.insert(ignoredcrafts,"lor")
+	table.insert(ignoredcrafts,"kerogen")
+	table.insert(ignoredcrafts,"pumpjack")
+	table.insert(ignoredcrafts,"tholin-plant")
+	table.insert(ignoredcrafts,"coalbed")
+	table.insert(ignoredcrafts,"fracking")
+	table.insert(ignoredcrafts,"rhe")
+	table.insert(ignoredcrafts,"tholin-atm")
+	table.insert(ignoredcrafts,"converter-valve")
+	table.insert(ignoredcrafts,"hot-air-advanced-foundry")
+	-- Add types
+	-- Add item-groups
+	-- Add invalid sub-groups
+	-- Test locale	
+end
+
+if mods["pyalienlife"] ~= nil then
+	-- Add crafting methods
+	table.insert(ignoredcrafts,"research")
+	table.insert(ignoredcrafts,"biofactory")
+	table.insert(ignoredcrafts,"fwf")
+	table.insert(ignoredcrafts,"creature-chamber")
+	table.insert(ignoredcrafts,"incubator")
+	table.insert(ignoredcrafts,"data-array")
+	table.insert(ignoredcrafts,"sap")
+	table.insert(ignoredcrafts,"slaughterhouse")
+	table.insert(ignoredcrafts,"atomizer")
+	table.insert(ignoredcrafts,"micro-mine")
+	table.insert(ignoredcrafts,"moss")
+	table.insert(ignoredcrafts,"seaweed")
+	table.insert(ignoredcrafts,"bay")
+	table.insert(ignoredcrafts,"sponge")
+	table.insert(ignoredcrafts,"tuuphra")
+	table.insert(ignoredcrafts,"arthurian")
+	table.insert(ignoredcrafts,"spore")
+	table.insert(ignoredcrafts,"navens")
+	table.insert(ignoredcrafts,"yotoi")
+	table.insert(ignoredcrafts,"dhilmos")
+	table.insert(ignoredcrafts,"scrondrix")
+	table.insert(ignoredcrafts,"rennea")
+	table.insert(ignoredcrafts,"dingrits")
+	table.insert(ignoredcrafts,"phadai")
+	table.insert(ignoredcrafts,"slaughterhouse-fish")
+	table.insert(ignoredcrafts,"fish-farm")
+	table.insert(ignoredcrafts,"korlex")
+	table.insert(ignoredcrafts,"yaedols")
+	table.insert(ignoredcrafts,"slaughterhouse-ulric")
+	table.insert(ignoredcrafts,"vonix")
+	table.insert(ignoredcrafts,"slaughterhouse-vonix")
+	table.insert(ignoredcrafts,"slaughterhouse-mukmoux")
+	table.insert(ignoredcrafts,"bhoddos")
+	table.insert(ignoredcrafts,"phagnot")
+	table.insert(ignoredcrafts,"slaughterhouse-phagnot")
+	table.insert(ignoredcrafts,"cridren")
+	table.insert(ignoredcrafts,"grod")
+	table.insert(ignoredcrafts,"slaughterhouse-arthurian")
+	table.insert(ignoredcrafts,"slaughterhouse-auog")
+	table.insert(ignoredcrafts,"slaughterhouse-dingrits")
+	table.insert(ignoredcrafts,"slaughterhouse-korlex")
+	table.insert(ignoredcrafts,"slaughterhouse-dhilmos")
+	table.insert(ignoredcrafts,"slaughterhouse-scrondrix")
+	table.insert(ignoredcrafts,"slaughterhouse-phadai")
+	table.insert(ignoredcrafts,"xeno")
+	table.insert(ignoredcrafts,"trits")
+	table.insert(ignoredcrafts,"vat")
+	table.insert(ignoredcrafts,"ralesia-farm")
+	table.insert(ignoredcrafts,"rennea-farm")
+	table.insert(ignoredcrafts,"tuuphra-farm")
+	table.insert(ignoredcrafts,"grod-farm")
+	table.insert(ignoredcrafts,"yotoi-farm")
+	table.insert(ignoredcrafts,"bioreserve-farm")
+	table.insert(ignoredcrafts,"slaughterhouse-zipir")
+	table.insert(ignoredcrafts,"slaughterhouse-xyhiphoe")
+	table.insert(ignoredcrafts,"slaughterhouse-trits")
+	table.insert(ignoredcrafts,"slaughterhouse-xeno")
+	table.insert(ignoredcrafts,"vrauks")
+	table.insert(ignoredcrafts,"slaughterhouse-vrauks")
+	table.insert(ignoredcrafts,"slaughterhouse-cottongut")
+	table.insert(ignoredcrafts,"slaughterhouse-kmauts")
+	table.insert(ignoredcrafts,"slaughterhouse-arqad")
+	table.insert(ignoredcrafts,"slaughterhouse-cridren")
+	table.insert(ignoredcrafts,"bio-printer")
+	table.insert(ignoredcrafts,"cottongut")
+	table.insert(ignoredcrafts,"arqad")
+	table.insert(ignoredcrafts,"compost")
+	table.insert(ignoredcrafts,"kicalk-farm")
+	table.insert(ignoredcrafts,"arum-farm")
+	table.insert(ignoredcrafts,"antelope")
+	table.insert(ignoredcrafts,"slaughterhouse-antelope")
+	-- Add types
+	-- Add item-groups
+	-- Add invalid sub-groups
+	table.insert(invalidsubgroups,"py-alienlife-food")
+	table.insert(invalidsubgroups,"py-alienlife-plants")
+	table.insert(invalidsubgroups,"py-alienlife-latex")
+	table.insert(invalidsubgroups,"py-alienlife-yotoi")
+	table.insert(invalidsubgroups,"py-alienlife-genetics")
+	-- Test locale	
+end
+
+--[[
+	Yuoki
+
+-- Yuoki Railways
+if mods["yi_railway"] ~= nil then
+	-- Add crafting methods
+	craftingbeforeandafter["yir_rc_future_monument"] = "recycling-with-fluid"
+	craftingbeforeandafter["yir_rc_diesel_monument"] = "recycling-with-fluid"
+	craftingbeforeandafter["yir_rc_wsl"] = "recycling-with-fluid"
+	craftingbeforeandafter["yir_rc_wsw"] = "recycling-with-fluid"
+	craftingbeforeandafter["yir_rc_material"] = "recycling-with-fluid"
+	craftingbeforeandafter["yir_rc_stuff"] = "recycling-with-fluid"
+	craftingbeforeandafter["yir_rc_tiles"] = "recycling-with-fluid"	-- Ignore crafting methods
+	-- Add types
+	-- Add item-groups
+	-- Add invalid sub-groups
+	table.insert(invalidsubgroups,"yir_floor")
+	table.insert(invalidsubgroups,"yir_floor_line2")
+	table.insert(invalidsubgroups,"yir_floor_line3")
+	-- Test locale	
+end
+]]--
 
 --[[
 	Load the data structures that document all the types, item-groups, and item-subgrupds that exist in vanilla
