@@ -1,13 +1,13 @@
 {
 	"name": "ZRecycling",
-	"version": "0.18.9",
+	"version": "0.18.10",
 	"title": "Recycling Machines",
 	"author": "DRY411S",
 	"contact": "https://forums.factorio.com/ucp.php(?)i=pm&mode=compose&u=15698",
 	"homepage": "https://github.com/DRY411S/Recycling-Machines",
 	"description": "Recycling Machines that disassemble most items back into their recipe ingredients. The number of items that have to be recycled to get back the ingredients for a single item, and the speed of the Recycling Machines are startup mod settings.",
 	"factorio_version":"0.18",
-	"dependencies": ["base >= 0.18.22",
+	"dependencies": ["base >= 0.18.34",
 "(?) bobplates >= 0.18.1",
 "(?) bobassembly >= 0.18.0",
 "(?) bobclasses >= 0.18.0",
@@ -91,5 +91,5 @@
 "(?) pyindustry >= 1.4.5",
 "(?) pypetroleumhandling >= 1.7.7",
 "(?) pyrawores >= 2.0.7",
-"(?) stdlib >= 1.4.2"]
+"? PatchFR >= 0.18.6"]
 }

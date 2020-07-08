@@ -510,7 +510,8 @@ function swopResultsAndIngredients(old,new)
 			i2 = "amount"
 		end
 		old.result = old.results[1][i1]
-		old.result_count = old.results[1][i2]
+		-- Fix for https://github.com/DRY411S/Recycling-Machines/issues/87 (result_count can be nil)
+		old.result_count = old.results[1][i2] or 1
 	end
 	new.ingredients = { {old.result, old.result_count * recycleratio} }
 	
