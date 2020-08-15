@@ -474,7 +474,7 @@ function add_reverse_recipe(item,recipe,tech)
 				newrecipeLayer[i].show_amount_in_title = false
 				newrecipeLayer[i].always_show_products = true
 				-- swop the results with the ingredients (for each layer)
-				swopResultsAndIngredients(oldrecipeLayer[i],newrecipeLayer[i],item)
+				swopResultsAndIngredients(item,oldrecipeLayer[i],newrecipeLayer[i])
 				newrecipeLayer[i].main_product = nil
 			end
 		end
@@ -494,7 +494,7 @@ function add_reverse_recipe(item,recipe,tech)
 end -- add_reverse_recipe
 
 -- A reverse recipe swops the original results and ingredients
-function swopResultsAndIngredients(old,new)
+function swopResultsAndIngredients(item,old,new)
 	-- Build results as ingredients
 	if old.result ~= nil then
 		if old.result_count == nil then
@@ -513,7 +513,15 @@ function swopResultsAndIngredients(old,new)
 		-- Fix for https://github.com/DRY411S/Recycling-Machines/issues/87 (result_count can be nil)
 		old.result_count = old.results[1][i2] or 1
 	end
-	new.ingredients = { {old.result, old.result_count * recycleratio} }
+	
+	local newresult_count
+	newresult_count = old.result_count * recycleratio
+	-- Fix: https://github.com/DRY411S/Recycling-Machines/issues/63
+	-- If an item has a stack_size of less than the ingredient count, then the ingredient count needs reducing
+	if item.stack_size < newresult_count then
+		newresult_count = item.stack_size
+	end
+	new.ingredients = { {old.result, newresult_count} }
 	
 	-- Build ingredients as results
 	-- No need to handle stack size any longer
