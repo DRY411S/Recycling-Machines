@@ -54,6 +54,10 @@ local validtypes =	{
 						"rail-planner",
 						-- Introduced in factorio v0.15
 						"item-with-entity-data",
+						-- Introduced in v1.0
+						-- Fix: https://github.com/DRY411S/Recycling-Machines/issues/90
+						-- cannot recycle spidertron-remote
+						"spidertron-remote",
 					}
 
 
@@ -189,7 +193,6 @@ function removeIneligibleRecipes()
     
 	for k , recipe in pairs(data.raw.recipe) do
 		local can_recycle = true
-
 		-- Fix for issues 11 and 12, caused by recipes that have NO ingredients!
 		-- http://stackoverflow.com/questions/1252539/most-efficient-way-to-determine-if-a-lua-table-is-empty-contains-no-entries
 		local recipeLayers = {recipe, recipe.normal, recipe.expensive}
@@ -502,18 +505,28 @@ function swopResultsAndIngredients(item,old,new)
 		end
 	elseif old.results ~= nil then
 		-- must be results then
-		if old.results[1].type == nil then
-			i1 = 1
-			i2 = 2
-		else
+		-- Structure is fluid, conforms with https://wiki.factorio.com/Types/ProductPrototype
+		-- Fix for https://github.com/DRY411S/Recycling-Machines/issues/89
+		-- Recipe result amount is before the name in the results table
+		-- NOTE: what if 'type' and 'show_details_in_recipe_tooltip' appear out of sequence?
+		local i1 ,i2
+		i1 = 1
+		i2 = 2
+		if old.results[1].type ~= nil then
+			i1 = 2
+			i2 = 3
+		end
+		if old.results[1].name ~= nil then
 			i1 = "name"
+		end
+		if old.results[1].amount ~= nil then
 			i2 = "amount"
 		end
 		old.result = old.results[1][i1]
 		-- Fix for https://github.com/DRY411S/Recycling-Machines/issues/87 (result_count can be nil)
 		old.result_count = old.results[1][i2] or 1
 	end
-	
+
 	local newresult_count
 	newresult_count = old.result_count * recycleratio
 	-- Fix: https://github.com/DRY411S/Recycling-Machines/issues/63
