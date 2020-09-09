@@ -193,6 +193,11 @@ vanillatypes = {
   "sound",
   "spectator-controller",
   "speech-bubble",
+  -- New in v1.0
+  "spidertron-remote",
+  "spider-vehicle",
+  "spider-leg",
+  -- End v1.0 newness
   "splitter",
   "sprite",
   "sticker",
